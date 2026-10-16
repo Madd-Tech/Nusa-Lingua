@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 1rem;
+
+    --surface: 255 251 245; /* #FFFBF5 krem kertas */
+    --ink: 28 25 23; /* #1C1917 */
+
+    --background: var(--surface);
+    --foreground: var(--ink);
+    --card: 255 255 255;
+    --card-foreground: var(--ink);
+    --popover: 255 255 255;
+    --popover-foreground: var(--ink);
+    --muted: 245 238 228;
+    --muted-foreground: 87 83 78;
+    --border: 232 223 210;
+    --input: 222 212 198;
+    --ring: 31 138 76;
+
+    --primary: 31 138 76; /* #1F8A4C hijau daun */
+    --primary-foreground: 255 255 255;
+    --primary-600: 26 122 67; /* #1A7A43 */
+    --primary-700: 20 92 51; /* #145C33 */
+
+    --secondary: 227 160 8; /* #E3A008 kunyit */
+    --secondary-foreground: 28 25 23;
+    --secondary-600: 227 160 8;
+    --secondary-700: 161 112 4;
+
+    --accent: 194 65 12; /* #C2410C terakota */
+    --accent-foreground: 255 255 255;
+    --accent-600: 194 65 12;
+    --accent-700: 140 47 9;
+
+    --danger: 220 38 38; /* #DC2626 */
+    --danger-foreground: 255 255 255;
+    --danger-700: 153 27 27;
+    --success: 22 163 74; /* #16A34A */
+    --success-foreground: 255 255 255;
+    --success-700: 21 128 61;
+
+    --c-belajar: 31 138 76;
+    --c-budaya: 126 58 242;
+    --c-asisten: 14 124 123;
+    --c-komunitas: 185 28 28;
+    --c-progres: 217 119 6;
+  }
+
+  .dark {
+    --surface: 23 20 18;
+    --ink: 245 240 232;
+
+    --background: var(--surface);
+    --foreground: var(--ink);
+    --card: 33 29 26;
+    --card-foreground: var(--ink);
+    --popover: 38 34 30;
+    --popover-foreground: var(--ink);
+    --muted: 44 39 35;
+    --muted-foreground: 176 168 160;
+    --border: 60 54 48;
+    --input: 74 67 60;
+    --ring: 74 208 128;
+
+    --primary: 74 208 128;
+    --primary-foreground: 255 255 255;
+    --primary-600: 26 122 67;
+    --primary-700: 16 74 41;
+
+    --secondary: 245 189 60;
+    --secondary-foreground: 28 25 23;
+    --secondary-600: 227 160 8;
+    --secondary-700: 140 98 4;
+
+    --accent: 251 128 64;
+    --accent-foreground: 255 255 255;
+    --accent-600: 194 65 12;
+    --accent-700: 120 40 8;
+
+    --danger: 248 113 113;
+    --danger-700: 153 27 27;
+    --success: 74 222 128;
+    --success-700: 21 128 61;
+
+    --c-belajar: 74 208 128;
+    --c-budaya: 176 145 255;
+    --c-asisten: 61 214 196;
+    --c-komunitas: 248 128 128;
+    --c-progres: 251 191 36;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01";
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-extrabold tracking-tight;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
