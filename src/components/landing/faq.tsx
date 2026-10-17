@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const FAQ = [
@@ -29,13 +30,27 @@ const FAQ = [
 
 export function Faq() {
   return (
-    <Accordion type="single" collapsible className="space-y-3">
-      {FAQ.map((item, i) => (
-        <AccordionItem key={i} value={`faq-${i}`}>
-          <AccordionTrigger>{item.q}</AccordionTrigger>
-          <AccordionContent>{item.a}</AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Image
+          src="/media/maskot/ekspresi-bingung.png"
+          alt="Maskot bingung"
+          width={48}
+          height={48}
+          className="rounded-xl"
+        />
+        <p className="text-sm text-muted-foreground">
+          Apa sih itu &quot;Matur nuwun&quot; dalam bahasa Jawa?
+        </p>
+      </div>
+      <Accordion type="single" collapsible className="space-y-3">
+        {FAQ.map((item, i) => (
+          <AccordionItem key={i} value={`faq-${i}`}>
+            <AccordionTrigger>{item.q}</AccordionTrigger>
+            <AccordionContent>{item.a}</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </div>
   );
 }

@@ -50,7 +50,7 @@ export default async function LanguagePathPage({ params }: { params: { code: str
       <section className="relative mb-6 overflow-hidden rounded-3xl border-2 bg-card p-5">
         <BatikPattern variant="kawung" color="rgb(var(--primary))" opacity={0.06} />
         <div className="relative flex items-start gap-4">
-          <LanguageIcon name={language.name} iconUrl={language.icon_url} className="size-16" />
+          <LanguageIcon name={language.name} code={language.code} iconUrl={language.icon_url} className="size-16" />
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl sm:text-3xl">{language.name}</h1>
             {language.region ? (

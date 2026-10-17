@@ -44,7 +44,7 @@ export function LanguagePicker({ languages, activeCode }: { languages: PickerLan
         className="inline-flex items-center gap-1.5 rounded-xl border-2 border-transparent px-1.5 py-1 text-sm font-bold hover:border-border hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label={`Bahasa aktif: ${active.name}. Ganti bahasa`}
       >
-        <LanguageIcon name={active.name} iconUrl={active.icon_url} className="size-8 rounded-lg text-xs" />
+        <LanguageIcon name={active.name} code={active.code} iconUrl={active.icon_url} className="size-8 rounded-lg text-xs" />
         <span className="hidden max-w-[8rem] truncate sm:inline">{active.name}</span>
         <ChevronDown aria-hidden="true" className="size-4 text-muted-foreground" />
       </DropdownMenuTrigger>
@@ -52,7 +52,7 @@ export function LanguagePicker({ languages, activeCode }: { languages: PickerLan
         <DropdownMenuLabel className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Bahasa aktif</DropdownMenuLabel>
         {languages.map((l) => (
           <DropdownMenuItem key={l.code} onSelect={() => choose(l.code)}>
-            <LanguageIcon name={l.name} iconUrl={l.icon_url} className="size-7 rounded-lg text-xs" />
+            <LanguageIcon name={l.name} code={l.code} iconUrl={l.icon_url} className="size-7 rounded-lg text-xs" />
             <span className="flex-1">{l.name}</span>
             {l.code === active.code ? <Check aria-label="dipilih" className="text-primary" /> : null}
           </DropdownMenuItem>

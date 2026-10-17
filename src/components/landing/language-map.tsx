@@ -5,13 +5,16 @@ import { ArrowRight, MapPin } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { FeatureLink } from "@/components/layout/feature-link";
 import { LanguageIcon } from "@/components/learning/language-icon";
+import { RumahAdat, getRumahAdat, type RumahAdatType } from "@/components/landing/rumah-adat";
 import type { RegionWithLanguages } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
 import { ISLAND_PATHS, MAP_H, MAP_W, project } from "./map-shapes";
 
-/** Peta bahasa Nusantara: marker dari regions.lat/lng, popover daftar bahasa, filter per pulau. */
+/** Peta bahasa Nusantara: marker dari regions.lat/lng, popover daftar bahasa, filter per pulau.
+ *  Saat marker diklik, pin berubah menjadi ilustrasi rumah adat khas daerah tersebut. */
 export function LanguageMap({ regions, isLoggedIn }: { regions: RegionWithLanguages[]; isLoggedIn: boolean }) {
   const [island, setIsland] = useState<string | null>(null);
+  const [openRegionId, setOpenRegionId] = useState<number | null>(null);
 
   const islands = useMemo(
     () => Array.from(new Set(regions.map((r) => r.island).filter((v): v is string => !!v))).sort((a, b) => a.localeCompare(b, "id")),
@@ -69,26 +72,39 @@ export function LanguageMap({ regions, isLoggedIn }: { regions: RegionWithLangua
             {markers.map((r) => {
               const { x, y } = project(r.lng!, r.lat!);
               const dim = island !== null && r.island !== island;
+              const house = getRumahAdat(r);
+              const isOpen = openRegionId === r.id;
               return (
                 <li
                   key={r.id}
                   className={cn("absolute -translate-x-1/2 -translate-y-full transition-opacity", dim && "pointer-events-none opacity-25")}
                   style={{ left: `${(x / MAP_W) * 100}%`, top: `${(y / MAP_H) * 100}%` }}
                 >
-                  <Popover>
+                  <Popover
+                    open={isOpen}
+                    onOpenChange={(open) => setOpenRegionId(open ? r.id : null)}
+                  >
                     <PopoverTrigger
-                      aria-label={`${r.name}: ${r.languages.length} bahasa`}
+                      aria-label={`${r.name}: ${r.languages.length} bahasa — buka ${house.name}`}
                       tabIndex={dim ? -1 : 0}
                       className="group flex flex-col items-center focus-visible:outline-none"
                     >
-                      <span className="flex items-center gap-1 rounded-full border-2 border-card bg-accent-600 px-2 py-1 text-xs font-extrabold text-white shadow-soft transition-transform group-hover:scale-110 group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2">
-                        <MapPin aria-hidden="true" className="size-3.5" />
-                        {r.languages.length || ""}
-                      </span>
-                      <span className="mt-0.5 h-2 w-0.5 bg-accent-600" />
+                      {isOpen ? (
+                        /* Marker terbuka → berubah menjadi rumah adat khas daerah ini */
+                        <span className="marker-house flex items-center gap-1.5 rounded-full border-2 border-card bg-white px-2 py-1 shadow-soft dark:bg-card">
+                          <RumahAdat type={house.type} className="size-7" />
+                          <span className="text-xs font-extrabold text-ink">{house.name}</span>
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 rounded-full border-2 border-card bg-accent-600 px-2 py-1 text-xs font-extrabold text-white shadow-soft transition-transform group-hover:scale-110 group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2">
+                          <MapPin aria-hidden="true" className="size-3.5" />
+                          {r.languages.length || ""}
+                        </span>
+                      )}
+                      <span className={cn("mt-0.5 h-2 w-0.5", isOpen ? "bg-primary-600" : "bg-accent-600")} />
                     </PopoverTrigger>
                     <PopoverContent side="top">
-                      <RegionPopover region={r} isLoggedIn={isLoggedIn} />
+                      <RegionPopover region={r} isLoggedIn={isLoggedIn} house={house} />
                     </PopoverContent>
                   </Popover>
                 </li>
@@ -112,7 +128,7 @@ export function LanguageMap({ regions, isLoggedIn }: { regions: RegionWithLangua
                   isLoggedIn={isLoggedIn}
                   className="flex h-full flex-col gap-2 rounded-2xl border-2 border-b-4 bg-card p-3"
                 >
-                  <LanguageIcon name={l.name} iconUrl={l.icon_url} className="size-10 rounded-xl text-base" />
+                  <LanguageIcon name={l.name} code={l.code} iconUrl={l.icon_url} className="size-10 rounded-xl text-base" />
                   <span className="font-extrabold leading-tight">{l.name}</span>
                   <span className="text-xs text-muted-foreground">{l.region.name}</span>
                 </FeatureLink>
@@ -127,18 +143,36 @@ export function LanguageMap({ regions, isLoggedIn }: { regions: RegionWithLangua
   );
 }
 
-function RegionPopover({ region, isLoggedIn }: { region: RegionWithLanguages; isLoggedIn: boolean }) {
+function RegionPopover({
+  region,
+  isLoggedIn,
+  house,
+}: {
+  region: RegionWithLanguages;
+  isLoggedIn: boolean;
+  house: { type: RumahAdatType; name: string };
+}) {
   return (
     <div className="space-y-3">
-      <div>
-        <p className="text-lg font-extrabold leading-tight">{region.name}</p>
-        <p className="text-xs text-muted-foreground">{[region.province, region.island].filter(Boolean).join(" · ")}</p>
+      <div className="flex items-center gap-3">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl border-2 border-b-4 bg-white p-1 dark:bg-card">
+          <RumahAdat type={house.type} className="size-10" />
+        </span>
+        <div>
+          <p className="text-lg font-extrabold leading-tight">{region.name}</p>
+          <p className="text-xs text-muted-foreground">
+            {house.name}
+            {[region.province, region.island].filter(Boolean).length
+              ? ` · ${[region.province, region.island].filter(Boolean).join(" · ")}`
+              : ""}
+          </p>
+        </div>
       </div>
       {region.languages.length ? (
         <ul className="space-y-2">
           {region.languages.map((l) => (
             <li key={l.id} className="flex items-center gap-2">
-              <LanguageIcon name={l.name} iconUrl={l.icon_url} className="size-9 rounded-xl text-sm" />
+              <LanguageIcon name={l.name} code={l.code} iconUrl={l.icon_url} className="size-9 rounded-xl text-sm" />
               <span className="flex-1 font-bold">{l.name}</span>
               <FeatureLink
                 path={`/belajar/${l.code}`}

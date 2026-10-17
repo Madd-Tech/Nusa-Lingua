@@ -1,15 +1,36 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Logo } from "@/components/layout/logo";
 import { LandingNavbar } from "@/components/landing/landing-navbar";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { SITE } from "@/lib/site";
 
-const FEATURE_LINKS = [
-  ["#fitur", "Belajar bertahap"],
-  ["#fitur", "Kamus & tingkat tutur"],
-  ["#budaya", "Sejarah & budaya"],
-  ["#asisten", "Teman ngobrol AI"],
-  ["#fitur", "Kontribusi komunitas"],
+const NAV_SECTIONS = [
+  {
+    title: "Fitur Utama",
+    links: [
+      ["#fitur", "Belajar Bertahap"],
+      ["/kamus", "Kamus & Tingkat Tutur"],
+      ["#bahasa", "Peta Bahasa"],
+      ["/asisten", "Teman Ngobrol AI"],
+    ],
+  },
+  {
+    title: "Komunitas",
+    links: [
+      ["/kontribusi", "Kontribusi"],
+      ["#budaya", "Sejarah & Budaya"],
+      ["#faq", "FAQ"],
+    ],
+  },
+  {
+    title: "Tentang",
+    links: [
+      ["/ketentuan", "Ketentuan & Privasi"],
+      ["/masuk", "Masuk"],
+      ["/daftar", "Daftar"],
+    ],
+  },
 ] as const;
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
@@ -35,44 +56,42 @@ export default async function MarketingLayout({ children }: { children: React.Re
       <main id="konten" className="-mt-16 flex-1">
         {children}
       </main>
-      <footer className="border-t-2 bg-card">
-        <div className="container grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-3 lg:col-span-2">
+
+      {/* ═══ FOOTER ═══ */}
+      <footer className="landing-footer">
+        <div className="landing-footer-grid">
+          {/* Brand */}
+          <div className="landing-footer-brand">
             <Logo />
-            <p className="max-w-sm text-sm text-muted-foreground">{SITE.description}</p>
-          </div>
-          <nav aria-label="Fitur" className="space-y-2 text-sm">
-            <p className="font-extrabold">Fitur</p>
-            <ul className="space-y-2">
-              {FEATURE_LINKS.map(([href, label]) => (
-                <li key={label}>
-                  <a href={href} className="text-muted-foreground hover:text-foreground hover:underline">
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className="space-y-2 text-sm">
-            <p className="font-extrabold">Tentang tim</p>
-            <p className="text-muted-foreground">
-              Dibuat oleh {SITE.team} untuk {SITE.competition}, sebagai upaya kecil melestarikan bahasa daerah Nusantara.
+            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+              {SITE.description}
             </p>
-            <ul className="space-y-2 pt-2">
-              <li>
-                <Link href="/ketentuan" className="text-muted-foreground hover:text-foreground hover:underline">
-                  Ketentuan & privasi
-                </Link>
-              </li>
-              <li>
-                <Link href="/masuk" className="text-muted-foreground hover:text-foreground hover:underline">
-                  Masuk
-                </Link>
-              </li>
-            </ul>
+            <p className="text-xs text-muted-foreground">
+              Dibuat oleh {SITE.team} untuk {SITE.competition}
+            </p>
           </div>
+
+          {/* Nav Sections */}
+          {NAV_SECTIONS.map((section) => (
+            <nav key={section.title} aria-label={section.title} className="landing-footer-nav space-y-2">
+              <p>{section.title}</p>
+              <ul className="space-y-2">
+                {section.links.map(([href, label]) => (
+                  <li key={label}>
+                    {href.startsWith("#") ? (
+                      <a href={href}>{label}</a>
+                    ) : (
+                      <Link href={href}>{label}</Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
-        <div className="border-t-2">
+
+        {/* Bottom bar */}
+        <div className="landing-footer-bar">
           <p className="container py-4 text-xs text-muted-foreground">
             © {new Date().getFullYear()} {SITE.name}. Hak cipta dilindungi.
           </p>

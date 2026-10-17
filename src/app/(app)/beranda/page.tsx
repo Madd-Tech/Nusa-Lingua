@@ -97,7 +97,7 @@ export default async function BerandaPage() {
                 />
               ) : (
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <LanguageIcon name={active.language.name} iconUrl={active.language.icon_url} className="size-16" />
+                  <LanguageIcon name={active.language.name} code={active.language.code} iconUrl={active.language.icon_url} className="size-16" />
                   <div className="min-w-0 flex-1 space-y-2">
                     <p className="text-sm font-bold text-muted-foreground">{active.language.name}</p>
                     <p className="text-lg font-extrabold leading-tight">
@@ -179,7 +179,7 @@ export default async function BerandaPage() {
                         href={`/belajar/${ul.language.code}`}
                         className="flex items-center gap-3 rounded-2xl border-2 bg-card p-3 transition-colors hover:bg-muted"
                       >
-                        <LanguageIcon name={ul.language.name} iconUrl={ul.language.icon_url} className="size-11 rounded-xl text-base" />
+                        <LanguageIcon name={ul.language.name} code={ul.language.code} iconUrl={ul.language.icon_url} className="size-11 rounded-xl text-base" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-extrabold">{ul.language.name}</p>
                           <p className="text-xs text-muted-foreground">{s ? `${s.completed}/${s.total} lesson` : "—"}</p>

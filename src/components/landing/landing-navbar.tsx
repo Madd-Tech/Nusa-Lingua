@@ -13,8 +13,7 @@ import { cn } from "@/lib/utils";
 const ANCHORS = [
   ["#fitur", "Fitur"],
   ["#bahasa", "Bahasa"],
-  ["#budaya", "Budaya"],
-  ["#cara-kerja", "Cara Kerja"],
+  ["#coba", "Coba Soal"],
   ["#faq", "FAQ"],
 ] as const;
 
@@ -31,15 +30,24 @@ export function LandingNavbar({ user }: { user: { name: string | null; avatarUrl
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b-2 transition-[background-color,border-color,backdrop-filter] duration-200",
-        scrolled ? "border-border bg-background/80 backdrop-blur-md" : "border-transparent bg-transparent",
+        "sticky top-0 z-40 transition-all duration-300",
+        scrolled
+          ? "border-b bg-white/90 shadow-sm backdrop-blur-xl dark:bg-background/90"
+          : "border-b border-transparent bg-transparent",
       )}
     >
       <div className="container flex h-16 items-center gap-3">
         <Logo />
         <nav aria-label="Navigasi halaman" className="ml-6 hidden items-center gap-1 lg:flex">
           {ANCHORS.map(([href, label]) => (
-            <a key={href} href={href} className="rounded-xl px-3 py-2 text-sm font-bold text-muted-foreground hover:bg-muted hover:text-foreground">
+            <a
+              key={href}
+              href={href}
+              className={cn(
+                "rounded-full px-4 py-2 text-sm font-bold transition-colors",
+                "text-muted-foreground hover:bg-primary/8 hover:text-primary",
+              )}
+            >
               {label}
             </a>
           ))}
@@ -51,16 +59,16 @@ export function LandingNavbar({ user }: { user: { name: string | null; avatarUrl
               <Link href="/profil" aria-label="Profil saya" className="hidden rounded-full sm:block">
                 <UserAvatar name={user.name} src={user.avatarUrl} className="size-9" />
               </Link>
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="rounded-full bg-primary-600 px-5 font-bold text-white">
                 <Link href="/beranda">Lanjut Belajar</Link>
               </Button>
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+              <Button asChild variant="ghost" size="sm" className="hidden rounded-full font-bold sm:inline-flex">
                 <Link href="/masuk">Masuk</Link>
               </Button>
-              <Button asChild size="sm" className="hidden sm:inline-flex">
+              <Button asChild size="sm" className="hidden rounded-full bg-primary-600 px-5 font-bold text-white sm:inline-flex">
                 <Link href="/daftar">Mulai Belajar</Link>
               </Button>
             </>
