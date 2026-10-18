@@ -279,7 +279,7 @@ export function OnboardingForm({
                                 selected ? "border-primary bg-primary/10" : "hover:bg-muted",
                               )}
                             >
-                              <LanguageIcon name={lang.name} iconUrl={lang.icon_url} className="size-11" />
+                              <LanguageIcon name={lang.name} code={lang.code} iconUrl={lang.icon_url} className="size-11" />
                               <span className="min-w-0 flex-1">
                                 <span className="block truncate font-extrabold">{lang.name}</span>
                                 <span className="block truncate text-xs text-muted-foreground">

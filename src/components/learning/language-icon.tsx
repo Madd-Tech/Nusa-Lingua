@@ -1,4 +1,5 @@
 import { RemoteImage } from "@/components/ui/remote-image";
+import { getAksara } from "@/lib/aksara";
 import { cn } from "@/lib/utils";
 
 const PALETTE = [
@@ -16,13 +17,20 @@ function hash(s: string) {
   return Math.abs(h);
 }
 
-/** Ikon bahasa: gambar dari icon_url, atau tile inisial berwarna (deterministik). */
+/**
+ * Ikon bahasa: gambar dari icon_url, glyph aksara tradisional Nusantara
+ * (jika bahasa punya aksara: Jawa, Sunda, Bali, Lontara, Batak), atau
+ * tile inisial berwarna (deterministik) sebagai fallback.
+ */
 export function LanguageIcon({
   name,
+  code,
   iconUrl,
   className,
 }: {
   name: string;
+  /** Kode bahasa (kolom languages.code) — dipakai untuk memilih glyph aksara. */
+  code?: string | null;
   iconUrl?: string | null;
   className?: string;
 }) {
@@ -33,15 +41,33 @@ export function LanguageIcon({
       </span>
     );
   }
+
+  const colorClass = PALETTE[hash(name) % PALETTE.length];
+  const aksara = getAksara(code, name);
+  if (aksara) {
+    return (
+      <span
+        aria-hidden="true"
+        title={aksara.label}
+        className={cn(
+          "flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl font-aksara leading-none",
+          colorClass,
+          className,
+        )}
+      >
+        {/* Sedikit turun agar garis dasar aksara terlihat seimbang di tengah tile */}
+        <span aria-hidden="true" className="translate-y-[0.05em] text-[1.45em]">
+          {aksara.glyph}
+        </span>
+      </span>
+    );
+  }
+
   const label = name.replace(/^bahasa\s+/i, "").slice(0, 2);
   return (
     <span
       aria-hidden="true"
-      className={cn(
-        "flex size-12 shrink-0 items-center justify-center rounded-2xl text-lg font-extrabold",
-        PALETTE[hash(name) % PALETTE.length],
-        className,
-      )}
+      className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl text-lg font-extrabold", colorClass, className)}
     >
       {label.charAt(0).toUpperCase() + label.slice(1).toLowerCase()}
     </span>

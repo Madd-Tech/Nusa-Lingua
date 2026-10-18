@@ -155,7 +155,7 @@ export default async function ProfilPage() {
                 <li key={l.language_id}>
                   <Link href={`/belajar/${l.language.code}`} className="block space-y-3 rounded-2xl border-2 bg-card p-4 hover:bg-muted">
                     <div className="flex items-center gap-3">
-                      <LanguageIcon name={l.language.name} iconUrl={l.language.icon_url} className="size-11 rounded-xl text-base" />
+                      <LanguageIcon name={l.language.name} code={l.language.code} iconUrl={l.language.icon_url} className="size-11 rounded-xl text-base" />
                       <span className="flex-1 font-extrabold">{l.language.name}</span>
                       <span className="inline-flex items-center gap-1 text-sm font-extrabold">
                         <Zap aria-hidden="true" className="size-4 fill-secondary text-secondary" /> {formatNumber(l.xp)} XP

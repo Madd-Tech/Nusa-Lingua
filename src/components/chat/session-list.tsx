@@ -83,7 +83,7 @@ export function SessionList({
                 aria-current={active ? "page" : undefined}
                 className="flex min-w-0 flex-1 items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <PersonaAvatar src={s.persona?.avatar_url} className="size-10 rounded-xl" />
+                <PersonaAvatar name={s.persona?.name} src={s.persona?.avatar_url} className="size-10 rounded-xl" />
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-bold">{title}</span>
                   <span className="block truncate text-xs text-muted-foreground">

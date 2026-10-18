@@ -64,7 +64,7 @@ export default async function KamusPage({ params, searchParams }: { params: { co
       <section className="relative mb-6 overflow-hidden rounded-3xl border-2 bg-card p-5">
         <BatikPattern variant="parang" color="rgb(var(--c-belajar))" opacity={0.05} />
         <div className="relative flex flex-wrap items-center gap-4">
-          <LanguageIcon name={language.name} iconUrl={language.icon_url} className="size-14" />
+          <LanguageIcon name={language.name} code={language.code} iconUrl={language.icon_url} className="size-14" />
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl sm:text-3xl">Kamus {language.name}</h1>
             <p className="text-sm text-muted-foreground">

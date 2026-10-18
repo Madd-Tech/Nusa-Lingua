@@ -30,7 +30,7 @@ export default async function KamusIndexPage() {
                 href={`/kamus/${lang.code}`}
                 className="flex items-center gap-3 rounded-2xl border-2 border-b-4 bg-card p-4 transition-colors hover:border-primary/50"
               >
-                <LanguageIcon name={lang.name} iconUrl={lang.icon_url} />
+                <LanguageIcon name={lang.name} code={lang.code} iconUrl={lang.icon_url} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-extrabold">Kamus {lang.name}</span>
                   <span className="block truncate text-xs text-muted-foreground">

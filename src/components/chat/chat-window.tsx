@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { UserAvatar } from "@/components/ui/avatar";
 import { PersonaAvatar } from "@/components/chat/persona-avatar";
+import { PersonaMascotAnim } from "@/components/chat/persona-mascot";
 import { MarkdownContent } from "@/components/culture/markdown-content";
 import { USE_MOCK_CHAT } from "@/lib/env";
 import { mockChatStream } from "@/lib/mock-chat";
+import { getPersonaMascot } from "@/lib/persona-mascots";
 import { cn } from "@/lib/utils";
 
 export type ChatMsg = {
@@ -63,6 +65,7 @@ export function ChatWindow({
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const mascot = getPersonaMascot(persona.name);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -156,10 +159,33 @@ export function ChatWindow({
 
   return (
     <div className="flex h-[calc(100dvh-15rem)] min-h-[420px] flex-col overflow-hidden rounded-3xl border-2 bg-card md:h-[calc(100dvh-12.5rem)]">
+      {/* Header persona — maskot animasi mengikuti status (mengetik / menyapa) */}
+      <div className="flex items-center gap-3 border-b-2 bg-asisten/6 px-4 py-2.5">
+        {mascot ? (
+          <PersonaMascotAnim m={mascot} busy={busy} size={48} />
+        ) : (
+          <PersonaAvatar name={persona.name} src={persona.avatar_url} className="size-11 rounded-xl" />
+        )}
+        <div className="min-w-0">
+          <p className="truncate font-extrabold">{persona.name}</p>
+          <p className="truncate text-xs text-muted-foreground">
+            {busy
+              ? "sedang mengetik…"
+              : persona.languageName
+                ? `Teman ngobrol bahasa ${persona.languageName}`
+                : "siap ngobrol"}
+          </p>
+        </div>
+      </div>
+
       <div role="log" aria-live="polite" aria-label={`Percakapan dengan ${persona.name}`} className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
         {messages.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <PersonaAvatar src={persona.avatar_url} className="size-16" />
+          <div className="flex h-full flex-col items-center justify-center gap-1 text-center">
+            {mascot ? (
+              <PersonaMascotAnim m={mascot} busy={busy} size={220} />
+            ) : (
+              <PersonaAvatar name={persona.name} src={persona.avatar_url} className="size-16" />
+            )}
             <p className="text-lg font-extrabold">Halo! Aku {persona.name}.</p>
             <p className="max-w-sm text-sm text-muted-foreground">
               Tulis apa saja{persona.languageName ? ` tentang bahasa ${persona.languageName}` : ""}, atau mulai dari salah satu ide di bawah.
@@ -173,7 +199,7 @@ export function ChatWindow({
                 {isUser ? (
                   <UserAvatar name={me.name} src={me.avatar_url} className="size-8" />
                 ) : (
-                  <PersonaAvatar src={persona.avatar_url} className="size-8 rounded-xl" />
+                  <PersonaAvatar name={persona.name} src={persona.avatar_url} className="size-8 rounded-xl" />
                 )}
                 <div className={cn("flex max-w-[82%] flex-col gap-1", isUser && "items-end")}>
                   <div

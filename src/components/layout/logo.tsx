@@ -1,19 +1,18 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+/** Logo mark — menggunakan gambar logo leaf emblem dari folder Media */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 40 40" aria-hidden="true" className={cn("size-9", className)}>
-      <rect width="40" height="40" rx="12" className="fill-primary-600" />
-      {/* motif kawung mini */}
-      <g className="fill-white/90">
-        <ellipse cx="20" cy="11.5" rx="4.2" ry="6.5" />
-        <ellipse cx="20" cy="28.5" rx="4.2" ry="6.5" />
-        <ellipse cx="11.5" cy="20" rx="6.5" ry="4.2" />
-        <ellipse cx="28.5" cy="20" rx="6.5" ry="4.2" />
-      </g>
-      <circle cx="20" cy="20" r="3" className="fill-secondary" />
-    </svg>
+    <Image
+      src="/media/logo/nusa-lingua-logo.png"
+      alt="Nusa Lingua"
+      width={160}
+      height={80}
+      className={cn("h-9 w-auto", className)}
+      priority
+    />
   );
 }
 
@@ -21,14 +20,27 @@ export function Logo({ href = "/", className, compact }: { href?: string; classN
   return (
     <Link
       href={href}
-      className={cn("inline-flex items-center gap-2.5 rounded-xl font-extrabold tracking-tight", className)}
+      className={cn("inline-flex items-center gap-2 rounded-xl", className)}
       aria-label="Nusa Lingua — halaman utama"
     >
-      <LogoMark />
-      {!compact && (
-        <span className="text-xl leading-none">
-          Nusa<span className="text-primary">Lingua</span>
-        </span>
+      {compact ? (
+        <Image
+          src="/media/logo/nusa-lingua-logo.png"
+          alt="Nusa Lingua"
+          width={36}
+          height={36}
+          className="size-9 object-contain"
+          priority
+        />
+      ) : (
+        <Image
+          src="/media/logo/nusa-lingua-logo.png"
+          alt="Nusa Lingua"
+          width={160}
+          height={80}
+          className="h-9 w-auto"
+          priority
+        />
       )}
     </Link>
   );

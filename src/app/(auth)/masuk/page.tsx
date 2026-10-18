@@ -31,8 +31,10 @@ export default async function MasukPage({ searchParams }: { searchParams: { next
         </p>
       ) : null}
       <div className="space-y-2">
-        <h1 className="text-3xl">Masuk</h1>
-        <p className="text-muted-foreground">Lanjutkan perjalanan belajarmu.</p>
+        <h1 className="text-3xl">
+          Masuk & <span className="landing-highlight">lanjut belajar</span>
+        </h1>
+        <p className="text-muted-foreground">Lanjutkan perjalanan belajarmu hari ini.</p>
       </div>
       {errorMessage ? (
         <p role="alert" className="rounded-2xl border-2 border-danger/40 bg-danger/10 px-4 py-3 text-sm font-semibold text-danger-700 dark:text-danger">

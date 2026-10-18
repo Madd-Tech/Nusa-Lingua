@@ -23,7 +23,7 @@ export function LanguageCard({
     <article className="relative flex h-full flex-col overflow-hidden rounded-3xl border-2 bg-card p-5 shadow-soft">
       <BatikPattern variant="kawung" color="rgb(var(--primary))" opacity={0.04} />
       <div className="relative flex items-start gap-3">
-        <LanguageIcon name={language.name} iconUrl={language.icon_url} className="size-14" />
+        <LanguageIcon name={language.name} code={language.code} iconUrl={language.icon_url} className="size-14" />
         <div className="min-w-0 flex-1">
           <h3 className="text-lg leading-tight">{language.name}</h3>
           {language.region ? (

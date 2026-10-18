@@ -1,1 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="12" fill="#1A7A43"/><g fill="#fff" fill-opacity=".92"><ellipse cx="20" cy="11.5" rx="4.2" ry="6.5"/><ellipse cx="20" cy="28.5" rx="4.2" ry="6.5"/><ellipse cx="11.5" cy="20" rx="6.5" ry="4.2"/><ellipse cx="28.5" cy="20" rx="6.5" ry="4.2"/></g><circle cx="20" cy="20" r="3" fill="#E3A008"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <rect width="40" height="40" rx="10" fill="#1B4332"/>
+  <!-- Leaf shape inspired by the Nusa Lingua emblem -->
+  <g transform="translate(20,20)">
+    <!-- Main leaf -->
+    <path d="M0,-14 C8,-12 14,-4 14,4 C14,8 10,12 4,14 C2,10 -2,4 -6,-2 C-8,-6 -4,-12 0,-14Z" fill="#C4963A"/>
+    <!-- Second leaf layer -->
+    <path d="M-2,-10 C4,-9 10,-2 10,4 C10,7 7,10 2,11 C1,8 -2,3 -5,-1 C-6,-4 -4,-9 -2,-10Z" fill="#D4A64A" opacity="0.8"/>
+    <!-- Small diamond accent -->
+    <path d="M0,-16 L1.5,-14 L0,-12 L-1.5,-14Z" fill="#D4A64A"/>
+  </g>
+</svg>
