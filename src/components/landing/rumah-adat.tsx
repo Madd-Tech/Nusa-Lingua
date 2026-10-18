@@ -11,7 +11,12 @@ export type RumahAdatType =
   | "joglo"
   | "badog"
   | "bali"
+  | "rumoh-aceh"
+  | "bolon"
   | "gadang"
+  | "tanean-lanjhang"
+  | "saoraja"
+  | "bubungan-tinggi"
   | "betang"
   | "tongkonan"
   | "lumbung"
@@ -23,7 +28,12 @@ const NAMES: Record<RumahAdatType, string> = {
   joglo: "Rumah Joglo",
   badog: "Imah Badog",
   bali: "Bale Bali",
+  "rumoh-aceh": "Rumoh Aceh",
+  bolon: "Rumah Bolon",
   gadang: "Rumah Gadang",
+  "tanean-lanjhang": "Tanean Lanjhang",
+  saoraja: "Saoraja",
+  "bubungan-tinggi": "Bubungan Tinggi",
   betang: "Rumah Betang",
   tongkonan: "Tongkonan",
   lumbung: "Lumbung Sasak",
@@ -41,7 +51,15 @@ export function getRumahAdat(region: { name: string; province: string | null; is
   return { type: "panggung" as const, name: NAMES.panggung };
 }
 
+// Urutan penting: aturan yang lebih spesifik ditaruh lebih dulu (mis. Madura sebelum "jawa timur",
+// Bugis sebelum "sulawesi", Banjar sebelum "kalimantan").
 const RULES: Array<{ type: RumahAdatType; keywords: string[] }> = [
+  { type: "rumoh-aceh", keywords: ["aceh", "lhokseumawe", "sabang", "meulaboh", "langsa"] },
+  {
+    type: "bolon",
+    keywords: ["sumatera utara", "sumatra utara", "batak", "toba", "balige", "samosir", "tarutung", "siantar", "sibolga", "medan"],
+  },
+  { type: "tanean-lanjhang", keywords: ["madura", "pamekasan", "sumenep", "sampang", "bangkalan"] },
   {
     type: "badog",
     keywords: ["jawa barat", "banten", "bandung", "bogor", "sunda", "tasik", "cirebon", "sumedang", "garut", "cianjur", "sukabumi", "purwakarta"],
@@ -56,12 +74,20 @@ const RULES: Array<{ type: RumahAdatType; keywords: string[] }> = [
     keywords: ["sumatera barat", "sumatra barat", "padang", "bukittinggi", "payakumbuh", "minang", "solok", "padang panjang", "sijunjung"],
   },
   {
+    type: "bubungan-tinggi",
+    keywords: ["kalimantan selatan", "banjarmasin", "banjarbaru", "martapura", "kandangan", "barabai", "banjar"],
+  },
+  {
     type: "betang",
-    keywords: ["kalimantan", "pontianak", "banjarmasin", "palangkaraya", "balikpapan", "samarinda", "dayak", "banjar", "kapuas", "ketapang"],
+    keywords: ["kalimantan", "pontianak", "palangka raya", "palangkaraya", "balikpapan", "samarinda", "dayak", "kapuas", "ketapang"],
+  },
+  {
+    type: "saoraja",
+    keywords: ["bugis", "watampone", "bone", "sengkang", "wajo", "soppeng", "sidrap", "sidenreng", "parepare", "barru", "pinrang"],
   },
   {
     type: "tongkonan",
-    keywords: ["sulawesi", "toraja", "makassar", "manado", "palu", "bugis", "bone", "gowa", "parepare", "bitung"],
+    keywords: ["sulawesi", "toraja", "makassar", "manado", "palu", "gowa", "bitung"],
   },
   {
     type: "lumbung",
@@ -123,6 +149,30 @@ const SHAPES: Record<RumahAdatType, ReactNode> = {
     </>
   ),
 
+  /* Rumoh Aceh — panggung tinggi, atap pelana memanjang + tangga di depan (Aceh) */
+  "rumoh-aceh": (
+    <>
+      <path d="M4 24 15 8h34l11 16Z" className="fill-accent-600" />
+      <path d="M2 24h60v3H2Z" className="fill-accent-700" />
+      <path d="M10 27h44v11H10Z" className="fill-primary-700" />
+      <path d="M15 30h5v5h-5ZM29 30h5v5h-5ZM44 30h5v5h-5Z" className="fill-secondary-600" />
+      <path d="M12 38h3v12h-3ZM24 38h3v12h-3ZM49 38h3v12h-3Z" className="fill-primary-700/80" />
+      <path d="M34 38h4l5 12h-4Z" className="fill-primary-700/60" />
+      {GROUND}
+    </>
+  ),
+
+  /* Rumah Bolon — atap pelana melengkung, kedua ujung menjulang + gorga (Batak Toba) */
+  bolon: (
+    <>
+      <path d="M2 4c12 12 48 12 60 0l-7 26H9Z" className="fill-accent-600" />
+      <path d="M12 30h40v10H12Z" className="fill-primary-700" />
+      <path d="m20 32 4 3-4 3-4-3ZM32 32l4 3-4 3-4-3ZM44 32l4 3-4 3-4-3Z" className="fill-secondary-600" />
+      <path d="M14 40h4v10h-4ZM30 40h4v10h-4ZM46 40h4v10h-4Z" className="fill-primary-700/80" />
+      {GROUND}
+    </>
+  ),
+
   /* Rumah Gadang — atap tanduk kerbau melengkung (Sumatera Barat) */
   gadang: (
     <>
@@ -130,6 +180,35 @@ const SHAPES: Record<RumahAdatType, ReactNode> = {
       <path d="M13 31h38l-4 17H17Z" className="fill-primary-700" />
       <path d="m18 35 6-1v7l-6 1ZM46 35l-6-1v7l6 1Z" className="fill-secondary-600" />
       <path d="M29 48V38h6v10Z" className="fill-card" />
+      {GROUND}
+    </>
+  ),
+
+  /* Tanean Lanjhang — deretan rumah satu keluarga di halaman panjang, langgar di ujung barat (Madura) */
+  "tanean-lanjhang": (
+    <>
+      <path d="M4 30 11 20l7 10Z" className="fill-accent-700" />
+      <path d="M6 30h10v18H6Z" className="fill-primary-700/80" />
+      <path d="M19 28 25 16h14l6 12Z" className="fill-accent-600" />
+      <path d="M21 28h22v20H21Z" className="fill-primary-700" />
+      <path d="M29 48v-9h6v9Z" className="fill-card" />
+      <path d="M45 31 49 22h9l4 9Z" className="fill-accent-600" />
+      <path d="M47 31h14v17H47Z" className="fill-primary-700" />
+      <path d="M52 48v-6h4v6Z" className="fill-card" />
+      <path d="M3 48h58v2H3Z" className="fill-secondary-600" />
+      {GROUND}
+    </>
+  ),
+
+  /* Bubungan Tinggi — atap tengah sangat curam diapit anjung (Banjar) */
+  "bubungan-tinggi": (
+    <>
+      <path d="M3 34 10 24h12v10ZM61 34l-7-10H42v10Z" className="fill-accent-700" />
+      <path d="M8 30h48v12H8Z" className="fill-primary-700" />
+      <path d="M32 2 44 30H20Z" className="fill-accent-600" />
+      <path d="M13 33h5v5h-5ZM46 33h5v5h-5Z" className="fill-secondary-600" />
+      <path d="M28 42v-8h8v8Z" className="fill-card" />
+      <path d="M10 42h4v8h-4ZM30 42h4v8h-4ZM50 42h4v8h-4Z" className="fill-primary-700/80" />
       {GROUND}
     </>
   ),
@@ -154,6 +233,20 @@ const SHAPES: Record<RumahAdatType, ReactNode> = {
       <path d="M20 34h5v3h-5ZM29 34h5v3h-5ZM38 34h5v3h-5Z" className="fill-secondary-600" />
       <path d="M27 46V36h10v10Z" className="fill-card" />
       <path d="M12 46h40v4H12Z" className="fill-primary-700/80" />
+      {GROUND}
+    </>
+  ),
+
+  /* Saoraja — rumah panggung tinggi, timpa laja bersusun di bidang atap (Bugis) */
+  saoraja: (
+    <>
+      <path d="M32 4 58 26H6Z" className="fill-accent-600" />
+      <path d="M29 1 35 7M35 1l-6 6" strokeWidth="2" strokeLinecap="round" className="stroke-accent-700" fill="none" />
+      <path d="M27 13h10v3H27ZM24 17h16v3H24ZM21 21h22v3H21Z" className="fill-secondary-600" />
+      <path d="M10 26h44v12H10Z" className="fill-primary-700" />
+      <path d="M16 29h5v5h-5ZM43 29h5v5h-5Z" className="fill-secondary-600" />
+      <path d="M29 38v-7h6v7Z" className="fill-card" />
+      <path d="M12 38h4v12h-4ZM30 38h4v12h-4ZM48 38h4v12h-4Z" className="fill-primary-700/80" />
       {GROUND}
     </>
   ),

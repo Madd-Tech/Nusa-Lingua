@@ -23,11 +23,16 @@ Tipe database: `npm run gen:types` (butuh `SUPABASE_PROJECT_ID` + `supabase logi
 
 ### Menyiapkan database
 
-Jika proyek Supabase masih kosong, jalankan tiga berkas ini **berurutan** di Supabase Dashboard → SQL Editor (masing-masing sekali, pada schema `public` yang kosong):
+Jika proyek Supabase masih kosong, jalankan berkas-berkas ini **berurutan** di Supabase Dashboard → SQL Editor (masing-masing sekali, pada schema `public` yang kosong):
 
 1. [`supabase/migrations/0001_schema.sql`](supabase/migrations/0001_schema.sql) — enum, tabel, indeks, RLS, hak kolom, trigger profil, RPC `complete_lesson`, view `weekly_leaderboard`, lencana otomatis.
 2. [`supabase/migrations/0002_storage.sql`](supabase/migrations/0002_storage.sql) — bucket publik `audio` & `avatars` + policy tulis hanya ke folder `<user_id>/`.
 3. [`supabase/seed.sql`](supabase/seed.sql) — data demo: 3 daerah, Bahasa Jawa & Sunda, 6 lesson (28 soal, keenam tipe), kosakata bertingkat tutur, 2 artikel terbit + 1 draf, 7 lencana, 2 persona AI. Aman dijalankan ulang.
+4. [`supabase/seed_basanusa.sql`](supabase/seed_basanusa.sql) — Basanusa Dataset v1.0: 8 bahasa baru (Aceh, Batak Toba, Minangkabau, Madura, Bali, Bugis, Dayak Ngaju, Banjar) + 7 daerah, dan unit tematik tambahan untuk Jawa & Sunda. Total 101 unit, 448 lesson, 7.111 kosakata, 5.853 soal pilihan ganda. Unit diurutkan sapaan → perasaan → kata kerja/sifat → manusia/alam/masyarakat. Harus setelah `seed.sql`; aman dijalankan ulang (menjalankan ulang ikut memperbarui urutan unit). Sumber NusaX (CC BY-SA 4.0, wajib atribusi — ditampilkan di `/ketentuan#sumber-data` dan kaki halaman kamus) — belum diverifikasi penutur asli.
+5. [`supabase/seed_personas.sql`](supabase/seed_personas.sql) — 8 persona AI untuk bahasa baru (Nek Aminah, Amang Tigor, Uda Rizal, Kak Sitti, Luh Sari, Daeng Baso, Bapa Ambun, Acil Imah), dengan instruksi tambahan agar tidak mengarang kosakata. Belum ada maskot khusus, jadi `avatar_url` NULL dan aplikasi menampilkan inisial nama persona. Harus setelah `seed_basanusa.sql`; aman dijalankan ulang.
+6. [`supabase/seed_budaya.sql`](supabase/seed_budaya.sql) — 8 artikel budaya terbit, satu per bahasa baru: Nyepi (Bali), Rumoh Aceh, Ulos & Dalihan Na Tolu (Batak Toba), asal-usul nama Minangkabau, Karapan Sapi (Madura), Aksara Lontara (Bugis), Huma Betang (Dayak Ngaju), Pasar Terapung (Banjar). Harus setelah `seed_basanusa.sql`; aman dijalankan ulang. Mohon ditinjau budayawan/penutur asli sebelum rilis.
+
+Peta bahasa di landing otomatis menampilkan rumah adat tiap daerah baru (Rumoh Aceh, Rumah Bolon, Rumah Gadang, Tanean Lanjhang, Saoraja, Rumah Betang, Bubungan Tinggi) — lihat `src/components/landing/rumah-adat.tsx`.
 
 Lalu daftar lewat `/daftar`. Untuk mencoba halaman moderasi:
 

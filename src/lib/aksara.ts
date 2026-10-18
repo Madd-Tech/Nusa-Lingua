@@ -17,6 +17,9 @@ const AKSARA_BY_CODE: Record<string, AksaraEntry> = {
   // Aksara Bali — huruf "ᬩ" (ba)
   ba: { glyph: "\u1B29", label: "Aksara Bali" },
   bal: { glyph: "\u1B29", label: "Aksara Bali" },
+  ban: { glyph: "\u1B29", label: "Aksara Bali" },
+  // Carakan Madura \u2014 bahasa Madura secara tradisional ditulis dengan aksara Jawa (dan Pegon)
+  mad: { glyph: "\uA997", label: "Aksara Carakan (Madura)" },
   // Lontara (Bugis/Makassar/Sasak) — huruf "ᨅ" (ba)
   bug: { glyph: "\u1A05", label: "Aksara Lontara" },
   mak: { glyph: "\u1A05", label: "Aksara Lontara" },
@@ -24,6 +27,7 @@ const AKSARA_BY_CODE: Record<string, AksaraEntry> = {
   // Aksara Batak — huruf "ᯅ" (ba)
   btk: { glyph: "\u1BC5", label: "Aksara Batak" },
   bata: { glyph: "\u1BC5", label: "Aksara Batak" },
+  bbc: { glyph: "\u1BC5", label: "Aksara Batak" },
 };
 
 /** Fallback berdasarkan nama bahasa (jika kode tidak dikenal). */
@@ -31,6 +35,7 @@ const AKSARA_BY_NAME: Array<{ keywords: string[]; entry: AksaraEntry }> = [
   { keywords: ["jawa", "javanese"], entry: AKSARA_BY_CODE.jv! },
   { keywords: ["sunda", "sundanese"], entry: AKSARA_BY_CODE.su! },
   { keywords: ["bali", "balinese"], entry: AKSARA_BY_CODE.ba! },
+  { keywords: ["madura", "madurese"], entry: AKSARA_BY_CODE.mad! },
   { keywords: ["bugis", "makassar", "sasak", "lontara"], entry: AKSARA_BY_CODE.bug! },
   { keywords: ["batak", "toba", "karo", "mandailing", "simalungun", "pakpak"], entry: AKSARA_BY_CODE.btk! },
 ];

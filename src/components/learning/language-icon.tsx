@@ -19,7 +19,7 @@ function hash(s: string) {
 
 /**
  * Ikon bahasa: gambar dari icon_url, glyph aksara tradisional Nusantara
- * (jika bahasa punya aksara: Jawa, Sunda, Bali, Lontara, Batak), atau
+ * (jika bahasa punya aksara: Jawa, Sunda, Bali, Madura, Lontara, Batak), atau
  * tile inisial berwarna (deterministik) sebagai fallback.
  */
 export function LanguageIcon({

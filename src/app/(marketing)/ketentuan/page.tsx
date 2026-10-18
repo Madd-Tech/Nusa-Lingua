@@ -27,6 +27,24 @@ export default function KetentuanPage() {
         </p>
         <h2>Perilaku pengguna</h2>
         <p>Gunakan bahasa yang sopan. Konten yang menyinggung SARA atau melanggar hukum akan dihapus.</p>
+        <h2 id="sumber-data">Sumber data</h2>
+        <p>
+          Sebagian besar kosakata, lesson, dan soal untuk bahasa Aceh, Bali, Banjar, Batak Toba, Bugis, Dayak Ngaju, Jawa, Madura,
+          Minangkabau, dan Sunda berasal dari <strong>Basanusa Dataset v1.0</strong>, yang disusun dari{" "}
+          <a href="https://github.com/IndoNLP/nusax" target="_blank" rel="noopener noreferrer">
+            NusaX
+          </a>{" "}
+          (Winata dkk., &ldquo;NusaX: Multilingual Parallel Sentiment Dataset for 10 Indonesian Local Languages&rdquo;, EACL 2023)
+          dan kamus-sunda (KatowProject). Data turunan ini dibagikan dengan lisensi{" "}
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.id" target="_blank" rel="noopener noreferrer">
+            CC BY-SA 4.0
+          </a>
+          .
+        </p>
+        <p>
+          Data tersebut belum diverifikasi penutur asli. Jika menemukan kata atau arti yang keliru, bantu kami memperbaikinya
+          lewat menu Kontribusi.
+        </p>
       </div>
     </article>
   );

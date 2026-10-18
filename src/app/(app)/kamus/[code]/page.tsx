@@ -159,6 +159,13 @@ export default async function KamusPage({ params, searchParams }: { params: { co
           ) : null}
         </>
       )}
+
+      <p className="mt-8 text-center text-xs text-muted-foreground">
+        Sebagian kosakata berasal dari NusaX (CC BY-SA 4.0) dan belum diverifikasi penutur asli.{" "}
+        <Link href="/ketentuan#sumber-data" className="font-bold underline underline-offset-2 hover:text-foreground">
+          Sumber data
+        </Link>
+      </p>
     </div>
   );
 }
