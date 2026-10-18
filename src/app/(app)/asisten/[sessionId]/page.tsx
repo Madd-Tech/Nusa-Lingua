@@ -73,7 +73,7 @@ export default async function ChatSessionPage({
           >
             <ArrowLeft aria-hidden="true" className="size-5" />
           </Link>
-          <PersonaAvatar src={persona?.avatar_url} className="size-11" />
+          <PersonaAvatar name={personaName} src={persona?.avatar_url} className="size-11" />
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-xl">{personaName}</h1>
             {languageName ? <Badge variant="asisten">{languageName}</Badge> : <p className="text-xs text-muted-foreground">Asisten AI</p>}

@@ -55,7 +55,7 @@ export default async function AsistenPage() {
                 <li key={p.id} className="relative flex flex-col overflow-hidden rounded-3xl border-2 bg-card p-5 shadow-soft">
                   <BatikPattern variant="parang" color="rgb(var(--c-asisten))" opacity={0.05} />
                   <div className="relative flex items-center gap-3">
-                    <PersonaAvatar src={p.avatar_url} className="size-14" />
+                    <PersonaAvatar name={p.name} src={p.avatar_url} className="size-14" />
                     <div className="min-w-0">
                       <h3 className="truncate text-lg">{p.name}</h3>
                       {p.language_id && langName.get(p.language_id) ? (

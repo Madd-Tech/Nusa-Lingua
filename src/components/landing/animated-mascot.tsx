@@ -10,59 +10,28 @@ import { cn } from "@/lib/utils";
  * so CSS animations inside the SVG run natively AND the background
  * is truly transparent — no white box in dark mode.
  *
- * Available mascots & poses:
- *
- * eyang-nusa:
- *   melambai-jawa, melambai-sunda, melambai-bali,
- *   mengangguk, tertawa, bercerita, merayakan
- *
- * mbah-darmo:
- *   menyapa, mengetik, mendengarkan, menjawab, berpikir
- *
- * teh-euis:
- *   menyapa, melambai-jawa, melambai-sunda, melambai-bali,
- *   mengangguk, tertawa, merayakan
+ * Daftar pose per maskot ada di MASCOT_POSES di bawah.
  */
 
-type EyangPose =
-  | "melambai-jawa"
-  | "melambai-sunda"
-  | "melambai-bali"
-  | "mengangguk"
-  | "tertawa"
-  | "bercerita"
-  | "merayakan";
+const MASCOT_POSES = {
+  "eyang-nusa": ["melambai-jawa", "melambai-sunda", "melambai-bali", "mengangguk", "tertawa", "bercerita", "merayakan"],
+  "mbah-darmo": ["menyapa", "mengetik", "mendengarkan", "menjawab", "berpikir"],
+  "teh-euis": ["menyapa", "melambai-jawa", "melambai-sunda", "melambai-bali", "mengangguk", "tertawa", "merayakan"],
+  "teh-euis-ai": ["menyapa-sunda", "menyapa-jawa", "menyapa-bali", "mengetik", "mendengarkan", "menjawab", "berpikir"],
+} as const;
 
-type MbahDarmoPose =
-  | "menyapa"
-  | "mengetik"
-  | "mendengarkan"
-  | "menjawab"
-  | "berpikir";
+export type MascotId = keyof typeof MASCOT_POSES;
+export type PoseOf<M extends MascotId> = (typeof MASCOT_POSES)[M][number];
 
-type TehEuisPose =
-  | "menyapa"
-  | "melambai-jawa"
-  | "melambai-sunda"
-  | "melambai-bali"
-  | "mengangguk"
-  | "tertawa"
-  | "merayakan";
+type MascotProps = { className?: string; size?: number } & {
+  [M in MascotId]: { mascot: M; pose?: PoseOf<M> };
+}[MascotId];
 
-type MascotProps = {
-  className?: string;
-  /** Width & height in px. Default 280. */
-  size?: number;
-} & (
-  | { mascot: "eyang-nusa"; pose?: EyangPose }
-  | { mascot: "mbah-darmo"; pose?: MbahDarmoPose }
-  | { mascot: "teh-euis"; pose?: TehEuisPose }
-);
-
-const DEFAULT_POSES: Record<string, string> = {
+const DEFAULT_POSES: Record<MascotId, string> = {
   "eyang-nusa": "melambai-jawa",
   "mbah-darmo": "menyapa",
   "teh-euis": "menyapa",
+  "teh-euis-ai": "menyapa-sunda",
 };
 
 // Client-side SVG cache to avoid re-fetching
