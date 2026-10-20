@@ -2,6 +2,8 @@ export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 export const USE_MOCK_CHAT = process.env.NEXT_PUBLIC_USE_MOCK_CHAT === "true";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+/** Client ID OAuth Google (publik). Mengaktifkan tombol resmi Google + signInWithIdToken. */
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
 /**
  * Peringatan dini untuk kesalahan konfigurasi yang umum:

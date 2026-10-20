@@ -1,7 +1,4 @@
-/**
- * Garis pantai Indonesia yang sangat disederhanakan (lon, lat) — cukup untuk peta ilustratif.
- * Proyeksi equirectangular: x = (lon - LON0) * K, y = (LAT0 - lat) * K.
- */
+
 export const LON0 = 94;
 export const LAT0 = 6.5;
 export const K = 20;

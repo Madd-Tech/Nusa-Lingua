@@ -5,10 +5,6 @@ import { Slot } from "@radix-ui/react-slot";
 import { useGoToFeature } from "@/hooks/use-go-to-feature";
 import { featureHref } from "@/lib/routes";
 
-/**
- * Link CTA ke fitur dari halaman publik. Memakai `goToFeature(path)`.
- * `href` awal sudah benar untuk status login saat render (berfungsi tanpa JS / buka di tab baru).
- */
 export function FeatureLink({
   path,
   isLoggedIn,

@@ -7,7 +7,7 @@ import { getOAuthProviders } from "@/lib/supabase/auth-settings";
 
 export const metadata: Metadata = { title: "Masuk" };
 
-/** Kode error dari /auth/callback → pesan ramah. */
+
 const CALLBACK_ERRORS: Record<string, string> = {
   callback: "Tautan masuk tidak valid. Silakan coba lagi.",
   oauth: "Gagal masuk dengan Google. Silakan coba lagi.",

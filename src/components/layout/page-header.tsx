@@ -3,7 +3,6 @@ import { BatikPattern } from "@/components/ui/batik-pattern";
 import { cn } from "@/lib/utils";
 import { CATEGORY_STYLES, type FeatureCategory } from "@/components/layout/nav-items";
 
-/** Header section dengan warna kategori fitur + aksen batik tipis. */
 export function PageHeader({
   title,
   description,

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { GoogleButton } from "@/components/auth/google-button";
+import { GoogleSignIn } from "@/components/auth/google-sign-in";
 import { PasswordInput } from "@/components/auth/password-input";
 import { AuthDivider } from "@/components/auth/auth-divider";
 import { createClient } from "@/lib/supabase/client";
@@ -38,7 +38,7 @@ export function LoginForm({ next, googleEnabled = null }: { next: string; google
 
   return (
     <div className="space-y-5">
-      <GoogleButton next={next} label="Masuk dengan Google" enabled={googleEnabled} />
+      <GoogleSignIn next={next} mode="signin" enabled={googleEnabled} />
       <AuthDivider />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>

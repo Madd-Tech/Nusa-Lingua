@@ -35,12 +35,12 @@ export function HeroMockup() {
         </div>
       </div>
 
-      <span className="absolute -left-3 top-4 flex animate-float items-center gap-1.5 rounded-2xl border-2 bg-card px-3 py-2 text-sm font-extrabold shadow-lift sm:-left-8">
+      {/* <span className="absolute -left-3 top-4 flex animate-float items-center gap-1.5 rounded-2xl border-2 bg-card px-3 py-2 text-sm font-extrabold shadow-lift sm:-left-8">
         <Flame className="size-5 fill-accent text-accent" /> 7 hari
       </span>
       <span className="absolute -right-2 top-20 flex animate-float-slow items-center gap-1.5 rounded-2xl border-2 bg-card px-3 py-2 text-sm font-extrabold shadow-lift [animation-delay:600ms] sm:-right-8">
         <Zap className="size-5 fill-secondary text-secondary" /> +10 XP
-      </span>
+      </span> */}
       <span className="absolute -bottom-1 right-6 flex animate-float items-center gap-0.5 rounded-2xl border-2 bg-card px-3 py-2 shadow-lift [animation-delay:1200ms]">
         {[0, 1, 2].map((i) => (
           <Star key={i} className="size-5 fill-secondary text-secondary" />

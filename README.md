@@ -17,6 +17,7 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client Supabase (browser & server) |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Server saja.** Dipakai di `src/lib/queries/personas.ts` untuk membaca `ai_personas` |
 | `NEXT_PUBLIC_SITE_URL` | Origin untuk redirect email/OAuth (opsional) |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Client ID OAuth Google (publik). Mengaktifkan tombol resmi Google + `signInWithIdToken` agar layar pilih akun menampilkan domain website, bukan `supabase.co`. Kosong = alur redirect OAuth. Lihat [docs/setup-google-oauth.md](docs/setup-google-oauth.md) |
 | `NEXT_PUBLIC_USE_MOCK_CHAT` | `true` = pakai `src/lib/mock-chat.ts` selama `POST /api/chat` belum ada |
 
 Tipe database: `npm run gen:types` (butuh `SUPABASE_PROJECT_ID` + `supabase login`) menimpa `src/types/database.ts`.

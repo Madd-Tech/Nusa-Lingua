@@ -1,6 +1,4 @@
 "use client";
-
-/* eslint-disable @next/next/no-img-element */
 import { useRef, useState } from "react";
 import { Check, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -10,7 +8,6 @@ import { createClient } from "@/lib/supabase/client";
 import { PRESET_AVATARS, uploadAvatar } from "@/lib/avatars";
 import { cn } from "@/lib/utils";
 
-/** Pilih avatar bawaan atau unggah foto sendiri. `value` = URL avatar terpilih. */
 export function AvatarPicker({
   userId,
   name,

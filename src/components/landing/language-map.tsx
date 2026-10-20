@@ -10,8 +10,6 @@ import type { RegionWithLanguages } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
 import { ISLAND_PATHS, MAP_H, MAP_W, project } from "./map-shapes";
 
-/** Peta bahasa Nusantara: marker dari regions.lat/lng, popover daftar bahasa, filter per pulau.
- *  Saat marker diklik, pin berubah menjadi ilustrasi rumah adat khas daerah tersebut. */
 export function LanguageMap({ regions, isLoggedIn }: { regions: RegionWithLanguages[]; isLoggedIn: boolean }) {
   const [island, setIsland] = useState<string | null>(null);
   const [openRegionId, setOpenRegionId] = useState<number | null>(null);

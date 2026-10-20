@@ -85,6 +85,8 @@ export function authErrorMessage(message: string | undefined | null) {
   if (m.includes("password should be") || m.includes("weak password")) return "Kata sandi terlalu lemah. Gunakan minimal 8 karakter.";
   if (m.includes("same password") || m.includes("different from the old")) return "Kata sandi baru harus berbeda dari yang lama.";
   if (m.includes("session") && m.includes("missing")) return "Sesi sudah berakhir. Minta tautan reset baru.";
+  if (m.includes("audience") || m.includes("nonce") || m.includes("id_token") || m.includes("id token"))
+    return "Gagal memverifikasi akun Google. Muat ulang halaman lalu coba lagi.";
   if (m.includes("provider is not enabled") || m.includes("unsupported provider"))
     return "Masuk dengan Google belum diaktifkan. Gunakan email dan kata sandi untuk sementara.";
   if (m.includes("network") || m.includes("fetch")) return "Koneksi bermasalah. Periksa internetmu.";

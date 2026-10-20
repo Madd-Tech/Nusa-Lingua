@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { GoogleButton } from "@/components/auth/google-button";
+import { GoogleSignIn } from "@/components/auth/google-sign-in";
 import { PasswordInput } from "@/components/auth/password-input";
 import { PasswordStrength } from "@/components/auth/password-strength";
 import { AuthDivider } from "@/components/auth/auth-divider";
@@ -78,7 +78,7 @@ export function RegisterForm({ next, googleEnabled = null }: { next: string; goo
 
   return (
     <div className="space-y-5">
-      <GoogleButton next={afterSignup} label="Daftar dengan Google" enabled={googleEnabled} />
+      <GoogleSignIn next={afterSignup} mode="signup" enabled={googleEnabled} />
       <AuthDivider />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>

@@ -4,13 +4,31 @@ Panduan ini mengaktifkan tombol **"Masuk dengan Google"** dan **"Daftar dengan G
 Proyek Supabase: `gnislsfjiubfeszhzsog`. Kode aplikasi sudah siap; yang perlu dilakukan hanya konfigurasi di
 **Google Cloud Console** dan **Supabase Dashboard**.
 
-> Status per 15 Okt 2026 (dicek lewat `/auth/v1/settings`): provider Google **belum aktif**, login email aktif
-> dan wajib konfirmasi email. Selama Google belum aktif, tombolnya tampil nonaktif dengan keterangan.
+> Status per 19 Okt 2026: provider Google **sudah aktif** di Supabase (Client ID
+> `518454541895-…9dkb.apps.googleusercontent.com`), redirect URI Supabase sudah terdaftar di Google. Selama
+> provider Google mati, tombolnya otomatis tampil nonaktif dengan keterangan.
 
 ## Cara kerjanya
 
+Aplikasi memakai **dua alur**, dipilih otomatis:
+
+**A. Tombol resmi Google + ID token (utama)** — aktif bila `NEXT_PUBLIC_GOOGLE_CLIENT_ID` diisi.
+
 ```
-[Tombol Google] → accounts.google.com (pilih akun & izin)
+[Tombol resmi Google] → popup accounts.google.com ("Lanjutkan ke localhost" / domain kamu)
+                      → ID token (dengan nonce) kembali ke halaman
+                      → supabase.auth.signInWithIdToken → /onboarding (akun baru) atau `next`
+```
+
+Login terjadi di domain website sendiri, sehingga layar "Pilih akun" menampilkan **domain Nusa Lingua**,
+bukan `gnislsfjiubfeszhzsog.supabase.co`. Nama aplikasi "Nusa Lingua" baru muncul setelah *brand* diverifikasi
+Google untuk domain produksimu (lihat langkah 1.3).
+
+**B. Redirect OAuth (cadangan)** — dipakai bila Client ID kosong, skrip Google diblokir/gagal dimuat, atau
+halaman tidak di HTTPS/localhost.
+
+```
+[Tombol Google] → accounts.google.com
               → https://gnislsfjiubfeszhzsog.supabase.co/auth/v1/callback   ← redirect URI di Google
               → http://localhost:3000/auth/callback?code=…&next=…          ← harus diizinkan di Supabase
               → exchangeCodeForSession → /onboarding (akun baru) atau `next` (mis. /beranda)
@@ -45,8 +63,10 @@ Buka <https://console.cloud.google.com/> dengan akun Google tim.
 6. **Clients → Create client**
    - **Application type:** `Web application`
    - **Name:** `Nusa Lingua (Supabase)`
-   - **Authorized JavaScript origins:**
+   - **Authorized JavaScript origins** (wajib untuk tombol resmi Google — alur A; harus persis sama dengan
+     alamat yang dibuka di browser, termasuk port):
      - `http://localhost:3000`
+     - `http://localhost` (dianjurkan Google untuk pengembangan lokal)
      - `https://<domain-produksi>` (nanti, saat deploy)
    - **Authorized redirect URIs** (harus persis sama, termasuk `https` dan tanpa garis miring di akhir):
      - `https://gnislsfjiubfeszhzsog.supabase.co/auth/v1/callback`
@@ -61,7 +81,9 @@ Buka <https://supabase.com/dashboard/project/gnislsfjiubfeszhzsog>.
    - Nyalakan **Enable Sign in with Google**
    - **Client IDs:** tempel Client ID dari langkah 1.6
    - **Client Secret (for OAuth):** tempel Client secret
-   - Biarkan *Skip nonce checks* dan *Allow users without an email* **mati**
+   - Biarkan *Skip nonce checks* dan *Allow users without an email* **mati** (aplikasi mengirim nonce)
+   - Alur A (`signInWithIdToken`) hanya menerima ID token yang *audience*-nya ada di kolom **Client IDs** ini.
+     Jika nanti menambah client lain (mis. Android), pisahkan dengan koma.
    - Pastikan **Callback URL (for OAuth)** yang ditampilkan sama dengan redirect URI di Google, lalu **Save**
 2. **Authentication → URL Configuration**
    - **Site URL:** `http://localhost:3000` (ganti ke domain produksi saat rilis)
@@ -82,10 +104,12 @@ Buka <https://supabase.com/dashboard/project/gnislsfjiubfeszhzsog>.
 NEXT_PUBLIC_SUPABASE_URL=https://gnislsfjiubfeszhzsog.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<publishable/anon key>
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+# Client ID Google (publik) — sama dengan yang ditempel di Supabase. Kosongkan untuk memakai alur B saja.
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=518454541895-717c41fn0b0moskpgq1272kj4iov9dkb.apps.googleusercontent.com
 ```
 
-Restart `npm run dev` setelah mengubah `.env.local`. Client ID/secret Google **tidak** perlu ditaruh di
-aplikasi — keduanya hanya disimpan di Supabase.
+Restart `npm run dev` setelah mengubah `.env.local`. **Client secret** Google tidak pernah ditaruh di aplikasi —
+hanya disimpan di Supabase. Client ID memang publik (terlihat di URL Google), jadi aman di `NEXT_PUBLIC_`.
 
 ## 4. Uji alurnya
 
@@ -106,6 +130,9 @@ PKCE disimpan per origin.
 
 | Gejala | Penyebab & solusi |
 | --- | --- |
+| Tombol resmi Google tidak muncul, console: **"The given origin is not allowed for the given client ID"** | Tambahkan origin persis (mis. `http://localhost:3000`) ke *Authorized JavaScript origins* client tersebut, tunggu ±5 menit. |
+| Popup Google menutup lalu muncul toast "Gagal memverifikasi akun Google" | Client ID di `.env.local` berbeda dengan yang ada di Supabase → *Client IDs*, atau *Skip nonce checks* sedang menyala. Samakan Client ID-nya. |
+| Yang muncul tombol hijau-putih biasa, bukan tombol resmi Google | Alur B aktif: `NEXT_PUBLIC_GOOGLE_CLIENT_ID` kosong, skrip `accounts.google.com/gsi/client` diblokir (ekstensi/adblock), atau halaman dibuka lewat HTTP non-localhost (mis. IP LAN). |
 | Google: **Error 400: redirect_uri_mismatch** | Redirect URI di Google harus persis `https://gnislsfjiubfeszhzsog.supabase.co/auth/v1/callback`. |
 | Google: **Access blocked / 403 access_denied** | Aplikasi masih *Testing* dan email belum ada di *Test users*. Tambahkan emailnya, atau *Publish app*. |
 | Halaman JSON `Unsupported provider: provider is not enabled` | Google belum diaktifkan atau belum disimpan di Supabase (langkah 2.1). |
@@ -120,7 +147,9 @@ PKCE disimpan per origin.
 
 | Berkas | Peran |
 | --- | --- |
-| `src/components/auth/google-button.tsx` | `signInWithOAuth({ provider: "google" })`, `redirectTo` = origin saat ini + `/auth/callback?next=…`, `prompt=select_account`, tombol nonaktif bila provider mati |
+| `src/components/auth/google-sign-in.tsx` | Alur A: memuat Google Identity Services, nonce SHA-256, tombol resmi (tema terang/gelap, bahasa Indonesia), `signInWithIdToken`, fallback otomatis ke alur B |
+| `src/types/google-gis.d.ts` | Tipe minimal Google Identity Services |
+| `src/components/auth/google-button.tsx` | Alur B: | `signInWithOAuth({ provider: "google" })`, `redirectTo` = origin saat ini + `/auth/callback?next=…`, `prompt=select_account`, tombol nonaktif bila provider mati |
 | `src/lib/supabase/auth-settings.ts` | Membaca provider yang aktif dari `/auth/v1/settings` (cache 5 menit) |
 | `src/app/auth/callback/route.ts` | Menukar `code` → sesi, menangani error provider (batal, kedaluwarsa, beda browser), redirect ke `next` |
 | `src/lib/supabase/middleware.ts` | Refresh sesi, proteksi route, user tanpa username → `/onboarding`, penyelamat `/?code=…` |

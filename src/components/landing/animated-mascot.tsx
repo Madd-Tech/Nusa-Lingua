@@ -3,16 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-/**
- * Animated SVG mascot component.
- *
- * Fetches individual SVG files and inlines them via dangerouslySetInnerHTML
- * so CSS animations inside the SVG run natively AND the background
- * is truly transparent — no white box in dark mode.
- *
- * Daftar pose per maskot ada di MASCOT_POSES di bawah.
- */
-
 const MASCOT_POSES = {
   "eyang-nusa": ["melambai-jawa", "melambai-sunda", "melambai-bali", "mengangguk", "tertawa", "bercerita", "merayakan"],
   "mbah-darmo": ["menyapa", "mengetik", "mendengarkan", "menjawab", "berpikir"],
@@ -34,7 +24,6 @@ const DEFAULT_POSES: Record<MascotId, string> = {
   "teh-euis-ai": "menyapa-sunda",
 };
 
-// Client-side SVG cache to avoid re-fetching
 const svgCache = new Map<string, string>();
 
 export function AnimatedMascot({

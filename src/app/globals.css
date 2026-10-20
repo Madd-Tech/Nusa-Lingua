@@ -6,6 +6,9 @@
   :root {
     --radius: 1rem;
 
+    /* Font utama (di-self-host via @fontsource-variable, lihat src/app/layout.tsx) */
+    --font-jakarta: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+
     --surface: 255 255 255; /* Pure white for clean look */
     --ink: 28 25 23; /* #1C1917 */
 
