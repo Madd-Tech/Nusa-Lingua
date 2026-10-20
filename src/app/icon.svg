@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
   <rect width="40" height="40" rx="10" fill="#1B4332"/>
   <!-- Leaf shape inspired by the Nusa Lingua emblem -->
-  <g transform="translate(20,20)">
+  <g transform="translate(20,20) scale(1.2) translate(-3,1)">
     <!-- Main leaf -->
     <path d="M0,-14 C8,-12 14,-4 14,4 C14,8 10,12 4,14 C2,10 -2,4 -6,-2 C-8,-6 -4,-12 0,-14Z" fill="#C4963A"/>
     <!-- Second leaf layer -->
