@@ -47,6 +47,24 @@ const THINKING_MESSAGES = [
   "Kalau sudah mantap, periksa jawabannya, ya!",
 ];
 
+/** Bandingkan dua jawaban agar efek suara pilih hanya berbunyi saat pilihan benar-benar berubah. */
+function isSameAnswer(a: AnswerValue | null, b: AnswerValue | null) {
+  if (a === b) return true;
+  if (!a || !b || a.kind !== b.kind) return false;
+  switch (a.kind) {
+    case "choice":
+      return a.value === (b as { value: string }).value;
+    case "text":
+      return a.value === (b as { value: string }).value;
+    case "speak":
+      return a.transcript === (b as { transcript: string }).transcript;
+    case "arrange":
+      return a.tokens.join(" ") === (b as { tokens: string[] }).tokens.join(" ");
+    case "match":
+      return a.complete === (b as { complete: boolean }).complete && a.mistakes === (b as { mistakes: number }).mistakes;
+  }
+}
+
 export function LessonPlayer({
   userId,
   lessonId,
@@ -88,6 +106,15 @@ export function LessonPlayer({
   const [mascotMood, setMascotMood] = useState<MascotMood>("idle");
   const [mascotMessage, setMascotMessage] = useState(() => mascot.greeting);
   const [celebration, setCelebration] = useState(0);
+
+  // Efek suara pilih: simpan jawaban sebelumnya + waktu bunyi terakhir (anti-spam).
+  const previousAnswerRef = useRef<AnswerValue | null>(null);
+  const lastSelectRef = useRef(0);
+
+  // Soal berganti → pilihan sebelumnya tidak relevan lagi.
+  useEffect(() => {
+    previousAnswerRef.current = null;
+  }, [index]);
 
   // Ikuti maskot pilihan pengguna (disimpan di localStorage oleh halaman jalur).
   useEffect(() => {
@@ -238,6 +265,17 @@ export function LessonPlayer({
   /** Saat pengguna mulai memilih/mengetik, maskot ikut "berpikir". */
   const handleAnswer = useCallback(
     (value: AnswerValue | null) => {
+      // Bunyikan ketukan pilih hanya saat pilihan berubah (mengetik teks tidak dibunyikan).
+      const isPick = value !== null && value.kind !== "text" && value.kind !== "speak";
+      if (isPick && !isSameAnswer(value, previousAnswerRef.current)) {
+        const now = performance.now();
+        if (now - lastSelectRef.current > 40) {
+          sfx.select();
+          lastSelectRef.current = now;
+        }
+      }
+      previousAnswerRef.current = value;
+
       setAnswer(value);
       if (verdict !== null) return;
       if (value && isAnswerReady(value)) {
@@ -248,7 +286,7 @@ export function LessonPlayer({
         setMascotMessage(pickLine(mascot.lines.idle, index));
       }
     },
-    [index, mascot, verdict],
+    [index, mascot, sfx, verdict],
   );
 
   const backToPath = () => router.push(`/belajar/${languageCode}`);
