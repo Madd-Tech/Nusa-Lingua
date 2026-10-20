@@ -79,6 +79,13 @@ export function useSoundEffects() {
     setEnabled,
     correct: () => play([{ freq: 660, at: 0, dur: 0.12 }, { freq: 990, at: 0.1, dur: 0.2 }]),
     wrong: () => play([{ freq: 220, at: 0, dur: 0.25, type: "triangle" }, { freq: 180, at: 0.12, dur: 0.25, type: "triangle" }]),
+    streak: () =>
+      play([
+        { freq: 659, at: 0, dur: 0.12 },
+        { freq: 784, at: 0.1, dur: 0.12 },
+        { freq: 988, at: 0.2, dur: 0.12 },
+        { freq: 1319, at: 0.3, dur: 0.35 },
+      ]),
     finish: () =>
       play([
         { freq: 523, at: 0, dur: 0.15 },

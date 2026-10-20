@@ -1,0 +1,32 @@
+KAK SITTI - MASKOT AI NUSA-LINGUA (Bahasa Madura, Pamekasan)
+=============================================================
+Isi folder animasi/ : 12 file SVG beranimasi, latar belakang transparan, ukuran 512x512.
+Animasi memakai CSS di dalam SVG, jadi tetap jalan lewat <img src="...">, CSS background, maupun inline.
+Tanpa JavaScript. Otomatis berhenti jika pengguna mengaktifkan "prefers-reduced-motion".
+
+PEMAKAIAN
+  <img src="/maskot/kak-sitti/menyapa.svg" width="160" height="160" alt="Kak Sitti menyapa">
+
+PEMETAAN STATE AI -> ANIMASI (saran)
+  napas.svg            diam / idle (bernapas + berkedip)
+  menyapa.svg          pesan pembuka, sapaan awal
+  salam.svg            salam pembuka atau penutup sesi
+  mendengarkan.svg     pengguna sedang mengetik / merekam suara
+  berpikir.svg         AI memproses jawaban
+  mengetik.svg         AI sedang menulis balasan (streaming)
+  menjawab.svg         AI sedang menyampaikan jawaban
+  memuji.svg           jawaban pengguna benar / progres bagus
+  kurang-yakin.svg     AI belum yakin dengan jawabannya
+  gangguan-koneksi.svg error jaringan / API gagal
+  berpetatah.svg       menampilkan pepatah, kata mutiara, atau budaya
+  tidur.svg            sesi tidak aktif lama
+
+PALET
+  Garis #11382C | Kulit #D39A6A | Kebaya #D2394B | Sarung #2B3A73
+  Emas #CD9B3C  | Rambut #2A1B17 | Hijau #2F8F66 | Krem #F4F2EA
+
+CATATAN
+  - Teks di balon ("Hampir benar!", "Begini, ya!") ada di versi statis ai-mengoreksi dan ai-menjelaskan.
+    Kalau ingin balon berbahasa Madura, minta penutur asli memeriksa ejaan dan tingkat tutur
+    (enja'-iya, engghi-enten, engghi-bhunten) sebelum dipakai.
+  - Bercerita (kak-sitti-bercerita.svg) dipisah, dipakai untuk mode dongeng/cerita rakyat.

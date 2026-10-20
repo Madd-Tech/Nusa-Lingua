@@ -31,8 +31,12 @@ export function VocabList({ items, strength }: { items: VocabularyItem[]; streng
                 <span className="flex flex-wrap items-center gap-2">
                   <span className="truncate text-lg font-extrabold">{v.word}</span>
                   {v.speech_level ? <Badge variant="budaya">{v.speech_level}</Badge> : null}
+                  {v.peran === "varian" ? <Badge variant="muted">padanan</Badge> : null}
                 </span>
                 <span className="block truncate text-sm text-muted-foreground">{v.meaning_id}</span>
+                {v.meaning_en ? (
+                  <span className="block truncate text-xs italic text-muted-foreground/80">{v.meaning_en}</span>
+                ) : null}
                 <StrengthDots value={strength[v.id] ?? null} className="mt-1.5" />
               </span>
               <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-muted-foreground" />
@@ -46,8 +50,18 @@ export function VocabList({ items, strength }: { items: VocabularyItem[]; streng
           {selected ? (
             <>
               <SheetHeader>
-                <SheetTitle className="text-3xl">{selected.word}</SheetTitle>
+                <SheetTitle className="text-3xl">
+                  {selected.word}
+                  {selected.peran === "varian" ? (
+                    <Badge variant="muted" className="ml-2 align-middle text-sm font-bold">
+                      padanan
+                    </Badge>
+                  ) : null}
+                </SheetTitle>
                 <SheetDescription className="text-base">{selected.meaning_id}</SheetDescription>
+                {selected.meaning_en ? (
+                  <p className="text-sm italic text-muted-foreground">{selected.meaning_en}</p>
+                ) : null}
               </SheetHeader>
               {selected.image_url ? (
                 <RemoteImage src={selected.image_url} alt={`Ilustrasi ${selected.word}`} className="aspect-video w-full rounded-2xl border-2" />
@@ -66,11 +80,32 @@ export function VocabList({ items, strength }: { items: VocabularyItem[]; streng
                 </div>
                 <div>
                   <dt className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Contoh kalimat</dt>
-                  <dd className="mt-1 italic">{selected.example_sentence ? `“${selected.example_sentence}”` : "—"}</dd>
+                  <dd className="mt-1">
+                    {selected.example_sentence ? (
+                      <>
+                        <span className="italic">“{selected.example_sentence}”</span>
+                        {selected.example_meaning ? (
+                          <span className="mt-0.5 block text-sm text-muted-foreground">{selected.example_meaning}</span>
+                        ) : null}
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Kategori</dt>
                   <dd className="mt-1 capitalize">{selected.category ?? "—"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Peran kata</dt>
+                  <dd className="mt-1 text-sm">
+                    {selected.peran === "varian" ? (
+                      "Padanan: kata lain untuk arti yang sama."
+                    ) : (
+                      "Materi pelajaran: muncul di lesson & soal."
+                    )}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Penguasaanmu</dt>

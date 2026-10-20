@@ -90,15 +90,16 @@ export async function getVocabularies(
   const from = (page - 1) * VOCAB_PAGE_SIZE;
   let query = db
     .from("vocabularies")
-    .select("id, word, meaning_id, speech_level, pronunciation, audio_url, image_url, example_sentence, category", {
-      count: "exact",
-    })
+    .select(
+      "id, word, meaning_id, meaning_en, speech_level, pronunciation, audio_url, image_url, example_sentence, example_meaning, category, peran, source",
+      { count: "exact" },
+    )
     .eq("language_id", languageId)
     .order("word")
     .range(from, from + VOCAB_PAGE_SIZE - 1);
 
   const q = sanitizeSearch(opts.q);
-  if (q) query = query.or(`word.ilike.%${q}%,meaning_id.ilike.%${q}%`);
+  if (q) query = query.or(`word.ilike.%${q}%,meaning_id.ilike.%${q}%,meaning_en.ilike.%${q}%`);
   if (opts.category) query = query.eq("category", opts.category);
   if (opts.speechLevel) query = query.eq("speech_level", opts.speechLevel);
 

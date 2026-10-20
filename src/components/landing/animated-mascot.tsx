@@ -2,39 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { resolvePose, type MascotId } from "@/lib/mascot-poses";
 
-const MASCOT_POSES = {
-  "eyang-nusa": ["melambai-jawa", "melambai-sunda", "melambai-bali", "mengangguk", "tertawa", "bercerita", "merayakan"],
-  "mbah-darmo": ["menyapa", "mengetik", "mendengarkan", "menjawab", "berpikir"],
-  "teh-euis": ["menyapa", "melambai-jawa", "melambai-sunda", "melambai-bali", "mengangguk", "tertawa", "merayakan"],
-  "teh-euis-ai": ["menyapa-sunda", "menyapa-jawa", "menyapa-bali", "mengetik", "mendengarkan", "menjawab", "berpikir"],
-} as const;
 
-export type MascotId = keyof typeof MASCOT_POSES;
-export type PoseOf<M extends MascotId> = (typeof MASCOT_POSES)[M][number];
+export type { MascotId, PoseOf } from "@/lib/mascot-poses";
 
-type MascotProps = { className?: string; size?: number } & {
-  [M in MascotId]: { mascot: M; pose?: PoseOf<M> };
-}[MascotId];
-
-const DEFAULT_POSES: Record<MascotId, string> = {
-  "eyang-nusa": "melambai-jawa",
-  "mbah-darmo": "menyapa",
-  "teh-euis": "menyapa",
-  "teh-euis-ai": "menyapa-sunda",
+type MascotProps = {
+  mascot: MascotId;  
+  pose?: string;
+  className?: string;
+  size?: number;
 };
 
 const svgCache = new Map<string, string>();
 
-export function AnimatedMascot({
-  mascot,
-  pose,
-  className,
-  size = 280,
-}: MascotProps) {
+export function AnimatedMascot({ mascot, pose, className, size }: MascotProps) {
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const selectedPose = pose ?? DEFAULT_POSES[mascot];
+  const selectedPose = resolvePose(mascot, pose);
   const src = `/media/animasi-maskot/${mascot}/${selectedPose}.svg`;
 
   useEffect(() => {
@@ -72,8 +57,8 @@ export function AnimatedMascot({
   return (
     <div
       ref={containerRef}
-      className={cn("relative inline-flex items-center justify-center", className)}
-      style={{ width: size, height: size }}
+      className={cn("relative inline-flex size-40 items-center justify-center", className)}
+      style={size ? { width: size, height: size } : undefined}
       aria-hidden="true"
     >
       {svgContent ? (
@@ -92,7 +77,7 @@ export function AnimatedMascot({
         // Placeholder while loading
         <div
           className="animate-pulse rounded-2xl bg-muted"
-          style={{ width: size * 0.6, height: size * 0.8 }}
+          style={size ? { width: size * 0.6, height: size * 0.8 } : { width: "60%", height: "80%" }}
         />
       )}
     </div>

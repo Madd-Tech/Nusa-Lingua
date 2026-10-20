@@ -4,16 +4,20 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Flame, Star, Target, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BatikPattern } from "@/components/ui/batik-pattern";
+import { AnimatedMascot } from "@/components/landing/animated-mascot";
 import { Confetti } from "@/components/gamification/confetti";
 import type { CompleteLessonResult } from "@/components/learning/questions/types";
+import type { LearningMascotProfile } from "@/lib/learning-mascots";
 import { cn } from "@/lib/utils";
 
 export function LessonResult({
+  mascot,
   result,
   score,
   onContinue,
   onRetry,
 }: {
+  mascot: LearningMascotProfile;
   result: CompleteLessonResult;
   score: number;
   onContinue: () => void;
@@ -27,6 +31,20 @@ export function LessonResult({
       {result.stars >= 3 ? <Confetti /> : null}
       <BatikPattern variant="kawung" size={56} color="rgb(var(--secondary))" opacity={0.12} />
       <div className="relative w-full max-w-md space-y-8">
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 16, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 220, damping: 20 }}
+          className="mx-auto flex w-fit items-end gap-1"
+        >
+          <AnimatedMascot mascot={mascot.id} pose={mascot.poses.celebrate} size={150} />
+          <div className="mb-8 max-w-[11rem] rounded-2xl rounded-bl-sm border-2 bg-card px-3 py-2 text-left shadow-soft">
+            <p className="text-sm font-bold leading-snug">{mascot.lines.result}</p>
+            <p className="mt-1 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
+              {mascot.name}
+            </p>
+          </div>
+        </motion.div>
         <div role="img" aria-label={`${result.stars} dari 3 bintang`} className="flex items-end justify-center gap-3">
           {[0, 1, 2].map((i) => (
             <motion.span

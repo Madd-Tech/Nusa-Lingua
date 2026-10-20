@@ -84,6 +84,16 @@ src/lib/supabase/        client (browser), server, admin (service role), middlew
 
 **Bahasa aktif** disimpan di cookie `nl_active_lang` (dipilih dari top bar), dipakai beranda untuk "Lanjutkan belajar" & rekomendasi.
 
+## Sumber data & lisensi
+
+Konten learning path di luar data seed (unit, lesson, kosakata, dan soal Bahasa Jawa & Sunda) diimpor dari [`basanusa-dataset/`](basanusa-dataset/) oleh generator `scripts/generate_basanusa_migration.py` yang menulis `supabase/migrations/0004_basanusa_content.sql`.
+
+- **NusaX** — *Multilingual Parallel Sentiment Dataset for 10 Indonesian Local Languages* (EACL 2023) — <https://github.com/IndoNLP/nusax>, **lisensi CC BY-SA 4.0**. Hanya baris ber-sumber `NusaX` yang diimpor; atribusi wajib disebutkan (tercantum di header migration dan di footer situs).
+- Baris **`kamus-sunda (KatowProject)`** tidak disertakan karena lisensinya tidak dinyatakan. Akibatnya 39 lesson Sunda dan sebagian soal ikut dibuang; unit "Kosakata Umum" gugur seluruhnya karena tak punya kata inti NusaX.
+- Contoh kalimat NusaX berasal dari unggahan media sosial/ulasan produk — gaya bicaranya nonformal; terjemah Indonesianya disimpan di `vocabularies.example_meaning` dan ditampilkan di detail kamus.
+- Asal tiap kosakata tercatat di kolom `vocabularies.source` (`seed` / `NusaX`); peran kata di `vocabularies.peran` (`inti` = materi pelajaran & sumber soal, `varian` = padanan untuk kamus).
+- Setelah dataset berubah, jalankan ulang `python scripts/generate_basanusa_migration.py` lalu `python scripts/verify_basanusa_migration.py` — file SQL dibangun ulang deterministik, verifier memastikan struktur & aturan soal tetap sah, dan keduanya aman dieksekusi berulang (`on conflict do nothing`).
+
 ## Catatan & asumsi
 - **ID konten** (`regions`, `languages`, `lessons`, …) diasumsikan `bigint` → `number`; parsing param route ada di satu tempat (`parseId` di `src/lib/utils.ts`). Jika skema memakai uuid, ubah `parseId` dan regenerasi tipe.
 - **`questions.options`** (jsonb) dibaca secara toleran di `src/lib/questions.ts`: array string, `{choices|options|words}`, atau pasangan `[{left,right}]` / `{pairs}` / objek `{kata: arti}`. `correct_answer` boleh berisi alternatif dipisah `|`.
