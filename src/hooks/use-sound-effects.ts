@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const STORAGE_KEY = "nl_sound";
 const EVENT = "nl-sound-change";
@@ -40,7 +40,10 @@ export function useSoundPreference() {
   return [enabled, set] as const;
 }
 
-type Tone = { freq: number; at: number; dur: number; type?: OscillatorType };
+type Tone = { freq: number; at: number; dur: number; type?: OscillatorType; gain?: number };
+
+/** Volume puncak bawaan tiap nada (0–1). Nada individu bisa menimpanya lewat `gain`. */
+const DEFAULT_GAIN = 0.18;
 
 /** Efek suara sintetis (Web Audio) — tanpa berkas audio tambahan. */
 export function useSoundEffects() {
@@ -54,14 +57,17 @@ export function useSoundEffects() {
         const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
         ctxRef.current ??= new Ctx();
         const ctx = ctxRef.current;
+        // Browser bisa menangguhkan AudioContext sebelum ada interaksi pengguna.
+        if (ctx.state === "suspended") void ctx.resume();
         const now = ctx.currentTime;
         for (const t of tones) {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
+          const peak = t.gain ?? DEFAULT_GAIN;
           osc.type = t.type ?? "sine";
           osc.frequency.value = t.freq;
           gain.gain.setValueAtTime(0.0001, now + t.at);
-          gain.gain.exponentialRampToValueAtTime(0.18, now + t.at + 0.02);
+          gain.gain.exponentialRampToValueAtTime(peak, now + t.at + 0.02);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + t.at + t.dur);
           osc.connect(gain).connect(ctx.destination);
           osc.start(now + t.at);
@@ -74,24 +80,46 @@ export function useSoundEffects() {
     [enabled],
   );
 
-  return {
-    enabled,
-    setEnabled,
-    correct: () => play([{ freq: 660, at: 0, dur: 0.12 }, { freq: 990, at: 0.1, dur: 0.2 }]),
-    wrong: () => play([{ freq: 220, at: 0, dur: 0.25, type: "triangle" }, { freq: 180, at: 0.12, dur: 0.25, type: "triangle" }]),
-    streak: () =>
-      play([
-        { freq: 659, at: 0, dur: 0.12 },
-        { freq: 784, at: 0.1, dur: 0.12 },
-        { freq: 988, at: 0.2, dur: 0.12 },
-        { freq: 1319, at: 0.3, dur: 0.35 },
-      ]),
-    finish: () =>
-      play([
-        { freq: 523, at: 0, dur: 0.15 },
-        { freq: 659, at: 0.12, dur: 0.15 },
-        { freq: 784, at: 0.24, dur: 0.15 },
-        { freq: 1047, at: 0.36, dur: 0.35 },
-      ]),
-  };
+  return useMemo(
+    () => ({
+      enabled,
+      setEnabled,
+      /** Ketukan lembut saat memilih jawaban. */
+      select: () =>
+        play([
+          { freq: 880, at: 0, dur: 0.05, type: "triangle", gain: 0.07 },
+          { freq: 1320, at: 0.016, dur: 0.07, type: "sine", gain: 0.045 },
+        ]),
+      correct: () =>
+        play([
+          { freq: 784, at: 0, dur: 0.1, type: "triangle", gain: 0.12 },
+          { freq: 1047, at: 0.09, dur: 0.18, type: "triangle", gain: 0.12 },
+        ]),
+      wrong: () =>
+        play([
+          { freq: 233, at: 0, dur: 0.16, type: "sawtooth", gain: 0.06 },
+          { freq: 185, at: 0.08, dur: 0.22, type: "triangle", gain: 0.13 },
+          { freq: 110, at: 0.08, dur: 0.24, type: "sine", gain: 0.1 },
+        ]),
+      /** Combo 3 jawaban benar berturut-turut: arpeggio cepat + kilau. */
+      streak: () =>
+        play([
+          { freq: 659, at: 0, dur: 0.09, type: "triangle", gain: 0.1 },
+          { freq: 784, at: 0.08, dur: 0.09, type: "triangle", gain: 0.1 },
+          { freq: 988, at: 0.16, dur: 0.09, type: "triangle", gain: 0.1 },
+          { freq: 1319, at: 0.24, dur: 0.28, type: "triangle", gain: 0.12 },
+          { freq: 1976, at: 0.26, dur: 0.2, type: "sine", gain: 0.05 },
+          { freq: 1568, at: 0.34, dur: 0.26, type: "sine", gain: 0.05 },
+        ]),
+      finish: () =>
+        play([
+          { freq: 523, at: 0, dur: 0.14, type: "triangle", gain: 0.11 },
+          { freq: 659, at: 0.12, dur: 0.14, type: "triangle", gain: 0.11 },
+          { freq: 784, at: 0.24, dur: 0.14, type: "triangle", gain: 0.11 },
+          { freq: 1047, at: 0.36, dur: 0.32, type: "triangle", gain: 0.13 },
+          { freq: 1319, at: 0.4, dur: 0.3, type: "sine", gain: 0.05 },
+        ]),
+    }),
+    [enabled, play, setEnabled],
+  );
 }
