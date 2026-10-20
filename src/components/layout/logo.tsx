@@ -8,9 +8,9 @@ export function LogoMark({ className }: { className?: string }) {
     <Image
       src="/media/logo/nusa-lingua-logo.png"
       alt="Nusa Lingua"
-      width={160}
-      height={80}
-      className={cn("h-9 w-auto", className)}
+      width={161}
+      height={100}
+      className={cn("h-11 w-auto max-w-full object-contain", className)}
       priority
     />
   );
@@ -27,18 +27,18 @@ export function Logo({ href = "/", className, compact }: { href?: string; classN
         <Image
           src="/media/logo/nusa-lingua-logo.png"
           alt="Nusa Lingua"
-          width={36}
-          height={36}
-          className="size-9 object-contain"
+          width={161}
+          height={100}
+          className="size-11 object-contain"
           priority
         />
       ) : (
         <Image
           src="/media/logo/nusa-lingua-logo.png"
           alt="Nusa Lingua"
-          width={160}
-          height={80}
-          className="h-9 w-auto"
+          width={161}
+          height={100}
+          className="h-11 w-auto sm:h-12"
           priority
         />
       )}
