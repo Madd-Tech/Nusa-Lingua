@@ -26,16 +26,26 @@ import {
   type CompleteLessonResult,
 } from "@/components/learning/questions/types";
 import { useSoundEffects } from "@/hooks/use-sound-effects";
+import { useLearningMascot } from "@/hooks/use-learning-mascot";
 import { createClient } from "@/lib/supabase/client";
 import { nextMastery, type MasteryState } from "@/lib/srs";
 import type { LessonQuestion } from "@/lib/questions";
+import { pickLine } from "@/lib/learning-mascots";
 import { FeedbackBar } from "./feedback-bar";
+import { LearningMascot, type MascotMood } from "./learning-mascot";
+import { StreakCelebration } from "./streak-celebration";
 import { LessonResult } from "./lesson-result";
 
 type QueueItem = { q: LessonQuestion; retry: boolean; key: string };
 type Phase = "playing" | "submitting" | "submit-error" | "result" | "out-of-hearts";
 
 const toQueue = (qs: LessonQuestion[]): QueueItem[] => qs.map((q) => ({ q, retry: false, key: `${q.id}` }));
+
+const THINKING_MESSAGES = [
+  "Sudah yakin? Tekan Periksa kalau sudah.",
+  "Pilih dengan tenang, aku temani.",
+  "Kalau sudah mantap, periksa jawabannya, ya!",
+];
 
 export function LessonPlayer({
   userId,
@@ -60,6 +70,7 @@ export function LessonPlayer({
   const supabase = useMemo(() => createClient(), []);
   const sfx = useSoundEffects();
   const maxHearts = Math.max(1, initialHearts);
+  const { mascot } = useLearningMascot(languageCode);
 
   const [queue, setQueue] = useState<QueueItem[]>(() => toQueue(questions));
   const [index, setIndex] = useState(0);
@@ -71,6 +82,18 @@ export function LessonPlayer({
   const [phase, setPhase] = useState<Phase>("playing");
   const [result, setResult] = useState<CompleteLessonResult | null>(null);
   const [exitOpen, setExitOpen] = useState(false);
+
+  // Maskot pendamping: streak jawaban benar berturut-turut + reaksi.
+  const [streak, setStreak] = useState(0);
+  const [mascotMood, setMascotMood] = useState<MascotMood>("idle");
+  const [mascotMessage, setMascotMessage] = useState(() => mascot.greeting);
+  const [celebration, setCelebration] = useState(0);
+
+  // Ikuti maskot pilihan pengguna (disimpan di localStorage oleh halaman jalur).
+  useEffect(() => {
+    setMascotMood("idle");
+    setMascotMessage(mascot.greeting);
+  }, [mascot]);
 
   // Status penguasaan kosakata terbaru (berantai dalam satu lesson).
   const masteryRef = useRef<Record<number, MasteryState>>({ ...mastery });
@@ -115,6 +138,10 @@ export function LessonPlayer({
     setHearts(maxHearts);
     setResult(null);
     setPhase("playing");
+    setStreak(0);
+    setCelebration(0);
+    setMascotMood("idle");
+    setMascotMessage(mascot.greeting);
   };
 
   const submit = useCallback(
@@ -138,8 +165,21 @@ export function LessonPlayer({
     if (!current || !answer || !isAnswerReady(answer) || verdict !== null) return;
     const ok = gradeAnswer(current.q, answer);
     setVerdict(ok);
-    if (ok) sfx.correct();
-    else sfx.wrong();
+
+    const nextStreak = ok ? streak + 1 : 0;
+    setStreak(nextStreak);
+    if (ok && nextStreak > 0 && nextStreak % 3 === 0) {
+      setMascotMood("celebrate");
+      setMascotMessage(pickLine(mascot.lines.streak, index));
+      setCelebration(nextStreak);
+      sfx.streak();
+    } else {
+      setMascotMood(ok ? "correct" : "wrong");
+      setMascotMessage(pickLine(ok ? mascot.lines.correct : mascot.lines.wrong, index + 1));
+      if (ok) sfx.correct();
+      else sfx.wrong();
+    }
+
     if (!current.retry && !firstTry.has(current.q.id)) {
       setFirstTry((m) => new Map(m).set(current.q.id, ok));
     }
@@ -150,7 +190,7 @@ export function LessonPlayer({
       if (!current.retry) setQueue((qs) => [...qs, { q: current.q, retry: true, key: `${current.q.id}-r` }]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [answer, current, firstTry, recordMastery, verdict, sfx.enabled]);
+  }, [answer, current, firstTry, index, mascot, recordMastery, streak, verdict, sfx.enabled]);
 
   const advance = useCallback(
     (opts?: { skip?: boolean }) => {
@@ -158,7 +198,11 @@ export function LessonPlayer({
       if (opts?.skip && current) {
         nextSkipped = new Set(skipped).add(current.q.id);
         setSkipped(nextSkipped);
+        setStreak(0);
       }
+      setCelebration(0);
+      setMascotMood("idle");
+      setMascotMessage(pickLine(mascot.lines.idle, index));
       if (hearts <= 0) {
         setPhase("out-of-hearts");
         return;
@@ -173,13 +217,13 @@ export function LessonPlayer({
         setIndex((i) => i + 1);
       }
     },
-    [current, firstTry, hearts, index, queue.length, questions, skipped, submit],
+    [current, firstTry, hearts, index, mascot, queue.length, questions, skipped, submit],
   );
 
   // Enter = Periksa / Lanjut
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Enter" || phase !== "playing" || exitOpen) return;
+      if (e.key !== "Enter" || phase !== "playing" || exitOpen || celebration > 0) return;
       if (e.target instanceof HTMLButtonElement) return; // tombol yang sedang fokus menangani sendiri
       e.preventDefault();
       if (verdict === null) check();
@@ -187,7 +231,25 @@ export function LessonPlayer({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [advance, check, exitOpen, phase, verdict]);
+  }, [advance, celebration, check, exitOpen, phase, verdict]);
+
+  const closeCelebration = useCallback(() => setCelebration(0), []);
+
+  /** Saat pengguna mulai memilih/mengetik, maskot ikut "berpikir". */
+  const handleAnswer = useCallback(
+    (value: AnswerValue | null) => {
+      setAnswer(value);
+      if (verdict !== null) return;
+      if (value && isAnswerReady(value)) {
+        setMascotMood("thinking");
+        setMascotMessage(pickLine(THINKING_MESSAGES, index));
+      } else {
+        setMascotMood("idle");
+        setMascotMessage(pickLine(mascot.lines.idle, index));
+      }
+    },
+    [index, mascot, verdict],
+  );
 
   const backToPath = () => router.push(`/belajar/${languageCode}`);
 
@@ -206,7 +268,7 @@ export function LessonPlayer({
   }
 
   if (phase === "result" && result) {
-    return <LessonResult result={result} score={score} onContinue={backToPath} onRetry={reset} />;
+    return <LessonResult mascot={mascot} result={result} score={score} onContinue={backToPath} onRetry={reset} />;
   }
 
   if (phase === "out-of-hearts") {
@@ -257,7 +319,7 @@ export function LessonPlayer({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="mx-auto flex w-full max-w-3xl items-center gap-2 px-4 pt-4 sm:gap-4 sm:pt-6">
+      <header className="mx-auto flex w-full max-w-5xl items-center gap-2 px-4 pt-4 sm:gap-4 sm:pt-6">
         <Button variant="ghost" size="icon" onClick={() => setExitOpen(true)} aria-label="Keluar dari lesson">
           <X />
         </Button>
@@ -282,33 +344,42 @@ export function LessonPlayer({
         </span>
       </header>
 
-      <main id="konten" aria-labelledby="soal" className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:py-12">
+      <main id="konten" aria-labelledby="soal" className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:py-8">
         <p className="sr-only">Lesson: {lessonTitle}</p>
-        {current?.retry ? (
-          <p className="mb-4 inline-flex rounded-xl bg-accent/12 px-3 py-1 text-sm font-bold text-accent-700 dark:text-accent">
-            Ulangi soal yang tadi keliru
-          </p>
-        ) : null}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current?.key}
-            initial={{ opacity: 0, x: 32 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -32 }}
-            transition={{ duration: 0.2 }}
-          >
-            {current ? (
-              <QuestionView
-                question={current.q}
-                answer={answer}
-                onAnswer={setAnswer}
-                locked={verdict !== null}
-                verdict={verdict}
-                onSkip={() => advance({ skip: true })}
-              />
+        <div className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-8">
+          {/* Maskot selalu terlihat: lengket di atas (mobile) / di samping soal (desktop). */}
+          <div className="sticky top-0 z-20 -mx-4 bg-background/95 px-4 py-2 backdrop-blur-sm sm:-mx-4 lg:top-6 lg:z-auto lg:mx-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+            <LearningMascot mascot={mascot} mood={mascotMood} message={mascotMessage} streak={streak} />
+          </div>
+
+          <div className="min-w-0">
+            {current?.retry ? (
+              <p className="mb-4 inline-flex rounded-xl bg-accent/12 px-3 py-1 text-sm font-bold text-accent-700 dark:text-accent">
+                Ulangi soal yang tadi keliru
+              </p>
             ) : null}
-          </motion.div>
-        </AnimatePresence>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current?.key}
+                initial={{ opacity: 0, x: 32 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -32 }}
+                transition={{ duration: 0.2 }}
+              >
+                {current ? (
+                  <QuestionView
+                    question={current.q}
+                    answer={answer}
+                    onAnswer={handleAnswer}
+                    locked={verdict !== null}
+                    verdict={verdict}
+                    onSkip={() => advance({ skip: true })}
+                  />
+                ) : null}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
       </main>
 
       <div className="sticky bottom-0">
@@ -320,6 +391,8 @@ export function LessonPlayer({
           onContinue={() => advance()}
         />
       </div>
+
+      <StreakCelebration mascot={mascot} count={celebration} onClose={closeCelebration} />
 
       <Dialog open={exitOpen} onOpenChange={setExitOpen}>
         <DialogContent hideClose>

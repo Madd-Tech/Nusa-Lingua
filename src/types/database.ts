@@ -165,6 +165,10 @@ export type Database = {
           image_url: string | null;
           example_sentence: string | null;
           category: string | null;
+          meaning_en: string | null;
+          example_meaning: string | null;
+          peran: string;
+          source: string | null;
         };
         Insert: {
           id?: number;
@@ -177,6 +181,10 @@ export type Database = {
           image_url?: string | null;
           example_sentence?: string | null;
           category?: string | null;
+          meaning_en?: string | null;
+          example_meaning?: string | null;
+          peran?: string;
+          source?: string | null;
         };
         Update: {
           id?: number;
@@ -189,6 +197,10 @@ export type Database = {
           image_url?: string | null;
           example_sentence?: string | null;
           category?: string | null;
+          meaning_en?: string | null;
+          example_meaning?: string | null;
+          peran?: string;
+          source?: string | null;
         };
         Relationships: [
           {

@@ -94,6 +94,27 @@ export default async function MarketingLayout({ children }: { children: React.Re
         <div className="landing-footer-bar">
           <p className="container py-4 text-xs text-muted-foreground">
             © {new Date().getFullYear()} {SITE.name}. Hak cipta dilindungi.
+            <span className="mt-1 block">
+              Materi belajar Bahasa Jawa &amp; Sunda diadaptasi dari{" "}
+              <a
+                href="https://github.com/IndoNLP/nusax"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                NusaX
+              </a>{" "}
+              (EACL 2023) berlisensi{" "}
+              <a
+                href="https://creativecommons.org/licenses/by-sa/4.0/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                CC BY-SA 4.0
+              </a>
+              ; disesuaikan untuk Nusa Lingua.
+            </span>
           </p>
         </div>
       </footer>

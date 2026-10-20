@@ -9,6 +9,7 @@ import { BatikPattern } from "@/components/ui/batik-pattern";
 import { IlloBook } from "@/components/illustrations";
 import { LanguageIcon } from "@/components/learning/language-icon";
 import { LanguageTabs } from "@/components/learning/language-tabs";
+import { PathMascot } from "@/components/learning/path-mascot";
 import { StartLanguageButton } from "@/components/learning/start-language-button";
 import { UnitPath } from "@/components/learning/unit-path";
 import { computePath } from "@/lib/path";
@@ -93,6 +94,8 @@ export default async function LanguagePathPage({ params }: { params: { code: str
       <div className="mb-8 flex justify-center">
         <LanguageTabs code={language.code} active="jalur" />
       </div>
+
+      <PathMascot code={language.code} languageName={language.name} completed={completed} total={total} />
 
       {units.length === 0 ? (
         <EmptyState

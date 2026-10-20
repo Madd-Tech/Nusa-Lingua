@@ -23,11 +23,13 @@ Tipe database: `npm run gen:types` (butuh `SUPABASE_PROJECT_ID` + `supabase logi
 
 ### Menyiapkan database
 
-Jika proyek Supabase masih kosong, jalankan tiga berkas ini **berurutan** di Supabase Dashboard → SQL Editor (masing-masing sekali, pada schema `public` yang kosong):
+Jika proyek Supabase masih kosong, jalankan lima berkas ini **berurutan** di Supabase Dashboard → SQL Editor (masing-masing sekali, pada schema `public` yang kosong):
 
 1. [`supabase/migrations/0001_schema.sql`](supabase/migrations/0001_schema.sql) — enum, tabel, indeks, RLS, hak kolom, trigger profil, RPC `complete_lesson`, view `weekly_leaderboard`, lencana otomatis.
 2. [`supabase/migrations/0002_storage.sql`](supabase/migrations/0002_storage.sql) — bucket publik `audio` & `avatars` + policy tulis hanya ke folder `<user_id>/`.
 3. [`supabase/seed.sql`](supabase/seed.sql) — data demo: 3 daerah, Bahasa Jawa & Sunda, 6 lesson (28 soal, keenam tipe), kosakata bertingkat tutur, 2 artikel terbit + 1 draf, 7 lencana, 2 persona AI. Aman dijalankan ulang.
+4. [`supabase/migrations/0003_vocab_columns.sql`](supabase/migrations/0003_vocab_columns.sql) — kolom tambahan `vocabularies` (`meaning_en`, `example_meaning`, `peran`, `source`) untuk data dataset. Aman dijalankan ulang.
+5. [`supabase/migrations/0004_basanusa_content.sql`](supabase/migrations/0004_basanusa_content.sql) — konten learning path Jawa & Sunda dari `basanusa-dataset/` (sumber NusaX): 20 unit, 82 lesson, 1.242 kosakata, 799 soal. Dibuat otomatis oleh `scripts/generate_basanusa_migration.py`, aman dijalankan ulang. Lihat "Sumber data & lisensi" di bawah.
 
 Lalu daftar lewat `/daftar`. Untuk mencoba halaman moderasi:
 
@@ -77,6 +79,16 @@ src/lib/supabase/        client (browser), server, admin (service role), middlew
 - **Fase 3:** budaya (filter kategori/daerah/bahasa/judul + paginasi), artikel (daftar isi sticky, tandai dibaca di 80% gulir, "Tanya asisten AI" → sesi dengan persona bahasa terkait), asisten (riwayat + hapus, sidebar/Sheet, markdown, saran prompt, auto-grow, stop, kirim ulang & pesan limit 429), kontribusi (rekam ≤10 dtk, tabel usulan), moderasi (403 ramah), peringkat (Nasional/Daerah saya, podium medali, baris saya sticky), profil (6 statistik, grafik XP 30 hari recharts, progres unit, koleksi lencana), pengaturan (avatar, username, daerah, ubah kata sandi, mode gelap, efek suara).
 
 **Bahasa aktif** disimpan di cookie `nl_active_lang` (dipilih dari top bar), dipakai beranda untuk "Lanjutkan belajar" & rekomendasi.
+
+## Sumber data & lisensi
+
+Konten learning path di luar data seed (unit, lesson, kosakata, dan soal Bahasa Jawa & Sunda) diimpor dari [`basanusa-dataset/`](basanusa-dataset/) oleh generator `scripts/generate_basanusa_migration.py` yang menulis `supabase/migrations/0004_basanusa_content.sql`.
+
+- **NusaX** — *Multilingual Parallel Sentiment Dataset for 10 Indonesian Local Languages* (EACL 2023) — <https://github.com/IndoNLP/nusax>, **lisensi CC BY-SA 4.0**. Hanya baris ber-sumber `NusaX` yang diimpor; atribusi wajib disebutkan (tercantum di header migration dan di footer situs).
+- Baris **`kamus-sunda (KatowProject)`** tidak disertakan karena lisensinya tidak dinyatakan. Akibatnya 39 lesson Sunda dan sebagian soal ikut dibuang; unit "Kosakata Umum" gugur seluruhnya karena tak punya kata inti NusaX.
+- Contoh kalimat NusaX berasal dari unggahan media sosial/ulasan produk — gaya bicaranya nonformal; terjemah Indonesianya disimpan di `vocabularies.example_meaning` dan ditampilkan di detail kamus.
+- Asal tiap kosakata tercatat di kolom `vocabularies.source` (`seed` / `NusaX`); peran kata di `vocabularies.peran` (`inti` = materi pelajaran & sumber soal, `varian` = padanan untuk kamus).
+- Setelah dataset berubah, jalankan ulang `python scripts/generate_basanusa_migration.py` lalu `python scripts/verify_basanusa_migration.py` — file SQL dibangun ulang deterministik, verifier memastikan struktur & aturan soal tetap sah, dan keduanya aman dieksekusi berulang (`on conflict do nothing`).
 
 ## Catatan & asumsi
 - **ID konten** (`regions`, `languages`, `lessons`, …) diasumsikan `bigint` → `number`; parsing param route ada di satu tempat (`parseId` di `src/lib/utils.ts`). Jika skema memakai uuid, ubah `parseId` dan regenerasi tipe.

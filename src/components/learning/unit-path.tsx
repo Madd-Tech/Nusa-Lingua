@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { Check, Lock, Play, RotateCcw, Star, Target, Zap } from "lucide-react";
+import { AnimatedMascot } from "@/components/landing/animated-mascot";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BatikPattern } from "@/components/ui/batik-pattern";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Stars } from "@/components/gamification/stars";
+import { useLearningMascot } from "@/hooks/use-learning-mascot";
 import { UNIT_LEVEL_LABEL } from "@/lib/constants";
+import type { LearningMascotProfile } from "@/lib/learning-mascots";
 import type { LessonState, PathLesson, PathUnit } from "@/lib/path";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +24,7 @@ const UNIT_COLORS = [
 ];
 
 export function UnitPath({ units, code }: { units: PathUnit[]; code: string }) {
+  const { mascot } = useLearningMascot(code);
   let globalIndex = 0;
   return (
     <ol className="space-y-10">
@@ -56,7 +60,7 @@ export function UnitPath({ units, code }: { units: PathUnit[]; code: string }) {
                   const offset = OFFSETS[globalIndex++ % OFFSETS.length];
                   return (
                     <li key={lesson.id} style={{ transform: `translateX(${offset}px)` }} className="flex flex-col items-center">
-                      <LessonNode lesson={lesson} href={`/belajar/${code}/lesson/${lesson.id}`} />
+                      <LessonNode lesson={lesson} mascot={mascot} href={`/belajar/${code}/lesson/${lesson.id}`} />
                     </li>
                   );
                 })}
@@ -75,7 +79,7 @@ const STATE_LABEL: Record<LessonState, string> = {
   locked: "terkunci",
 };
 
-function LessonNode({ lesson, href }: { lesson: PathLesson; href: string }) {
+function LessonNode({ lesson, mascot, href }: { lesson: PathLesson; mascot: LearningMascotProfile; href: string }) {
   const label = `${lesson.title}, ${STATE_LABEL[lesson.state]}${lesson.state === "completed" ? `, ${lesson.stars} bintang` : ""}`;
   const styles: Record<LessonState, string> = {
     completed: "bg-secondary-600 border-secondary-700 text-ink hover:brightness-105",
@@ -94,12 +98,15 @@ function LessonNode({ lesson, href }: { lesson: PathLesson; href: string }) {
   return (
     <>
       {lesson.state === "current" ? (
-        <span
-          aria-hidden="true"
-          className="relative mb-3 animate-bounce rounded-xl border-2 bg-card px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-primary-700 shadow-soft after:absolute after:left-1/2 after:top-full after:-translate-x-1/2 after:border-[6px] after:border-transparent after:border-t-border dark:text-primary"
-        >
-          Mulai
-        </span>
+        <div className="mb-1 flex items-end gap-1">
+          <AnimatedMascot mascot={mascot.id} pose={mascot.poses.idle} className="size-16 shrink-0" />
+          <span
+            aria-hidden="true"
+            className="relative mb-4 animate-bounce rounded-xl border-2 bg-card px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-primary-700 shadow-soft after:absolute after:left-1/2 after:top-full after:-translate-x-1/2 after:border-[6px] after:border-transparent after:border-t-border dark:text-primary"
+          >
+            {mascot.name} menanti!
+          </span>
+        </div>
       ) : null}
       <Popover>
         <PopoverTrigger
