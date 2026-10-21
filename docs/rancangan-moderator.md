@@ -1,6 +1,6 @@
 # Rancangan fitur moderator
 
-> **Status:** Fase A (P1 + P2) diimplementasikan di `supabase/migrations/0005_moderation_core.sql` dengan semua rekomendasi di [bagian 10](#10-keputusan-yang-perlu-dikonfirmasi). Fase B–D masih rancangan · 21 Oktober 2026
+> **Status:** Fase A (P1 + P2, `0005_moderation_core.sql`) dan Fase B (P3, `0006_moderation_dashboard.sql`) sudah diimplementasikan dengan semua rekomendasi di [bagian 10](#10-keputusan-yang-perlu-dikonfirmasi). Fase C–D masih rancangan · 21 Oktober 2026
 > Cakupan: semua prioritas dari diskusi fitur moderator (P1–P5). SQL di dokumen ini adalah **sketsa**; untuk Fase A, migrasinya yang menjadi acuan.
 
 ## 1. Ringkasan
@@ -360,7 +360,8 @@ src/app/(app)/moderasi/
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-- Data diambil dari `get_moderation_overview()` dan `get_my_moderation_stats(7)`. "Aktivitas terbaru" berasal dari `moderation_log` (10 baris terakhir).
+- Data diambil dari `get_moderation_overview()` dan `get_my_moderation_stats(7)`. "Aktivitas terbaru" berasal dari `moderation_log` (8 baris terakhir).
+- **Implementasi Fase B:** karena laporan (Fase D) dan artikel (Fase C) belum ada, keempat tile berisi: usulan menunggu, menunggu paling lama, jumlah tinjauanmu dalam 7 hari (beserta % disetujui), dan tile keempat yang berbeda per peran: **bahasa tanpa moderator** untuk admin, **rata-rata waktu tunggu** untuk moderator. Tile laporan dan artikel ditambahkan di fase masing-masing (ubah tipe kembalian `get_moderation_overview` lewat `drop function` + `create function`). "Menunggu" tidak menghitung usulan milik sendiri, karena usulan itu tidak bisa ia tinjau.
 - Tidak ada grafik pada versi pertama: angka yang membantu menghabiskan antrean lebih berguna. Sparkline bisa ditambahkan nanti.
 - Empty state "Semua beres!" (`IlloCheck`) bila tidak ada pekerjaan.
 
@@ -423,6 +424,8 @@ src/app/(app)/moderasi/
 ### 6.7 `/moderasi/riwayat` — Riwayat aktivitas (P3)
 
 Daftar `moderation_log` dengan filter aksi, bahasa, dan moderator; paginasi 30. Setiap baris berbunyi seperti "@budi menolak *sugeng enjang* (ejaan) · Bahasa Jawa · 2 jam lalu", dengan tautan ke target. Admin melihat semua bahasa.
+
+**Implementasi Fase B:** dibaca langsung dari `moderation_log` lewat RLS 0005 (tanpa RPC). Filter moderator berupa tombol **Aktivitas saya**; untuk moderator lain, klik namanya di daftar (`?aktor=<id>`), karena moderator biasa tidak bisa melihat daftar rekan moderatornya. Filter aksi "Penugasan moderator" hanya muncul untuk admin.
 
 ### 6.8 `/moderasi/tim` — Kelola moderator (admin, P2)
 

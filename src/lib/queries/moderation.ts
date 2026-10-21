@@ -60,6 +60,86 @@ export async function countActionablePending(db: DB, userId: string) {
   return res.count ?? 0;
 }
 
+/** Antrean per bahasa yang dimoderasi (admin: semua bahasa), terbanyak di atas. */
+export async function getModerationOverview(db: DB) {
+  return must("Gagal memuat ringkasan moderasi", await db.rpc("get_moderation_overview"));
+}
+
+export type OverviewRow = Awaited<ReturnType<typeof getModerationOverview>>[number];
+
+export type MyModerationStats = {
+  days: number;
+  reviewed: number;
+  approved: number;
+  rejected: number;
+  /** Rata-rata jarak kirim → diputuskan (jam); null bila belum ada tinjauan. */
+  avg_wait_hours: number | null;
+};
+
+export async function getMyModerationStats(db: DB, days = 7) {
+  const stats = must("Gagal memuat statistik tinjauanmu", await db.rpc("get_my_moderation_stats", { p_days: days }));
+  return stats as unknown as MyModerationStats;
+}
+
+export const LOG_PAGE_SIZE = 30;
+
+/** Riwayat moderasi (RLS: bahasa yang dimoderasi; admin juga melihat penugasan moderator). */
+export async function getModerationLog(
+  db: DB,
+  opts: {
+    actions?: Enums<"moderation_action">[];
+    languageId?: number | null;
+    actorId?: string | null;
+    page?: number;
+    pageSize?: number;
+  } = {},
+) {
+  const page = Math.max(1, opts.page ?? 1);
+  const pageSize = opts.pageSize ?? LOG_PAGE_SIZE;
+  const from = (page - 1) * pageSize;
+  let query = db
+    .from("moderation_log")
+    .select(
+      "id, action, target_type, target_id, detail, created_at, actor_id, actor:profiles!moderation_log_actor_id_fkey(username, avatar_url), language:languages(id, name, code)",
+      { count: "exact" },
+    )
+    .order("created_at", { ascending: false })
+    .range(from, from + pageSize - 1);
+  if (opts.actions?.length) query = query.in("action", opts.actions);
+  if (opts.languageId) query = query.eq("language_id", opts.languageId);
+  if (opts.actorId) query = query.eq("actor_id", opts.actorId);
+
+  const res = await query;
+  const rows = must("Gagal memuat riwayat moderasi", res);
+
+  // Nama moderator yang ditugaskan/dilepas (target_id = id profil).
+  const targetIds = Array.from(new Set(rows.filter((r) => r.target_type === "moderator").map((r) => r.target_id)));
+  const targetNames = new Map<string, string>();
+  if (targetIds.length) {
+    const names = await db.from("profiles").select("id, username").in("id", targetIds);
+    names.data?.forEach((p) => p.username && targetNames.set(p.id, p.username));
+  }
+
+  const items = rows.map((r) => ({
+    ...r,
+    detail: (r.detail ?? {}) as LogDetail,
+    targetUsername: r.target_type === "moderator" ? targetNames.get(r.target_id) ?? null : null,
+  }));
+  return { items, total: res.count ?? 0, page, pageSize };
+}
+
+/** Isi `moderation_log.detail` yang ditulis RPC (semua opsional). */
+export type LogDetail = {
+  word?: string;
+  vocabulary_id?: number;
+  edited?: boolean;
+  reason?: Enums<"reject_reason">;
+  note?: string | null;
+  language_ids?: number[];
+};
+
+export type LogEntry = Awaited<ReturnType<typeof getModerationLog>>["items"][number];
+
 /** Khusus admin: moderator beserta bahasa & aktivitas tinjauan 30 hari terakhir. */
 export async function getModeratorTeam(db: DB) {
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();

@@ -913,6 +913,23 @@ export type Database = {
         Args: { p_user: string; p_language_ids: number[] };
         Returns: Json;
       };
+      get_moderation_overview: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          language_id: number;
+          language_name: string;
+          language_code: string;
+          pending_count: number;
+          oldest_pending_at: string | null;
+          reviewed_7d: number;
+          approved_7d: number;
+          moderator_count: number;
+        }[];
+      };
+      get_my_moderation_stats: {
+        Args: { p_days?: number };
+        Returns: Json;
+      };
     };
     Enums: {
       unit_level: "pemula" | "menengah" | "mahir";

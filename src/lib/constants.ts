@@ -54,6 +54,35 @@ export const REJECT_REASON_LABEL = Object.fromEntries(REJECT_REASONS.map((r) => 
   string
 >;
 
+/** Kata kerja untuk riwayat moderasi: "@budi {label} …". */
+export const MODERATION_ACTION_LABEL: Record<Enums<"moderation_action">, string> = {
+  submission_approved: "menyetujui usulan",
+  submission_rejected: "menolak usulan",
+  vocab_updated: "mengubah kata",
+  vocab_hidden: "menyembunyikan kata",
+  vocab_restored: "memulihkan kata",
+  article_created: "membuat draf artikel",
+  article_updated: "mengubah artikel",
+  article_status_changed: "mengubah status artikel",
+  article_deleted: "menghapus draf artikel",
+  report_resolved: "menyelesaikan laporan",
+  report_dismissed: "mengabaikan laporan",
+  moderator_assigned: "menugaskan",
+  moderator_removed: "melepas",
+};
+
+/** Filter jenis aktivitas di /moderasi/riwayat (param `aksi`). */
+export const LOG_ACTION_FILTERS: {
+  value: string;
+  label: string;
+  actions: Enums<"moderation_action">[];
+  adminOnly?: boolean;
+}[] = [
+  { value: "disetujui", label: "Usulan disetujui", actions: ["submission_approved"] },
+  { value: "ditolak", label: "Usulan ditolak", actions: ["submission_rejected"] },
+  { value: "penugasan", label: "Penugasan moderator", actions: ["moderator_assigned", "moderator_removed"], adminOnly: true },
+];
+
 export const ROLE_LABEL: Record<Enums<"user_role">, string> = {
   user: "Pelajar",
   moderator: "Moderator",

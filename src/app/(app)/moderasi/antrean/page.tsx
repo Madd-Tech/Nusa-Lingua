@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, UserRoundX } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { IlloCheck } from "@/components/illustrations";
-import { LanguageFilter } from "@/components/moderation/language-filter";
+import { NoScopeState } from "@/components/moderation/no-scope-state";
+import { ParamSelect } from "@/components/moderation/param-select";
 import { ReviewedSubmissionCard } from "@/components/moderation/reviewed-submission-card";
 import { SubmissionReviewCard } from "@/components/moderation/submission-review-card";
 import { getModerationContext } from "@/lib/moderation-context";
@@ -33,15 +34,7 @@ export default async function AntreanPage({ searchParams }: { searchParams: SP }
   const { supabase, isModerator, scope } = await getModerationContext();
   if (!isModerator) return null;
 
-  if (!scope.length) {
-    return (
-      <EmptyState
-        illustration={<UserRoundX aria-hidden="true" className="size-20 text-komunitas" />}
-        title="Belum ada bahasa yang ditugaskan"
-        description="Minta admin menugaskanmu ke bahasa yang kamu kuasai. Setelah itu, usulan dari bahasa tersebut muncul di sini."
-      />
-    );
-  }
+  if (!scope.length) return <NoScopeState />;
 
   const status = STATUSES.includes(searchParams.status as Enums<"submission_status">)
     ? (searchParams.status as Enums<"submission_status">)
@@ -72,7 +65,14 @@ export default async function AntreanPage({ searchParams }: { searchParams: SP }
             </Link>
           ))}
         </nav>
-        {scope.length > 1 ? <LanguageFilter languages={scope} value={language?.code ?? ""} /> : null}
+        {scope.length > 1 ? (
+          <ParamSelect
+            param="bahasa"
+            label="Bahasa"
+            value={language?.code ?? ""}
+            options={[{ value: "", label: "Semua bahasa" }, ...scope.map((l) => ({ value: l.code, label: l.name }))]}
+          />
+        ) : null}
       </div>
 
       <p className="mb-4 text-sm text-muted-foreground" aria-live="polite">

@@ -25,6 +25,13 @@ export function formatRelative(value: string | Date) {
   return formatDate(value);
 }
 
+/** Durasi singkat dari jumlah jam: "< 1 jam", "5 jam", "3 hari". */
+export function formatHours(hours: number) {
+  if (hours < 1) return "< 1 jam";
+  if (hours < 48) return `${Math.round(hours)} jam`;
+  return `${Math.round(hours / 24)} hari`;
+}
+
 export function initials(name: string | null | undefined) {
   if (!name) return "?";
   return name
