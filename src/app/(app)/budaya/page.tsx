@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Landmark, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, NativeSelect } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { SelectFilter } from "@/components/ui/select-filter";
 import { EmptyState } from "@/components/ui/empty-state";
 import { BatikPattern } from "@/components/ui/batik-pattern";
 import { IlloBook } from "@/components/illustrations";
@@ -94,27 +95,31 @@ export default async function BudayaPage({ searchParams }: { searchParams: SP })
           <label htmlFor="filter-daerah" className="sr-only">
             Daerah
           </label>
-          <NativeSelect id="filter-daerah" name="daerah" defaultValue={regionId ? String(regionId) : ""}>
-            <option value="">Semua daerah</option>
-            {regions.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </NativeSelect>
+          <SelectFilter
+            id="filter-daerah"
+            name="daerah"
+            defaultValue={regionId ? String(regionId) : ""}
+            placeholder="Semua daerah"
+            options={[
+              { value: "", label: "Semua daerah" },
+              ...regions.map((r) => ({ value: String(r.id), label: r.name })),
+            ]}
+          />
         </div>
         <div>
           <label htmlFor="filter-bahasa" className="sr-only">
             Bahasa
           </label>
-          <NativeSelect id="filter-bahasa" name="bahasa" defaultValue={languageId ? String(languageId) : ""}>
-            <option value="">Semua bahasa</option>
-            {languages.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.name}
-              </option>
-            ))}
-          </NativeSelect>
+          <SelectFilter
+            id="filter-bahasa"
+            name="bahasa"
+            defaultValue={languageId ? String(languageId) : ""}
+            placeholder="Semua bahasa"
+            options={[
+              { value: "", label: "Semua bahasa" },
+              ...languages.map((l) => ({ value: String(l.id), label: l.name })),
+            ]}
+          />
         </div>
         <Button type="submit" variant="budaya" className="sm:col-span-2 lg:col-span-1">
           Terapkan

@@ -8,7 +8,8 @@ import type { z } from "zod";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input, NativeSelect } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { SelectFilter } from "@/components/ui/select-filter";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AudioRecorder } from "@/components/community/audio-recorder";
@@ -77,16 +78,15 @@ export function SubmissionForm({
             <FormItem>
               <FormLabel>Bahasa</FormLabel>
               <FormControl>
-                <NativeSelect value={String(field.value ?? 0)} onChange={(e) => field.onChange(Number(e.target.value))}>
-                  <option value="0" disabled>
-                    Pilih bahasa…
-                  </option>
-                  {languages.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.name}
-                    </option>
-                  ))}
-                </NativeSelect>
+                <SelectFilter
+                  value={String(field.value ?? 0)}
+                  onValueChange={(v) => field.onChange(Number(v))}
+                  placeholder="Pilih bahasa…"
+                  options={[
+                    { value: "0", label: "Pilih bahasa…", disabled: true },
+                    ...languages.map((l) => ({ value: String(l.id), label: l.name })),
+                  ]}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

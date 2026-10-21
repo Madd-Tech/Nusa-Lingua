@@ -72,6 +72,10 @@ const config: Config = {
           "20%,60%": { transform: "translateX(-6px)" },
           "40%,80%": { transform: "translateX(6px)" },
         },
+        "flame-shimmer": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "100%": { backgroundPosition: "200% 50%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -80,6 +84,7 @@ const config: Config = {
         shake: "shake 0.4s ease-in-out",
         float: "float 4s ease-in-out infinite",
         "float-slow": "float 5.5s ease-in-out infinite",
+        "flame-shimmer": "flame-shimmer 1.1s linear infinite",
       },
     },
   },

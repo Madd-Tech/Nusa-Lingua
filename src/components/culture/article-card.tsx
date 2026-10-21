@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { CheckCircle2, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { BatikPattern } from "@/components/ui/batik-pattern";
 import { RemoteImage } from "@/components/ui/remote-image";
+import { ArticleIllustration } from "@/components/culture/article-illustration";
 import { FeatureLink } from "@/components/layout/feature-link";
 import { articleCategoryLabel } from "@/lib/constants";
 import type { ArticleCardData } from "@/lib/queries/culture";
@@ -36,7 +36,7 @@ export function ArticleCard({
             className="h-full w-full transition-transform duration-300 group-hover:scale-[1.03]"
           />
         ) : (
-          <BatikPattern variant="kawung" className="text-budaya opacity-25" />
+          <ArticleIllustration slug={article.slug} category={article.category} />
         )}
         {read ? (
           <Badge variant="success" className="absolute right-3 top-3 bg-card/95 shadow-soft">
