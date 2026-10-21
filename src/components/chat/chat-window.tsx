@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { RotateCcw, SendHorizontal, Square } from "lucide-react";
+import { Languages, RotateCcw, SendHorizontal, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { UserAvatar } from "@/components/ui/avatar";
 import { PersonaAvatar } from "@/components/chat/persona-avatar";
 import { PersonaMascotAnim } from "@/components/chat/persona-mascot";
 import { MarkdownContent } from "@/components/culture/markdown-content";
+import { splitBilingual } from "@/lib/bilingual";
 import { USE_MOCK_CHAT } from "@/lib/env";
 import { mockChatStream } from "@/lib/mock-chat";
 import { getPersonaMascot } from "@/lib/persona-mascots";
@@ -62,6 +63,8 @@ export function ChatWindow({
   const [messages, setMessages] = useState<ChatMsg[]>(initialMessages);
   const [input, setInput] = useState(initialPrompt ?? "");
   const [busy, setBusy] = useState(false);
+  // Id balasan asisten yang sedang menampilkan terjemahan Indonesia.
+  const [translated, setTranslated] = useState<Set<string>>(() => new Set());
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -80,6 +83,14 @@ export function ChatWindow({
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 168)}px`;
   }, [input]);
+
+  const setShowTranslation = (id: string, show: boolean) =>
+    setTranslated((s) => {
+      const next = new Set(s);
+      if (show) next.add(id);
+      else next.delete(id);
+      return next;
+    });
 
   const patch = (id: string, p: Partial<ChatMsg> | ((m: ChatMsg) => Partial<ChatMsg>)) =>
     setMessages((ms) => ms.map((m) => (m.id === id ? { ...m, ...(typeof p === "function" ? p(m) : p) } : m)));
@@ -146,6 +157,7 @@ export function ChatWindow({
       .reverse()
       .find((m) => m.role === "user");
     if (!userMsg) return;
+    setShowTranslation(assistantId, false);
     patch(assistantId, { content: "", status: "streaming", errorText: undefined });
     void stream(userMsg.content, assistantId);
   };
@@ -194,6 +206,12 @@ export function ChatWindow({
         ) : (
           messages.map((m) => {
             const isUser = m.role === "user";
+            // Balasan asisten: teks bahasa daerah + terjemahan tersembunyi (src/lib/bilingual.ts).
+            const { original, translation } = isUser
+              ? { original: m.content, translation: null }
+              : splitBilingual(m.content, m.status === "streaming");
+            const canTranslate = !!translation && !m.status;
+            const showTranslation = canTranslate && translated.has(m.id);
             return (
               <div key={m.id} className={cn("flex items-end gap-2", isUser && "flex-row-reverse")}>
                 {isUser ? (
@@ -210,8 +228,30 @@ export function ChatWindow({
                     )}
                   >
                     <span className="sr-only">{isUser ? "Kamu: " : `${persona.name}: `}</span>
-                    {isUser ? m.content : m.content ? <MarkdownContent content={m.content} variant="chat" /> : null}
-                    {m.status === "streaming" && !m.content ? (
+                    {isUser ? (
+                      m.content
+                    ) : showTranslation ? (
+                      <div lang="id">
+                        <span className="sr-only">Terjemahan bahasa Indonesia: </span>
+                        <MarkdownContent content={translation ?? ""} variant="chat" className="italic" />
+                      </div>
+                    ) : original ? (
+                      <MarkdownContent content={original} variant="chat" />
+                    ) : null}
+                    {canTranslate ? (
+                      <span className="-mb-1 -mr-2 mt-1 flex justify-end">
+                        <button
+                          type="button"
+                          aria-pressed={showTranslation}
+                          onClick={() => setShowTranslation(m.id, !showTranslation)}
+                          className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold text-asisten hover:bg-asisten/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-asisten"
+                        >
+                          <Languages aria-hidden="true" className="size-3.5" />
+                          {showTranslation ? "Teks asli" : "Terjemahkan"}
+                        </button>
+                      </span>
+                    ) : null}
+                    {m.status === "streaming" && !original ? (
                       <span className="inline-flex items-center gap-1 py-1" role="status" aria-label={`${persona.name} sedang mengetik`}>
                         {[0, 1, 2].map((i) => (
                           <span key={i} className="size-2 animate-bounce rounded-full bg-asisten" style={{ animationDelay: `${i * 120}ms` }} />
