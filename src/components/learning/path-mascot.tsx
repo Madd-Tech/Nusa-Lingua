@@ -63,11 +63,11 @@ export function PathMascot({
         <summary className="cursor-pointer list-none select-none text-xs font-extrabold uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
           {isCustom ? `Ganti teman belajar (${mascot.name})` : "Pilih teman belajar lain"}
         </summary>
-        <ul className="mt-2 flex flex-wrap gap-1.5">
+        <ul className="-mx-1 mt-2 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]">
           {LEARNING_MASCOTS.map((item) => {
             const active = item.id === mascot.id;
             return (
-              <li key={`${item.id}-${item.languageCodes.join("-")}`}>
+              <li key={item.id} className="shrink-0">
                 <button
                   type="button"
                   onClick={() => choose(item)}

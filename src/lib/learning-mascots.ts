@@ -73,11 +73,12 @@ const MASCOTS: Record<string, LearningMascotProfile> = {
   "eyang-nusa": {
     id: "eyang-nusa",
     name: "Eyang Nusa",
-    region: "Bali",
-    languageCodes: ["ban"],
-    avatar: "/media/animasi-maskot/eyang-nusa/melambai-bali.svg",
-    tagline: "Eyang bijak yang senang bercerita tentang bahasa dan budaya Bali.",
-    greeting: "Rahajeng rauh! Ayo belajar bahasa Bali bersama Eyang.",
+    region: "Nusantara",
+    // Maskot payung Nusa Lingua — tidak lagi jadi default bahasa tertentu.
+    languageCodes: [],
+    avatar: "/media/maskot/ekspresi-senang.svg",
+    tagline: "Maskot kenamaan Nusa Lingua yang merayakan keberagaman bahasa daerah.",
+    greeting: "Salam budaya! Ayo lestarikan bahasa daerah bersama Eyang.",
     poses: { greeting: "melambai-bali", idle: "melambai-bali", thinking: "bercerita", correct: "mengangguk", wrong: "bercerita", celebrate: "merayakan" },
     lines: {
       idle: ["Eyang temani belajar, ya. Pilih jawaban yang paling tepat.", "Tidak perlu tergesa-gesa, nikmati prosesnya."],
@@ -138,6 +139,91 @@ const MASCOTS: Record<string, LearningMascotProfile> = {
       result: "Kerja bagus! Ayo terus baraja basa Minang.",
     },
   },
+  "luh-sari": {
+    id: "luh-sari",
+    name: "Luh Sari",
+    region: "Denpasar, Bali",
+    languageCodes: ["ban"],
+    avatar: "/media/maskot/luh-sari/avatar-default.svg",
+    tagline: "Gadis Bali yang riang dari Denpasar, siap mengajari bahasa Bali dan sor singgih basa.",
+    greeting: "Rahajeng rauh! Ayo belajar bahasa Bali dan sor singgih basa bareng Luh Sari.",
+    poses: { greeting: "menyapa", idle: "napas", thinking: "berpikir", correct: "memuji", wrong: "kurang-yakin", celebrate: "memuji" },
+    lines: {
+      idle: ["Luh Sari temani belajar, ya. Pilih jawaban yang paling tepat!", "Tenang, tidak perlu buru-buru."],
+      correct: ["Tepat sekali!", "Bagus, kamu makin paham!", "Luh Sari bangga!"],
+      wrong: ["Hampir benar. Coba lagi, ya.", "Tidak apa-apa, dari salah kita belajar."],
+      streak: ["Tiga jawaban benar berturut-turut! Luar biasa!"],
+      result: "Kerja bagus! Ayo terus belajar bahasa Bali.",
+    },
+  },
+  "acil-imah": {
+    id: "acil-imah",
+    name: "Acil Imah",
+    region: "Banjarmasin, Kalimantan Selatan",
+    languageCodes: ["bjn"],
+    avatar: "/media/maskot/acil-imah/avatar-default.svg",
+    tagline: "Acil ramah dari Banjarmasin yang siap menemani belajar bahasa Banjar.",
+    greeting: "Salamat datang! Ayo belajar bahasa Banjar bareng Acil Imah.",
+    poses: { greeting: "menyapa", idle: "napas", thinking: "berpikir", correct: "memuji", wrong: "kurang-yakin", celebrate: "memuji" },
+    lines: {
+      idle: ["Acil Imah temani belajar, ya. Pilih jawaban yang tepat!", "Tenang, tidak perlu buru-buru."],
+      correct: ["Tepat sekali!", "Hebat, kamu makin jago!", "Acil bangga!"],
+      wrong: ["Hampir benar! Coba lagi, ya.", "Tidak apa-apa, salah itu bagian dari belajar."],
+      streak: ["Tiga jawaban benar berturut-turut! Luar biasa!"],
+      result: "Kerja bagus! Ayo terus belajar bahasa Banjar.",
+    },
+  },
+  "amang-tigor": {
+    id: "amang-tigor",
+    name: "Amang Tigor",
+    region: "Danau Toba, Sumatera Utara",
+    languageCodes: ["bbc"],
+    avatar: "/media/maskot/amang-tigor/avatar-default.svg",
+    tagline: "Bapak hangat dari tepi Danau Toba yang siap menemani latihan bahasa Batak Toba.",
+    greeting: "Horas! Ayo belajar bahasa Batak Toba bareng Amang Tigor.",
+    poses: { greeting: "menyapa", idle: "napas", thinking: "berpikir", correct: "memuji", wrong: "kurang-yakin", celebrate: "memuji" },
+    lines: {
+      idle: ["Amang temani belajar, ya. Pilih jawaban yang paling tepat!", "Santai saja, tidak perlu tergesa-gesa."],
+      correct: ["Tepat sekali! Horas!", "Bagus, kamu makin paham!", "Amang bangga!"],
+      wrong: ["Hampir benar. Coba lagi, ya.", "Tidak apa-apa, dari salah kita belajar."],
+      streak: ["Tiga jawaban benar berturut-turut! Horas! Luar biasa!"],
+      result: "Kerja bagus! Ayo terus belajar bahasa Batak Toba.",
+    },
+  },
+  "bapa-ambun": {
+    id: "bapa-ambun",
+    name: "Bapa Ambun",
+    region: "Sungai Kahayan, Kalimantan Tengah",
+    languageCodes: ["nij"],
+    avatar: "/media/maskot/bapa-ambun/avatar-default.svg",
+    tagline: "Bapak bersahaja dari tepi Sungai Kahayan, pendamping latihan bahasa Dayak Ngaju.",
+    greeting: "Selamat datang! Bapa Ambun temani belajar bahasa Dayak Ngaju, ya.",
+    poses: { greeting: "menyapa", idle: "napas", thinking: "berpikir", correct: "memuji", wrong: "kurang-yakin", celebrate: "memuji" },
+    lines: {
+      idle: ["Bapa temani belajar, ya. Pilih jawaban yang paling tepat!", "Tenang, tidak perlu tergesa-gesa."],
+      correct: ["Tepat sekali!", "Bagus, kamu makin paham!", "Bapa bangga!"],
+      wrong: ["Hampir benar. Coba lagi, ya.", "Tidak apa-apa, dari salah kita belajar."],
+      streak: ["Tiga jawaban benar berturut-turut! Luar biasa!"],
+      result: "Kerja bagus! Ayo terus belajar bahasa Dayak Ngaju.",
+    },
+  },
+  "daeng-baso": {
+    id: "daeng-baso",
+    name: "Daeng Baso",
+    region: "Watampone, Sulawesi Selatan",
+    languageCodes: ["bug"],
+    avatar: "/media/maskot/daeng-baso/avatar-default.svg",
+    tagline: "Pelaut tenang dari Watampone yang senang mengajari bahasa Bugis.",
+    greeting: "Aga kareba! Ayo belajar bahasa Bugis bareng Daeng Baso.",
+    poses: { greeting: "menyapa", idle: "napas", thinking: "berpikir", correct: "memuji", wrong: "kurang-yakin", celebrate: "memuji" },
+    lines: {
+      idle: ["Daeng temani belajar, ya. Pilih jawaban yang paling tepat!", "Santai saja, tidak perlu tergesa-gesa."],
+      correct: ["Tepat sekali!", "Hebat, kamu makin paham!", "Daeng bangga!"],
+      wrong: ["Hampir benar. Coba lagi, ya.", "Tidak apa-apa, salah itu bagian dari belajar."],
+      streak: ["Tiga jawaban benar berturut-turut! Luar biasa!"],
+      result: "Kerja bagus! Ayo terus belajar bahasa Bugis.",
+    },
+  },
 };
 
 const BY_CODE = new Map<string, LearningMascotProfile>();
@@ -145,10 +231,25 @@ for (const profile of Object.values(MASCOTS)) {
   for (const code of profile.languageCodes) BY_CODE.set(code, profile);
 }
 
-/** Maskot cadangan untuk bahasa yang belum punya pendamping khusus. */
-const FALLBACK_ORDER: LearningMascotProfile[] = [MASCOTS["kak-sitti"], MASCOTS["nenek-aminah"], MASCOTS["uda-rizal"]];
+/** Urutan tampil di pemilih teman belajar — satu maskot untuk tiap bahasa daerah. */
+export const LEARNING_MASCOTS: LearningMascotProfile[] = [
+  MASCOTS["mbah-darmo"],
+  MASCOTS["teh-euis-ai"],
+  MASCOTS["luh-sari"],
+  MASCOTS["kak-sitti"],
+  MASCOTS["nenek-aminah"],
+  MASCOTS["uda-rizal"],
+  MASCOTS["amang-tigor"],
+  MASCOTS["daeng-baso"],
+  MASCOTS["bapa-ambun"],
+  MASCOTS["acil-imah"],
+  MASCOTS["eyang-nusa"],
+];
 
-export const LEARNING_MASCOTS = Object.values(MASCOTS);
+/** Maskot cadangan untuk bahasa yang belum punya pendamping khusus. */
+const FALLBACK_ORDER: LearningMascotProfile[] = LEARNING_MASCOTS.filter(
+  (profile) => profile.languageCodes.length > 0,
+);
 
 function hashString(value: string) {
   let hash = 0;

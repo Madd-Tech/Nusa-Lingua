@@ -62,6 +62,51 @@ const RULES: Array<{ match: RegExp; mascot: PersonaMascot }> = [
       typingPose: "mengetik",
     },
   },
+  {
+    match: /tigor/i,
+    mascot: {
+      avatar: "/media/maskot/amang-tigor/avatar-default.svg",
+      mascot: "amang-tigor",
+      greetingPose: "menyapa",
+      typingPose: "mengetik",
+    },
+  },
+  {
+    match: /acil/i,
+    mascot: {
+      avatar: "/media/maskot/acil-imah/avatar-default.svg",
+      mascot: "acil-imah",
+      greetingPose: "menyapa",
+      typingPose: "mengetik",
+    },
+  },
+  {
+    match: /ambun/i,
+    mascot: {
+      avatar: "/media/maskot/bapa-ambun/avatar-default.svg",
+      mascot: "bapa-ambun",
+      greetingPose: "menyapa",
+      typingPose: "mengetik",
+    },
+  },
+  {
+    match: /baso/i,
+    mascot: {
+      avatar: "/media/maskot/daeng-baso/avatar-default.svg",
+      mascot: "daeng-baso",
+      greetingPose: "menyapa",
+      typingPose: "mengetik",
+    },
+  },
+  {
+    match: /luh/i,
+    mascot: {
+      avatar: "/media/maskot/luh-sari/avatar-default.svg",
+      mascot: "luh-sari",
+      greetingPose: "menyapa",
+      typingPose: "mengetik",
+    },
+  },
 ];
 
 /** Cari maskot persona berdasarkan nama (null jika persona tidak dikenal). */

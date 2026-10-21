@@ -1,0 +1,49 @@
+BAPA AMBUN - MASKOT AI NUSA-LINGUA
+Bapak bersahaja dari tepi Sungai Kahayan, pendamping latihan bahasa Dayak Ngaju.
+Semua berkas: latar belakang transparan, tanpa font eksternal (teks memakai font sistem).
+
+ISI PAKET
+  ai-*.svg / ai-*.png     12 pose badan penuh, 512 x 512
+  avatar-*.svg / .png     6 ekspresi avatar bulat (bubble chat, header, notifikasi)
+  animasi/*.svg           12 animasi loop (CSS di dalam SVG, tanpa JavaScript)
+  bercerita.svg           ilustrasi bercerita beranimasi, 800 x 512
+
+PEMETAAN STATUS ASISTEN -> ANIMASI
+  Idle / menunggu            animasi/napas.svg
+  Sapaan pertama / welcome   animasi/menyapa.svg
+  Pengguna sedang mengetik   animasi/mendengarkan.svg
+  AI sedang memproses        animasi/berpikir.svg
+  AI sedang menulis balasan  animasi/mengetik.svg
+  AI menjawab / membacakan   animasi/menjawab.svg
+  Menyampaikan pepatah/tips  animasi/berpetatah.svg
+  Jawaban benar / selesai    animasi/memuji.svg
+  Jawaban hampir benar       ai-mengoreksi.svg
+  Jawaban kurang yakin       animasi/kurang-yakin.svg
+  Koneksi bermasalah         animasi/gangguan-koneksi.svg
+  Pengguna lama tidak aktif  animasi/tidur.svg
+  Pamit / akhir sesi         animasi/salam.svg
+
+CARA PAKAI DI WEBSITE
+  Pakai tag <img> agar animasi CSS di dalam SVG berjalan dan terisolasi:
+    <img src="/maskot/animasi/napas.svg" alt="Bapa Ambun" width="160" height="160">
+  Di Next.js: letakkan di /public/maskot dan pakai <img> biasa (next/image
+  mengoptimasi SVG secara berbeda dan bisa mematikan animasi).
+  Untuk berganti keadaan, ubah atribut src sesuai tabel di atas.
+  Animasi otomatis berhenti bila pengguna mengaktifkan "Reduce motion"
+  (prefers-reduced-motion).
+
+LATAR GELAP
+  Garis luar maskot berwarna hijau tua. Di halaman bertema gelap, letakkan
+  maskot di atas kartu atau lingkaran terang, atau beri bayangan putih tipis:
+    img.maskot { filter: drop-shadow(0 0 2px rgba(255,255,255,.9)); }
+
+PALET
+  Garis #0F3B2E   Lawung #C0352B   Sangkarut #8B2F2A   Emas #C99A3C
+  Headset #2FB38F   Kulit #D9A06B   Krem #F7F2E6
+
+CATATAN BUDAYA
+  Busana terinspirasi pria Dayak Ngaju: ikat kepala (lawung) merah dengan bulu
+  enggang, rompi baju sangkarut, kalung manik, dan kain bawahan bermotif.
+  Papan pada pose berpetatah memuat "Belom Bahadat" (hidup beradat), falsafah
+  Dayak Ngaju. Mohon motif dan teks diperiksa penutur atau tokoh budaya Ngaju
+  sebelum rilis publik.

@@ -1,0 +1,36 @@
+ACIL IMAH - MASKOT AI NUSA-LINGUA (Bahasa Banjar, Banjarmasin)
+==============================================================
+Isi folder animasi/ : 12 file SVG beranimasi, latar belakang transparan, ukuran 512x512.
+Animasi memakai CSS di dalam SVG, jadi tetap jalan lewat <img src="...">, CSS background, maupun inline.
+Tanpa JavaScript. Otomatis berhenti jika pengguna mengaktifkan "prefers-reduced-motion".
+
+PEMAKAIAN
+  <img src="/maskot/acil-imah/menyapa.svg" width="160" height="160" alt="Acil Imah menyapa">
+
+PEMETAAN STATE AI -> ANIMASI (saran)
+  napas.svg            diam / idle (bernapas + berkedip)
+  menyapa.svg          pesan pembuka, sapaan awal
+  salam.svg            salam pembuka atau penutup sesi
+  mendengarkan.svg     pengguna sedang mengetik / merekam suara
+  berpikir.svg         AI memproses jawaban
+  mengetik.svg         AI sedang menulis balasan (streaming)
+  menjawab.svg         AI sedang menyampaikan jawaban
+  memuji.svg           jawaban pengguna benar / progres bagus
+  kurang-yakin.svg     AI belum yakin dengan jawabannya
+  gangguan-koneksi.svg error jaringan / API gagal
+  berpetatah.svg       menampilkan pepatah/semboyan (gulungan bertuliskan "Kayuh Baimbai")
+  tidur.svg            sesi tidak aktif lama
+
+DESAIN (terinspirasi budaya Banjar)
+  Tanggui (topi kerucut anyaman), kerudung, baju bakurung, dan tapih bahalai dengan motif zigzag
+  terinspirasi sasirangan. "Kayuh Baimbai" adalah semboyan Kota Banjarmasin.
+
+PALET
+  Garis #11382C | Kulit #D39A6A | Kerudung #9A62C2 | Baju #1F9AA5
+  Tapih #7B2D3B | Kuning #F2C14E | Tanggui #E2B567 | Krem #F4F2EA
+
+CATATAN
+  - Teks di balon ("Hampir bujur!", "Pian paham, kah?") ada di ai-mengoreksi dan ai-menjelaskan.
+    Mohon dicek penutur asli Banjar (dialek Banjar Kuala) sebelum rilis, termasuk pilihan
+    kata dan kesesuaian dengan citra Acil.
+  - Bercerita (acil-imah-bercerita.svg) dipisah, dipakai untuk mode dongeng/cerita rakyat.
