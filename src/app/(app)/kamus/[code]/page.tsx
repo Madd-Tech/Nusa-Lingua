@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, NativeSelect } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { SelectFilter } from "@/components/ui/select-filter";
 import { EmptyState } from "@/components/ui/empty-state";
 import { BatikPattern } from "@/components/ui/batik-pattern";
 import { LanguageIcon } from "@/components/learning/language-icon";
@@ -86,27 +87,33 @@ export default async function KamusPage({ params, searchParams }: { params: { co
             <label htmlFor="filter-kategori" className="sr-only">
               Kategori
             </label>
-            <NativeSelect id="filter-kategori" name="kategori" defaultValue={searchParams.kategori ?? ""} className="sm:w-44">
-              <option value="">Semua kategori</option>
-              {facets.categories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </NativeSelect>
+            <SelectFilter
+              id="filter-kategori"
+              name="kategori"
+              defaultValue={searchParams.kategori ?? ""}
+              placeholder="Semua kategori"
+              className="sm:w-44"
+              options={[
+                { value: "", label: "Semua kategori" },
+                ...facets.categories.map((c) => ({ value: c, label: c })),
+              ]}
+            />
           </div>
           <div>
             <label htmlFor="filter-tutur" className="sr-only">
               Tingkat tutur
             </label>
-            <NativeSelect id="filter-tutur" name="tutur" defaultValue={searchParams.tutur ?? ""} className="sm:w-44">
-              <option value="">Semua tingkat tutur</option>
-              {facets.speechLevels.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </NativeSelect>
+            <SelectFilter
+              id="filter-tutur"
+              name="tutur"
+              defaultValue={searchParams.tutur ?? ""}
+              placeholder="Semua tingkat tutur"
+              className="sm:w-44"
+              options={[
+                { value: "", label: "Semua tingkat tutur" },
+                ...facets.speechLevels.map((s) => ({ value: s, label: s })),
+              ]}
+            />
           </div>
           <Button type="submit">Cari</Button>
         </form>

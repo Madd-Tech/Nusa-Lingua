@@ -9,7 +9,8 @@ import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input, NativeSelect } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { SelectFilter } from "@/components/ui/select-filter";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AvatarPicker } from "@/components/layout/avatar-picker";
@@ -136,15 +137,17 @@ function ProfileSection({
               <FormItem>
                 <FormLabel>Daerah asal</FormLabel>
                 <FormControl>
-                  <NativeSelect value={String(field.value ?? 0)} onChange={(e) => field.onChange(Number(e.target.value))}>
-                    <option value="0">— Belum dipilih —</option>
-                    {regions.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.name}
-                        {r.province ? ` · ${r.province}` : ""}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                  <SelectFilter
+                    value={String(field.value ?? 0)}
+                    onValueChange={(v) => field.onChange(Number(v))}
+                    options={[
+                      { value: "0", label: "— Belum dipilih —" },
+                      ...regions.map((r) => ({
+                        value: String(r.id),
+                        label: r.province ? `${r.name} · ${r.province}` : r.name,
+                      })),
+                    ]}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

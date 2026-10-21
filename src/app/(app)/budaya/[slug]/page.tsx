@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { BatikPattern } from "@/components/ui/batik-pattern";
 import { RemoteImage } from "@/components/ui/remote-image";
 import { ArticleCard } from "@/components/culture/article-card";
+import { ArticleIllustration } from "@/components/culture/article-illustration";
 import { MarkdownContent } from "@/components/culture/markdown-content";
 import { ReadTracker } from "@/components/culture/read-tracker";
 import { TableOfContents } from "@/components/culture/table-of-contents";
@@ -50,9 +51,11 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         {article.cover_url ? (
           <RemoteImage src={article.cover_url} alt="" eager className="aspect-[16/7] w-full" />
         ) : (
-          <div className="relative aspect-[16/5] bg-budaya/10">
-            <BatikPattern variant="parang" color="rgb(var(--c-budaya))" opacity={0.25} />
-          </div>
+          <ArticleIllustration
+            slug={article.slug}
+            category={article.category}
+            className="aspect-[16/7] w-full"
+          />
         )}
         <div className="space-y-3 p-5 sm:p-7">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-semibold text-muted-foreground">
