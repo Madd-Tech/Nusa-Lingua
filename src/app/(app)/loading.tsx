@@ -1,5 +1,5 @@
-import { PageSkeleton } from "@/components/layout/page-skeletons";
+import { PageLoading } from "@/components/ui/page-loading";
 
 export default function Loading() {
-  return <PageSkeleton />;
+  return <PageLoading label="Memuat halaman…" />;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Flame, Sparkles } from "lucide-react";
+import { Flame } from "lucide-react";
 import { AnimatedMascot } from "@/components/landing/animated-mascot";
 import type { LearningMascotProfile } from "@/lib/learning-mascots";
 import { cn } from "@/lib/utils";
@@ -59,7 +59,7 @@ export function LearningMascot({
                   : { y: [0, -4, 0] }
             }
             transition={mood === "celebrate" ? { duration: 0.9, repeat: Infinity } : { duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
-            className="relative shrink-0"
+            className="relative shrink-0 pt-5"
           >
             <AnimatedMascot mascot={mascot.id} pose={mascot.poses[mood]} className="size-16 sm:size-24 lg:size-44" />
             {streak > 0 ? (
@@ -84,8 +84,7 @@ export function LearningMascot({
             >
               <p className="text-sm font-bold leading-snug">{message}</p>
             </div>
-            <p className={cn("mt-2 hidden items-center justify-center gap-1 text-center text-[11px] font-extrabold uppercase tracking-wide lg:flex", tone.label)}>
-              <Sparkles aria-hidden="true" className="size-3" />
+            <p className={cn("mt-2 hidden text-center text-[11px] font-extrabold uppercase tracking-wide lg:block", tone.label)}>
               {mascot.name} · {mascot.region}
             </p>
           </div>
