@@ -6,7 +6,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Heart, HeartCrack, RotateCcw, Volume2, VolumeX, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { ErrorState } from "@/components/ui/error-state";
 import {
   Dialog,
@@ -31,7 +30,9 @@ import { createClient } from "@/lib/supabase/client";
 import { nextMastery, type MasteryState } from "@/lib/srs";
 import type { LessonQuestion } from "@/lib/questions";
 import { pickLine } from "@/lib/learning-mascots";
+import { celebrationFor, type CelebrationTier } from "@/lib/streak-celebration";
 import { FeedbackBar } from "./feedback-bar";
+import { FieryProgress } from "./fiery-progress";
 import { LearningMascot, type MascotMood } from "./learning-mascot";
 import { StreakCelebration } from "./streak-celebration";
 import { LessonResult } from "./lesson-result";
@@ -105,7 +106,7 @@ export function LessonPlayer({
   const [streak, setStreak] = useState(0);
   const [mascotMood, setMascotMood] = useState<MascotMood>("idle");
   const [mascotMessage, setMascotMessage] = useState(() => mascot.greeting);
-  const [celebration, setCelebration] = useState(0);
+  const [celebration, setCelebration] = useState<{ count: number; tier: CelebrationTier } | null>(null);
 
   // Efek suara pilih: simpan jawaban sebelumnya + waktu bunyi terakhir (anti-spam).
   const previousAnswerRef = useRef<AnswerValue | null>(null);
@@ -166,7 +167,7 @@ export function LessonPlayer({
     setResult(null);
     setPhase("playing");
     setStreak(0);
-    setCelebration(0);
+    setCelebration(null);
     setMascotMood("idle");
     setMascotMessage(mascot.greeting);
   };
@@ -195,16 +196,30 @@ export function LessonPlayer({
 
     const nextStreak = ok ? streak + 1 : 0;
     setStreak(nextStreak);
-    if (ok && nextStreak > 0 && nextStreak % 3 === 0) {
+
+    const tier = celebrationFor(nextStreak);
+    if (ok && nextStreak >= 3) {
       setMascotMood("celebrate");
-      setMascotMessage(pickLine(mascot.lines.streak, index));
-      setCelebration(nextStreak);
-      sfx.streak();
+      setMascotMessage(
+        nextStreak === 3
+          ? pickLine(mascot.lines.streak, index)
+          : nextStreak === 10
+            ? `Super duper gokil! ${nextStreak} jawaban benar berturut-turut. ${mascot.name} bangga!`
+            : `${nextStreak} jawaban benar berturut-turut. ${mascot.name} bangga!`,
+      );
     } else {
       setMascotMood(ok ? "correct" : "wrong");
       setMascotMessage(pickLine(ok ? mascot.lines.correct : mascot.lines.wrong, index + 1));
-      if (ok) sfx.correct();
-      else sfx.wrong();
+    }
+
+    if (tier) {
+      setCelebration({ count: nextStreak, tier });
+      if (tier === "mega") sfx.streakMega();
+      else sfx.streak();
+    } else if (ok) {
+      sfx.correct();
+    } else {
+      sfx.wrong();
     }
 
     if (!current.retry && !firstTry.has(current.q.id)) {
@@ -227,7 +242,7 @@ export function LessonPlayer({
         setSkipped(nextSkipped);
         setStreak(0);
       }
-      setCelebration(0);
+      setCelebration(null);
       setMascotMood("idle");
       setMascotMessage(pickLine(mascot.lines.idle, index));
       if (hearts <= 0) {
@@ -250,7 +265,7 @@ export function LessonPlayer({
   // Enter = Periksa / Lanjut
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Enter" || phase !== "playing" || exitOpen || celebration > 0) return;
+      if (e.key !== "Enter" || phase !== "playing" || exitOpen || celebration !== null) return;
       if (e.target instanceof HTMLButtonElement) return; // tombol yang sedang fokus menangani sendiri
       e.preventDefault();
       if (verdict === null) check();
@@ -260,7 +275,7 @@ export function LessonPlayer({
     return () => window.removeEventListener("keydown", onKey);
   }, [advance, celebration, check, exitOpen, phase, verdict]);
 
-  const closeCelebration = useCallback(() => setCelebration(0), []);
+  const closeCelebration = useCallback(() => setCelebration(null), []);
 
   /** Saat pengguna mulai memilih/mengetik, maskot ikut "berpikir". */
   const handleAnswer = useCallback(
@@ -361,11 +376,11 @@ export function LessonPlayer({
         <Button variant="ghost" size="icon" onClick={() => setExitOpen(true)} aria-label="Keluar dari lesson">
           <X />
         </Button>
-        <Progress
+        <FieryProgress
           value={progressValue}
           max={queue.length}
+          streak={streak}
           aria-label={`Progres lesson: soal ${Math.min(index + 1, queue.length)} dari ${queue.length}`}
-          className="h-4"
         />
         <Button
           variant="ghost"
@@ -430,7 +445,12 @@ export function LessonPlayer({
         />
       </div>
 
-      <StreakCelebration mascot={mascot} count={celebration} onClose={closeCelebration} />
+      <StreakCelebration
+        mascot={mascot}
+        count={celebration?.count ?? 0}
+        tier={celebration?.tier ?? null}
+        onClose={closeCelebration}
+      />
 
       <Dialog open={exitOpen} onOpenChange={setExitOpen}>
         <DialogContent hideClose>

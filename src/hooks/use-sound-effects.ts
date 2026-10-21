@@ -111,6 +111,19 @@ export function useSoundEffects() {
           { freq: 1976, at: 0.26, dur: 0.2, type: "sine", gain: 0.05 },
           { freq: 1568, at: 0.34, dur: 0.26, type: "sine", gain: 0.05 },
         ]),
+      /** Super combo 10: fanfare lebih panjang dengan gebrakan bass. */
+      streakMega: () =>
+        play([
+          { freq: 98, at: 0, dur: 0.32, type: "sine", gain: 0.1 },
+          { freq: 523, at: 0, dur: 0.12, type: "triangle", gain: 0.13 },
+          { freq: 659, at: 0.1, dur: 0.12, type: "triangle", gain: 0.13 },
+          { freq: 784, at: 0.2, dur: 0.12, type: "triangle", gain: 0.13 },
+          { freq: 1047, at: 0.3, dur: 0.14, type: "triangle", gain: 0.14 },
+          { freq: 1319, at: 0.42, dur: 0.52, type: "triangle", gain: 0.16 },
+          { freq: 1568, at: 0.44, dur: 0.4, type: "sine", gain: 0.07 },
+          { freq: 1976, at: 0.5, dur: 0.36, type: "sine", gain: 0.05 },
+          { freq: 2093, at: 0.62, dur: 0.42, type: "sine", gain: 0.04 },
+        ]),
       finish: () =>
         play([
           { freq: 523, at: 0, dur: 0.14, type: "triangle", gain: 0.11 },
