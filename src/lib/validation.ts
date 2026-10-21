@@ -75,6 +75,26 @@ export const submissionSchema = z.object({
   meaningId: z.string().trim().min(1, "Arti wajib diisi").max(200, "Arti terlalu panjang"),
 });
 
+const optionalText = (max: number, label: string) =>
+  z.string().trim().max(max, `${label} maksimal ${max} karakter`).optional().or(z.literal(""));
+
+export const rejectSchema = z.object({
+  reason: z.enum(["duplikat", "ejaan", "arti_keliru", "bukan_bahasa_ini", "tidak_pantas", "audio_buruk", "lainnya"], {
+    required_error: "Pilih alasan penolakan",
+    invalid_type_error: "Pilih alasan penolakan",
+  }),
+  note: optionalText(500, "Catatan"),
+});
+
+export const approveEditSchema = z.object({
+  word: z.string().trim().min(1, "Kata wajib diisi").max(80, "Kata terlalu panjang"),
+  meaningId: z.string().trim().min(1, "Arti wajib diisi").max(200, "Arti terlalu panjang"),
+  speechLevel: optionalText(40, "Tingkat tutur"),
+  exampleSentence: optionalText(300, "Contoh kalimat"),
+  exampleMeaning: optionalText(300, "Terjemah contoh"),
+  note: optionalText(500, "Catatan"),
+});
+
 /** Terjemahkan pesan error Supabase Auth ke Bahasa Indonesia yang ramah. */
 export function authErrorMessage(message: string | undefined | null) {
   const m = (message ?? "").toLowerCase();

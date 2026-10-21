@@ -37,9 +37,11 @@ export function SubmissionForm({
   const onSubmit = async (values: Values) => {
     const supabase = createClient();
     let audioUrl: string | null = null;
+    let audioPath: string | null = null;
 
     if (audio) {
       const path = `${userId}/${Date.now()}.webm`;
+      audioPath = path;
       const { error: upErr } = await supabase.storage.from("audio").upload(path, audio, { contentType: "audio/webm", upsert: false });
       if (upErr) {
         toast.error("Rekaman gagal diunggah. Coba lagi atau kirim tanpa audio.");
@@ -57,7 +59,10 @@ export function SubmissionForm({
       status: "pending",
     });
     if (error) {
-      toast.error("Kiriman gagal disimpan. Coba lagi.");
+      // Jangan tinggalkan rekaman yatim bila usulan gagal disimpan.
+      if (audioPath) await supabase.storage.from("audio").remove([audioPath]);
+      // NL429: batas usulan menunggu (pesan dari database).
+      toast.error(error.code === "NL429" ? error.message : "Kiriman gagal disimpan. Coba lagi.");
       return;
     }
     toast.success("Terima kasih! Kirimanmu akan ditinjau moderator.");

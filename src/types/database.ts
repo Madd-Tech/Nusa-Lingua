@@ -169,6 +169,7 @@ export type Database = {
           example_meaning: string | null;
           peran: string;
           source: string | null;
+          contributed_by: string | null;
         };
         Insert: {
           id?: number;
@@ -185,6 +186,7 @@ export type Database = {
           example_meaning?: string | null;
           peran?: string;
           source?: string | null;
+          contributed_by?: string | null;
         };
         Update: {
           id?: number;
@@ -201,8 +203,16 @@ export type Database = {
           example_meaning?: string | null;
           peran?: string;
           source?: string | null;
+          contributed_by?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "vocabularies_contributed_by_fkey";
+            columns: ["contributed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "vocabularies_language_id_fkey";
             columns: ["language_id"];
@@ -688,6 +698,11 @@ export type Database = {
           status: Database["public"]["Enums"]["submission_status"];
           reviewed_by: string | null;
           created_at: string;
+          reject_reason: Database["public"]["Enums"]["reject_reason"] | null;
+          review_note: string | null;
+          reviewed_at: string | null;
+          original: Json | null;
+          vocabulary_id: number | null;
         };
         Insert: {
           id?: number;
@@ -699,6 +714,11 @@ export type Database = {
           status?: Database["public"]["Enums"]["submission_status"];
           reviewed_by?: string | null;
           created_at?: string;
+          reject_reason?: Database["public"]["Enums"]["reject_reason"] | null;
+          review_note?: string | null;
+          reviewed_at?: string | null;
+          original?: Json | null;
+          vocabulary_id?: number | null;
         };
         Update: {
           id?: number;
@@ -710,10 +730,106 @@ export type Database = {
           status?: Database["public"]["Enums"]["submission_status"];
           reviewed_by?: string | null;
           created_at?: string;
+          reject_reason?: Database["public"]["Enums"]["reject_reason"] | null;
+          review_note?: string | null;
+          reviewed_at?: string | null;
+          original?: Json | null;
+          vocabulary_id?: number | null;
         };
         Relationships: [
           {
             foreignKeyName: "vocab_submissions_language_id_fkey";
+            columns: ["language_id"];
+            isOneToOne: false;
+            referencedRelation: "languages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "vocab_submissions_vocabulary_id_fkey";
+            columns: ["vocabulary_id"];
+            isOneToOne: false;
+            referencedRelation: "vocabularies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      moderator_languages: {
+        Row: {
+          user_id: string;
+          language_id: number;
+          assigned_by: string | null;
+          assigned_at: string;
+        };
+        Insert: {
+          user_id: string;
+          language_id: number;
+          assigned_by?: string | null;
+          assigned_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          language_id?: number;
+          assigned_by?: string | null;
+          assigned_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "moderator_languages_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "moderator_languages_language_id_fkey";
+            columns: ["language_id"];
+            isOneToOne: false;
+            referencedRelation: "languages";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      moderation_log: {
+        Row: {
+          id: number;
+          actor_id: string | null;
+          action: Database["public"]["Enums"]["moderation_action"];
+          language_id: number | null;
+          target_type: string;
+          target_id: string;
+          detail: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          actor_id?: string | null;
+          action: Database["public"]["Enums"]["moderation_action"];
+          language_id?: number | null;
+          target_type: string;
+          target_id: string;
+          detail?: Json | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          actor_id?: string | null;
+          action?: Database["public"]["Enums"]["moderation_action"];
+          language_id?: number | null;
+          target_type?: string;
+          target_id?: string;
+          detail?: Json | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "moderation_log_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "moderation_log_language_id_fkey";
             columns: ["language_id"];
             isOneToOne: false;
             referencedRelation: "languages";
@@ -739,6 +855,64 @@ export type Database = {
         Args: { p_lesson_id: number; p_score: number };
         Returns: Json;
       };
+      is_moderator: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      is_admin: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      can_moderate: {
+        Args: { p_language_id: number };
+        Returns: boolean;
+      };
+      review_submission: {
+        Args: {
+          p_id: number;
+          p_decision: Database["public"]["Enums"]["submission_status"];
+          p_reject_reason?: Database["public"]["Enums"]["reject_reason"] | null;
+          p_note?: string | null;
+          p_edits?: Json | null;
+        };
+        Returns: Json;
+      };
+      get_submission_queue: {
+        Args: {
+          p_status?: Database["public"]["Enums"]["submission_status"];
+          p_language_id?: number | null;
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: {
+          id: number;
+          language_id: number;
+          language_name: string;
+          language_code: string;
+          word: string;
+          meaning_id: string;
+          audio_url: string | null;
+          status: Database["public"]["Enums"]["submission_status"];
+          created_at: string;
+          reviewed_at: string | null;
+          reject_reason: Database["public"]["Enums"]["reject_reason"] | null;
+          review_note: string | null;
+          original: Json | null;
+          vocabulary_id: number | null;
+          submitter_id: string;
+          submitter_username: string | null;
+          submitter_approved: number;
+          submitter_reviewed: number;
+          reviewer_username: string | null;
+          is_own: boolean;
+          duplicates: Json;
+          total_count: number;
+        }[];
+      };
+      set_moderator_languages: {
+        Args: { p_user: string; p_language_ids: number[] };
+        Returns: Json;
+      };
     };
     Enums: {
       unit_level: "pemula" | "menengah" | "mahir";
@@ -756,6 +930,28 @@ export type Database = {
       lesson_status: "in_progress" | "completed";
       submission_status: "pending" | "approved" | "rejected";
       chat_role: "user" | "assistant";
+      reject_reason:
+        | "duplikat"
+        | "ejaan"
+        | "arti_keliru"
+        | "bukan_bahasa_ini"
+        | "tidak_pantas"
+        | "audio_buruk"
+        | "lainnya";
+      moderation_action:
+        | "submission_approved"
+        | "submission_rejected"
+        | "vocab_updated"
+        | "vocab_hidden"
+        | "vocab_restored"
+        | "article_created"
+        | "article_updated"
+        | "article_status_changed"
+        | "article_deleted"
+        | "report_resolved"
+        | "report_dismissed"
+        | "moderator_assigned"
+        | "moderator_removed";
     };
     CompositeTypes: {
       [_ in never]: never;

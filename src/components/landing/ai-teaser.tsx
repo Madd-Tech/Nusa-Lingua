@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { BatikPattern } from "@/components/ui/batik-pattern";
 import { FeatureLink } from "@/components/layout/feature-link";
 
-/** Contoh percakapan statis — gambaran fitur, diberi label jelas. */
 const SAMPLE = [
   { role: "user", text: "Mbah, bagaimana bilang “selamat pagi” dalam bahasa Jawa?" },
   { role: "assistant", text: "Gampang, Nak! Ucapkan “Sugeng enjing”. Coba tulis atau ucapkan, nanti Mbah koreksi." },

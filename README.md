@@ -32,30 +32,40 @@ Jika proyek Supabase masih kosong, jalankan berkas-berkas ini **berurutan** di S
 4. [`supabase/seed_basanusa.sql`](supabase/seed_basanusa.sql) — Basanusa Dataset v1.0: 8 bahasa baru (Aceh, Batak Toba, Minangkabau, Madura, Bali, Bugis, Dayak Ngaju, Banjar) + 7 daerah, dan unit tematik tambahan untuk Jawa & Sunda. Total 101 unit, 448 lesson, 7.111 kosakata, 5.853 soal pilihan ganda. Unit diurutkan sapaan → perasaan → kata kerja/sifat → manusia/alam/masyarakat. Harus setelah `seed.sql`; aman dijalankan ulang (menjalankan ulang ikut memperbarui urutan unit). Sumber NusaX (CC BY-SA 4.0, wajib atribusi — ditampilkan di `/ketentuan#sumber-data` dan kaki halaman kamus) — belum diverifikasi penutur asli.
 5. [`supabase/seed_personas.sql`](supabase/seed_personas.sql) — 8 persona AI untuk bahasa baru (Nek Aminah, Amang Tigor, Uda Rizal, Kak Sitti, Luh Sari, Daeng Baso, Bapa Ambun, Acil Imah), dengan instruksi tambahan agar tidak mengarang kosakata. Belum ada maskot khusus, jadi `avatar_url` NULL dan aplikasi menampilkan inisial nama persona. Harus setelah `seed_basanusa.sql`; aman dijalankan ulang.
 6. [`supabase/seed_budaya.sql`](supabase/seed_budaya.sql) — 8 artikel budaya terbit, satu per bahasa baru: Nyepi (Bali), Rumoh Aceh, Ulos & Dalihan Na Tolu (Batak Toba), asal-usul nama Minangkabau, Karapan Sapi (Madura), Aksara Lontara (Bugis), Huma Betang (Dayak Ngaju), Pasar Terapung (Banjar). Harus setelah `seed_basanusa.sql`; aman dijalankan ulang. Mohon ditinjau budayawan/penutur asli sebelum rilis.
+7. [`supabase/migrations/0005_moderation_core.sql`](supabase/migrations/0005_moderation_core.sql) — moderasi inti: moderator per bahasa (`moderator_languages`), RPC `review_submission` (alasan penolakan, edit sebelum setuju, cek duplikat, XP kontributor), `get_submission_queue`, `set_moderator_languages` (admin), `moderation_log`, batas 20 usulan menunggu per user. Jalankan sekali, setelah semua berkas di atas. Moderator yang sudah ada otomatis ditugaskan ke semua bahasa. Rancangan lengkap: [docs/rancangan-moderator.md](docs/rancangan-moderator.md).
 
 Peta bahasa di landing otomatis menampilkan rumah adat tiap daerah baru (Rumoh Aceh, Rumah Bolon, Rumah Gadang, Tanean Lanjhang, Saoraja, Rumah Betang, Bubungan Tinggi) — lihat `src/components/landing/rumah-adat.tsx`.
 
-Lalu daftar lewat `/daftar`. Untuk mencoba halaman moderasi:
+Lalu daftar lewat `/daftar`. Untuk mencoba halaman moderasi, jadikan akunmu admin (admin memoderasi semua bahasa dan bisa menugaskan moderator lain di `/moderasi/tim`):
+
+```sql
+update public.profiles set role = 'admin' where username = 'username_kamu';
+```
+
+Atau langsung jadikan moderator untuk bahasa tertentu (mis. Jawa `jv`):
 
 ```sql
 update public.profiles set role = 'moderator' where username = 'username_kamu';
+insert into public.moderator_languages (user_id, language_id)
+select p.id, l.id from public.profiles p, public.languages l
+where p.username = 'username_kamu' and l.code = 'jv';
 ```
 
 Yang ditegakkan database (bukan hanya UI):
 - Client **tidak bisa** mengubah `xp_total`, streak, `hearts`, atau `role` (hak kolom), maupun menulis `user_lesson_progress`, `xp_logs`, `user_achievements`. Semua lewat `complete_lesson`.
 - `complete_lesson`: XP penuh × skor pada penyelesaian pertama, setengahnya saat mengulang (min. 1); bintang 3/2/1 untuk skor ≥90/≥70/lainnya; streak memakai tanggal WIB; menambah XP profil + per bahasa, `xp_logs`, dan lencana.
 - `ai_personas` sama sekali tidak terjangkau `anon`/`authenticated`.
-- Usulan kosakata wajib `pending` saat dikirim; hanya moderator/admin yang bisa mengubah `status`/`reviewed_by`. Usulan yang disetujui otomatis masuk `vocabularies` (kategori `kontribusi`).
+- Usulan kosakata wajib `pending` saat dikirim (maks. 20 menunggu per user) dan bisa dibatalkan pengusulnya selama masih menunggu. Client **tidak bisa** meng-update usulan; keputusan hanya lewat RPC `review_submission`, yang mengisi `reviewed_by = auth.uid()`, menolak usulan milik sendiri, membatasi moderator ke bahasa di `moderator_languages` (admin: semua bahasa), mewajibkan alasan penolakan, menolak duplikat persis, lalu memasukkan kata ke `vocabularies` (sumber `kontribusi`, `contributed_by`), memberi 15 XP + lencana, dan mencatat di `moderation_log`. Mengubah `status` langsung lewat SQL Editor **tidak** lagi memasukkan kata ke kamus.
 - Lencana diberikan otomatis berdasarkan `achievements.condition` (`lessons_completed`, `perfect_lesson`, `streak`, `xp_total`, `articles_read`, `contributions_approved`).
 
-Skrip ini diuji dengan 57 skenario (RLS, hak kolom, RPC, streak, leaderboard, moderasi, storage) di Postgres 16 (PGlite) dengan stub `auth`/`storage` ala Supabase — belum dijalankan di proyek Supabase sungguhan.
+Skrip ini diuji dengan 57 skenario (RLS, hak kolom, RPC, streak, leaderboard, moderasi, storage) di Postgres 16 (PGlite) dengan stub `auth`/`storage` ala Supabase — belum dijalankan di proyek Supabase sungguhan. `0005_moderation_core.sql` diuji terpisah dengan 62 skenario (cakupan bahasa, hak kolom, RPC, XP, lencana, batas usulan, backfill, anon) di Postgres 18 dengan stub serupa.
 
 ### Konfigurasi Supabase yang perlu dicek
 - **Login Google:** ikuti [docs/setup-google-oauth.md](docs/setup-google-oauth.md) (Google Cloud Console + Supabase).
 - **Auth → URL Configuration:** tambahkan `http://localhost:3000/**` (dan domain produksi) ke Redirect URLs — dipakai OAuth Google, konfirmasi email, dan reset password.
 - **Storage bucket `audio`:** kontribusi diunggah ke `<user_id>/<timestamp>.webm` dan `audio_url` diisi dengan *public URL*. Jika bucket privat, ganti `getPublicUrl` di `src/components/community/submission-form.tsx` dengan signed URL.
 - **RLS `profiles`:** onboarding & pengaturan meng-update `username`, `full_name`, `home_region_id` milik sendiri. Pastikan ada policy update untuk `auth.uid() = id`, dan constraint unik `username` (kode error `23505` ditampilkan sebagai "username sudah dipakai").
-- **Moderasi:** halaman moderasi membaca `profiles.username` pengirim secara terpisah; jika policy `profiles` tidak mengizinkan, nama pengirim tampil sebagai "pengguna".
+- **Moderasi:** area `/moderasi` (route lama `/kontribusi/moderasi` di-redirect lewat `next.config.mjs`). Antrean dibaca lewat RPC `get_submission_queue` (security definer), jadi nama pengusul & peninjau tetap tampil walau policy `profiles` diperketat. Atribusi "Kontribusi @username" di kamus membaca `profiles` lewat relasi `vocabularies.contributed_by`.
 - **Storage bucket `avatars` (asumsi, tidak ada di brief; dibuat oleh `0002_storage.sql`):** foto profil unggahan disimpan di `<user_id>/<timestamp>.<ext>` (maks. 2 MB) dan dipakai sebagai public URL. Avatar bawaan ada di `public/avatars/*.svg` dan disimpan sebagai path relatif (`/avatars/peci.svg`).
 - **Cek username real-time** membaca `profiles` milik user lain (`select id where username = …`). Jika policy select `profiles` hanya mengizinkan baris sendiri, status "tersedia" tidak bisa diandalkan — constraint UNIQUE tetap menolak saat simpan (pesan ramah ditampilkan).
 - **Hapus sesi obrolan** butuh policy delete `chat_sessions` untuk pemiliknya dan FK `chat_messages.session_id` dengan `on delete cascade`.

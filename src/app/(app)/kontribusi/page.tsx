@@ -6,11 +6,14 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { SubmissionForm } from "@/components/community/submission-form";
 import { SubmissionStatus } from "@/components/community/submission-status";
+import { SubmissionFeedback } from "@/components/community/submission-feedback";
+import { CancelSubmissionButton } from "@/components/community/cancel-submission-button";
 import { AudioButton } from "@/components/learning/audio-button";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { getActiveLanguages } from "@/lib/queries/content";
 import { getMySubmissions } from "@/lib/queries/community";
 import { getProfile, getUserLanguages } from "@/lib/queries/progress";
+import { CONTRIBUTION_XP } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Kontribusi" };
@@ -37,11 +40,11 @@ export default async function KontribusiPage() {
         icon={HandHeart}
         category="komunitas"
         title="Kontribusi komunitas"
-        description="Usulkan kosakata beserta rekaman pelafalanmu. Setiap usulan ditinjau moderator sebelum masuk kamus."
+        description={`Usulkan kosakata beserta rekaman pelafalanmu. Setiap usulan ditinjau moderator; yang disetujui masuk kamus dan memberimu ${CONTRIBUTION_XP} XP.`}
         actions={
           isModerator ? (
             <Button asChild variant="outline" size="sm">
-              <Link href="/kontribusi/moderasi">
+              <Link href="/moderasi">
                 <ShieldCheck aria-hidden="true" /> Moderasi
               </Link>
             </Button>
@@ -104,8 +107,12 @@ export default async function KontribusiPage() {
                         {s.audio_url ? <AudioButton src={s.audio_url} label={`Putar rekaman ${s.word}`} size="sm" /> : "—"}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatDate(s.created_at)}</td>
-                      <td className="px-4 py-3">
-                        <SubmissionStatus status={s.status} />
+                      <td className="max-w-xs px-4 py-3">
+                        <div className="space-y-1.5">
+                          <SubmissionStatus status={s.status} />
+                          <SubmissionFeedback submission={s} />
+                          {s.status === "pending" ? <CancelSubmissionButton id={s.id} word={s.word} audioUrl={s.audio_url} /> : null}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -123,8 +130,14 @@ export default async function KontribusiPage() {
                     <p className="mt-1 text-xs text-muted-foreground">
                       {s.language?.name} · {formatDate(s.created_at)}
                     </p>
+                    <div className="mt-1.5">
+                      <SubmissionFeedback submission={s} />
+                    </div>
                   </div>
-                  <SubmissionStatus status={s.status} />
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    <SubmissionStatus status={s.status} />
+                    {s.status === "pending" ? <CancelSubmissionButton id={s.id} word={s.word} audioUrl={s.audio_url} /> : null}
+                  </div>
                 </li>
               ))}
             </ul>

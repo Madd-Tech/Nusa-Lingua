@@ -30,7 +30,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/budaya", label: "Budaya", icon: Landmark, category: "budaya" },
   { href: "/asisten", label: "Asisten AI", icon: MessagesSquare, category: "asisten" },
   { href: "/kontribusi", label: "Kontribusi", icon: HandHeart, category: "komunitas" },
-  { href: "/kontribusi/moderasi", label: "Moderasi", icon: ShieldCheck, category: "komunitas", roles: ["moderator", "admin"] },
+  { href: "/moderasi", label: "Moderasi", icon: ShieldCheck, category: "komunitas", roles: ["moderator", "admin"] },
   { href: "/peringkat", label: "Peringkat", icon: Trophy, category: "progres" },
   { href: "/profil", label: "Profil", icon: UserRound, category: "progres" },
 ];
@@ -49,7 +49,7 @@ export const CATEGORY_STYLES: Record<FeatureCategory, { text: string; bg: string
 export function isNavActive(pathname: string, item: NavItem, all: NavItem[] = NAV_ITEMS) {
   const hit = (p: string) => pathname === p || pathname.startsWith(`${p}/`);
   if (!hit(item.href) && !(item.match ?? []).some(hit)) return false;
-  // Jangan tandai /kontribusi aktif saat berada di /kontribusi/moderasi.
+  // Jangan tandai item induk aktif bila ada item lain yang lebih spesifik untuk path ini.
   const moreSpecific = all.some((o) => o !== item && o.href.startsWith(`${item.href}/`) && hit(o.href));
   return !moreSpecific;
 }

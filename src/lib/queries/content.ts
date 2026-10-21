@@ -91,7 +91,7 @@ export async function getVocabularies(
   let query = db
     .from("vocabularies")
     .select(
-      "id, word, meaning_id, meaning_en, speech_level, pronunciation, audio_url, image_url, example_sentence, example_meaning, category, peran, source",
+      "id, word, meaning_id, meaning_en, speech_level, pronunciation, audio_url, image_url, example_sentence, example_meaning, category, peran, source, contributor:profiles!vocabularies_contributed_by_fkey(username)",
       { count: "exact" },
     )
     .eq("language_id", languageId)

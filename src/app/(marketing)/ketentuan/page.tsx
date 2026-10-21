@@ -18,8 +18,9 @@ export default function KetentuanPage() {
         </p>
         <h2>Kontribusi komunitas</h2>
         <p>
-          Kosakata dan rekaman suara yang kamu kirim akan ditinjau moderator. Jika disetujui, kontribusi dapat ditampilkan kepada
-          pengguna lain di kamus.
+          Kosakata dan rekaman suara yang kamu kirim akan ditinjau moderator. Moderator dapat merapikan ejaan atau arti sebelum
+          menyetujuinya, atau menolaknya dengan alasan yang bisa kamu lihat di halaman Kontribusi. Jika disetujui, kontribusi
+          ditampilkan kepada pengguna lain di kamus beserta username-mu sebagai kontributor, dan kamu mendapat XP.
         </p>
         <h2>Asisten AI</h2>
         <p>

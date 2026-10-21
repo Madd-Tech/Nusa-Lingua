@@ -65,7 +65,7 @@ export default async function ProfilPage() {
     { href: "/ulasan", label: "Ulasan kosakata", icon: Repeat, tone: "text-belajar" },
     { href: "/kontribusi", label: "Kontribusi", icon: HandHeart, tone: "text-komunitas" },
     { href: "/peringkat", label: "Peringkat", icon: Trophy, tone: "text-progres" },
-    ...(isModerator ? [{ href: "/kontribusi/moderasi", label: "Moderasi", icon: ShieldCheck, tone: "text-komunitas" }] : []),
+    ...(isModerator ? [{ href: "/moderasi", label: "Moderasi", icon: ShieldCheck, tone: "text-komunitas" }] : []),
     { href: "/profil/pengaturan", label: "Pengaturan", icon: Settings, tone: "text-muted-foreground" },
   ];
 

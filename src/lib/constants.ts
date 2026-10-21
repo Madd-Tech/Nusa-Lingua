@@ -32,6 +32,28 @@ export const SUBMISSION_STATUS_LABEL: Record<Enums<"submission_status">, string>
   rejected: "Ditolak",
 };
 
+/** XP untuk kontributor saat usulannya disetujui (ditegakkan di RPC review_submission). */
+export const CONTRIBUTION_XP = 15;
+
+/** Batas usulan menunggu per user (ditegakkan trigger vocab_submission_limit). */
+export const MAX_PENDING_SUBMISSIONS = 20;
+
+/** Alasan penolakan + templat catatan untuk kontributor. */
+export const REJECT_REASONS: { value: Enums<"reject_reason">; label: string; template: string }[] = [
+  { value: "duplikat", label: "Sudah ada di kamus", template: "Kata ini sudah ada di kamus dengan arti yang sama. Terima kasih sudah membantu!" },
+  { value: "ejaan", label: "Ejaan keliru", template: "Ejaannya belum tepat. Coba periksa lagi lalu kirim ulang, ya." },
+  { value: "arti_keliru", label: "Arti kurang tepat", template: "Arti yang dituliskan belum sesuai. Coba periksa lagi lalu kirim ulang, ya." },
+  { value: "bukan_bahasa_ini", label: "Bukan bahasa ini", template: "Kata ini sepertinya bukan dari bahasa yang dipilih." },
+  { value: "tidak_pantas", label: "Tidak pantas", template: "Kata ini tidak sesuai untuk kamus pembelajaran." },
+  { value: "audio_buruk", label: "Rekaman kurang jelas", template: "Rekamannya kurang jelas. Coba rekam ulang di tempat yang lebih tenang." },
+  { value: "lainnya", label: "Lainnya", template: "" },
+];
+
+export const REJECT_REASON_LABEL = Object.fromEntries(REJECT_REASONS.map((r) => [r.value, r.label])) as Record<
+  Enums<"reject_reason">,
+  string
+>;
+
 export const ROLE_LABEL: Record<Enums<"user_role">, string> = {
   user: "Pelajar",
   moderator: "Moderator",

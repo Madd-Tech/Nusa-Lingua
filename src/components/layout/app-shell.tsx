@@ -31,11 +31,14 @@ export function AppShell({
   profile,
   languages,
   activeLanguageCode,
+  badges = {},
   children,
 }: {
   profile: ShellProfile;
   languages: PickerLanguage[];
   activeLanguageCode: string | null;
+  /** Angka di samping item sidebar, per href (mis. usulan menunggu untuk /moderasi). */
+  badges?: Record<string, number>;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -53,7 +56,7 @@ export function AppShell({
       >
         Lewati ke konten
       </a>
-      <Sidebar items={items} pathname={pathname} />
+      <Sidebar items={items} pathname={pathname} badges={badges} />
       <TopBar profile={profile} languages={languages} activeLanguageCode={activeLanguageCode} />
       <main id="konten" className="mx-auto w-full max-w-5xl px-4 pb-28 pt-4 md:px-6 md:pb-12 lg:px-8 lg:pt-6">
         {children}
@@ -63,7 +66,7 @@ export function AppShell({
   );
 }
 
-function Sidebar({ items, pathname }: { items: NavItem[]; pathname: string }) {
+function Sidebar({ items, pathname, badges }: { items: NavItem[]; pathname: string; badges: Record<string, number> }) {
   return (
     <aside
       className="fixed inset-y-0 left-0 z-40 hidden w-20 flex-col border-r-2 bg-card md:flex lg:w-64"
@@ -81,19 +84,36 @@ function Sidebar({ items, pathname }: { items: NavItem[]; pathname: string }) {
             const active = isNavActive(pathname, item, items);
             const style = CATEGORY_STYLES[item.category];
             const Icon = item.icon;
+            const badge = badges[item.href] ?? 0;
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  title={item.label}
+                  title={badge ? `${item.label} (${badge})` : item.label}
                   className={cn(
                     "group flex items-center justify-center gap-3 rounded-2xl border-2 border-transparent px-3 py-2.5 text-[0.9375rem] font-bold transition-colors lg:justify-start",
                     active ? cn(style.activeBg, style.border) : "hover:bg-muted",
                   )}
                 >
-                  <Icon aria-hidden="true" className={cn("size-6 shrink-0", style.text)} strokeWidth={2.25} />
+                  <span className="relative flex shrink-0">
+                    <Icon aria-hidden="true" className={cn("size-6", style.text)} strokeWidth={2.25} />
+                    {badge ? (
+                      <span aria-hidden="true" className="absolute -right-1 -top-1 size-2.5 rounded-full bg-danger ring-2 ring-card lg:hidden" />
+                    ) : null}
+                  </span>
                   <span className="sr-only lg:not-sr-only">{item.label}</span>
+                  {badge ? (
+                    <>
+                      <span
+                        aria-hidden="true"
+                        className="ml-auto hidden rounded-full bg-komunitas-solid px-2 py-0.5 text-xs font-extrabold text-white lg:inline"
+                      >
+                        {badge > 99 ? "99+" : badge}
+                      </span>
+                      <span className="sr-only">, {badge} menunggu</span>
+                    </>
+                  ) : null}
                 </Link>
               </li>
             );

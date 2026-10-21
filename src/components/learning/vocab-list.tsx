@@ -32,6 +32,7 @@ export function VocabList({ items, strength }: { items: VocabularyItem[]; streng
                   <span className="truncate text-lg font-extrabold">{v.word}</span>
                   {v.speech_level ? <Badge variant="budaya">{v.speech_level}</Badge> : null}
                   {v.peran === "varian" ? <Badge variant="muted">padanan</Badge> : null}
+                  {v.contributor?.username ? <Badge variant="komunitas">kontribusi</Badge> : null}
                 </span>
                 <span className="block truncate text-sm text-muted-foreground">{v.meaning_id}</span>
                 {v.meaning_en ? (
@@ -107,6 +108,14 @@ export function VocabList({ items, strength }: { items: VocabularyItem[]; streng
                     )}
                   </dd>
                 </div>
+                {selected.contributor?.username ? (
+                  <div>
+                    <dt className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Kontributor</dt>
+                    <dd className="mt-1 text-sm">
+                      Diusulkan oleh <span className="font-bold">@{selected.contributor.username}</span> dan disetujui moderator.
+                    </dd>
+                  </div>
+                ) : null}
                 <div>
                   <dt className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Penguasaanmu</dt>
                   <dd className="mt-1 flex items-center gap-2">

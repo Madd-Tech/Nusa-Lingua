@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { getProfile, getUserLanguages } from "@/lib/queries/progress";
+import { countActionablePending } from "@/lib/queries/moderation";
 import { ACTIVE_LANGUAGE_COOKIE, resolveActiveLanguage } from "@/lib/active-language";
 import { todayJakarta } from "@/lib/utils";
 
@@ -16,6 +17,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     getUserLanguages(supabase, user.id).catch(() => []),
   ]);
   const active = resolveActiveLanguage(userLanguages, cookies().get(ACTIVE_LANGUAGE_COOKIE)?.value);
+  const isModerator = profile?.role === "moderator" || profile?.role === "admin";
+  const pendingReviews = isModerator ? await countActionablePending(supabase, user.id).catch(() => 0) : 0;
 
   return (
     <AppShell
@@ -31,6 +34,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       }}
       languages={userLanguages.map((ul) => ({ code: ul.language.code, name: ul.language.name, icon_url: ul.language.icon_url }))}
       activeLanguageCode={active?.language.code ?? null}
+      badges={pendingReviews ? { "/moderasi": pendingReviews } : undefined}
     >
       {children}
     </AppShell>
