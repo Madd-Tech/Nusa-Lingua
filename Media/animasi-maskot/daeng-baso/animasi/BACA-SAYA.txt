@@ -1,0 +1,5 @@
+Animasi Daeng Baso AI (SVG animasi, latar transparan, tanpa teks)
+Pakai di HTML:  <img src="berlayar.svg" width="240" alt="">
+Animasi berulang otomatis dan berhenti bila pengguna mengaktifkan "reduce motion".
+Bayangan lantai tipis ikut di tiap file (hapus <ellipse> pertama bila tidak diperlukan).
+Balon bicara tanpa teks sengaja dihilangkan; buat balon chat di HTML/CSS.

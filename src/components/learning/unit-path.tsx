@@ -98,7 +98,7 @@ function LessonNode({ lesson, mascot, href }: { lesson: PathLesson; mascot: Lear
   return (
     <>
       {lesson.state === "current" ? (
-        <div className="mb-1 flex items-end gap-1">
+        <div className="mb-1 flex -translate-x-[2.125rem] items-end gap-1">
           <AnimatedMascot mascot={mascot.id} pose={mascot.poses.idle} className="size-16 shrink-0" />
           <span
             aria-hidden="true"
