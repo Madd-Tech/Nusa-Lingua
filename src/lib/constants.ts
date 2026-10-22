@@ -20,6 +20,11 @@ export function articleCategoryLabel(value: string) {
   return ARTICLE_CATEGORIES.find((c) => c.value === value)?.label ?? value;
 }
 
+export const GENDER_OPTIONS: { value: Enums<"user_gender">; label: string }[] = [
+  { value: "male", label: "Laki-laki" },
+  { value: "female", label: "Perempuan" },
+];
+
 export const UNIT_LEVEL_LABEL: Record<Enums<"unit_level">, string> = {
   pemula: "Pemula",
   menengah: "Menengah",

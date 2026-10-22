@@ -51,9 +51,16 @@ export const usernameSchema = z
   .max(20, "Username maksimal 20 karakter")
   .regex(/^[a-z0-9_]+$/, "Hanya huruf kecil, angka, dan garis bawah (_)");
 
+/** Dipakai asisten AI untuk memilih panggilan daerah yang sesuai (lihat src/lib/user-address.ts). */
+export const genderSchema = z.enum(["male", "female"], {
+  required_error: "Pilih jenis kelamin",
+  invalid_type_error: "Pilih jenis kelamin",
+});
+
 export const onboardingSchema = z.object({
   username: usernameSchema,
   fullName: z.string().trim().min(2, "Nama minimal 2 karakter").max(80, "Nama terlalu panjang"),
+  gender: genderSchema,
   avatarUrl: z.string().nullable(),
   /** 0 = belum memilih (opsional). */
   homeRegionId: z.coerce.number().int().nonnegative(),
@@ -63,6 +70,8 @@ export const onboardingSchema = z.object({
 export const profileSettingsSchema = z.object({
   username: usernameSchema,
   fullName: z.string().trim().min(2, "Nama minimal 2 karakter").max(80, "Nama terlalu panjang"),
+  /** null = akun lama yang belum mengisi; asisten memakai sapaan netral. */
+  gender: genderSchema.nullable(),
   avatarUrl: z.string().nullable(),
   homeRegionId: z.coerce.number().int().nonnegative(),
 });

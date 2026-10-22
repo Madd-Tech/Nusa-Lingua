@@ -3,6 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BILINGUAL_FORMAT_INSTRUCTION } from "@/lib/bilingual";
+import { addressInstruction } from "@/lib/user-address";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,12 +48,16 @@ export async function POST(req: NextRequest) {
   if ((count ?? 0) >= DAILY_LIMIT) return new NextResponse("rate limited", { status: 429 });
 
   // system_prompt hanya terjangkau service role (ai_personas tertutup untuk client).
+  // Gender pengguna menentukan panggilan persona (mis. "Lae" / "Ito" di Batak Toba).
   const admin = createAdminClient();
-  const { data: persona } = await admin
-    .from("ai_personas")
-    .select("system_prompt")
-    .eq("id", session.persona_id)
-    .maybeSingle();
+  const [{ data: persona }, { data: profile }] = await Promise.all([
+    admin
+      .from("ai_personas")
+      .select("system_prompt, address_male, address_female")
+      .eq("id", session.persona_id)
+      .maybeSingle(),
+    supabase.from("profiles").select("gender").eq("id", user.id).maybeSingle(),
+  ]);
   if (!persona) return new NextResponse("persona not found", { status: 500 });
 
   // Riwayat sebelumnya (sebelum pesan baru ini).
@@ -75,7 +80,12 @@ export async function POST(req: NextRequest) {
   // Mulai streaming dari Gemini. Error awal (key salah / kuota habis / model tidak ada) → status rapi.
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
   // Balasan dwibahasa: teks daerah + penanda + terjemahan (lihat src/lib/bilingual.ts).
-  const systemInstruction = `${persona.system_prompt}\n\n${BILINGUAL_FORMAT_INSTRUCTION}`;
+  // Aturan format tetap paling akhir karena ia mengesampingkan aturan terjemahan di atasnya.
+  const systemInstruction = [
+    persona.system_prompt,
+    addressInstruction(profile?.gender ?? null, persona),
+    BILINGUAL_FORMAT_INSTRUCTION,
+  ].join("\n\n");
   const start = (model: string) =>
     ai.models.generateContentStream({ model, contents, config: { systemInstruction, temperature: 0.7 } });
 

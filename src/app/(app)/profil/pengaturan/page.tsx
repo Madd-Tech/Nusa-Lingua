@@ -27,6 +27,7 @@ export default async function PengaturanPage() {
         defaults={{
           fullName: profile?.full_name ?? "",
           username: profile?.username ?? "",
+          gender: profile?.gender ?? null,
           avatarUrl: profile?.avatar_url ?? null,
           homeRegionId: profile?.home_region_id ?? 0,
         }}

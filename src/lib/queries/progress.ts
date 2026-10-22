@@ -3,7 +3,7 @@ import { must } from "./_shared";
 import { startOfTodayJakartaISO } from "@/lib/utils";
 
 export const PROFILE_FIELDS =
-  "id, username, full_name, avatar_url, home_region_id, xp_total, current_streak, longest_streak, last_active_date, hearts, role, created_at" as const;
+  "id, username, full_name, avatar_url, home_region_id, xp_total, current_streak, longest_streak, last_active_date, hearts, role, gender, created_at" as const;
 
 export async function getProfile(db: DB, userId: string) {
   return must("Gagal memuat profil", await db.from("profiles").select(PROFILE_FIELDS).eq("id", userId).maybeSingle());

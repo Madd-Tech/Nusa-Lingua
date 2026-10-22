@@ -435,6 +435,7 @@ export type Database = {
           last_active_date: string | null;
           hearts: number;
           role: Database["public"]["Enums"]["user_role"];
+          gender: Database["public"]["Enums"]["user_gender"] | null;
           created_at: string;
         };
         Insert: {
@@ -449,6 +450,7 @@ export type Database = {
           last_active_date?: string | null;
           hearts?: number;
           role?: Database["public"]["Enums"]["user_role"];
+          gender?: Database["public"]["Enums"]["user_gender"] | null;
           created_at?: string;
         };
         Update: {
@@ -463,6 +465,7 @@ export type Database = {
           last_active_date?: string | null;
           hearts?: number;
           role?: Database["public"]["Enums"]["user_role"];
+          gender?: Database["public"]["Enums"]["user_gender"] | null;
           created_at?: string;
         };
         Relationships: [
@@ -664,6 +667,8 @@ export type Database = {
           description: string | null;
           avatar_url: string | null;
           system_prompt: string;
+          address_male: string | null;
+          address_female: string | null;
         };
         Insert: {
           id?: number;
@@ -672,6 +677,8 @@ export type Database = {
           description?: string | null;
           avatar_url?: string | null;
           system_prompt: string;
+          address_male?: string | null;
+          address_female?: string | null;
         };
         Update: {
           id?: number;
@@ -680,6 +687,8 @@ export type Database = {
           description?: string | null;
           avatar_url?: string | null;
           system_prompt?: string;
+          address_male?: string | null;
+          address_female?: string | null;
         };
         Relationships: [
           {
@@ -1139,6 +1148,7 @@ export type Database = {
         | "aksara"
         | "lainnya";
       user_role: "user" | "moderator" | "admin";
+      user_gender: "male" | "female";
       lesson_status: "in_progress" | "completed";
       submission_status: "pending" | "approved" | "rejected";
       chat_role: "user" | "assistant";

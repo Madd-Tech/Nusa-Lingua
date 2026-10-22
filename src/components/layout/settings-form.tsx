@@ -14,6 +14,7 @@ import { SelectFilter } from "@/components/ui/select-filter";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AvatarPicker } from "@/components/layout/avatar-picker";
+import { GenderPicker } from "@/components/layout/gender-picker";
 import { UsernameStatusText } from "@/components/layout/username-status";
 import { PasswordInput } from "@/components/auth/password-input";
 import { PasswordStrength } from "@/components/auth/password-strength";
@@ -71,6 +72,7 @@ function ProfileSection({
       .update({
         username: values.username,
         full_name: values.fullName,
+        gender: values.gender,
         avatar_url: values.avatarUrl,
         home_region_id: values.homeRegionId || null,
       })
@@ -111,6 +113,20 @@ function ProfileSection({
                 <FormControl>
                   <Input autoComplete="name" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Jenis kelamin</FormLabel>
+                <FormControl>
+                  <GenderPicker aria-label="Jenis kelamin" value={field.value} onChange={field.onChange} />
+                </FormControl>
+                <FormDescription>Dipakai asisten AI untuk memanggilmu dengan sapaan daerah yang pas.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

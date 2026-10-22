@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AvatarPicker } from "@/components/layout/avatar-picker";
+import { GenderPicker } from "@/components/layout/gender-picker";
 import { UsernameStatusText } from "@/components/layout/username-status";
 import { LanguageIcon } from "@/components/learning/language-icon";
 import { useUsernameCheck } from "@/hooks/use-username-check";
@@ -63,7 +64,7 @@ export function OnboardingForm({
 
   const goNext = async () => {
     if (step === 0) {
-      const ok = await form.trigger(["fullName", "username"]);
+      const ok = await form.trigger(["fullName", "username", "gender"]);
       if (!ok) return;
       if (usernameStatus === "taken") {
         form.setError("username", { message: "Username ini sudah dipakai. Coba yang lain." });
@@ -84,6 +85,7 @@ export function OnboardingForm({
       .update({
         username: values.username,
         full_name: values.fullName,
+        gender: values.gender,
         avatar_url: values.avatarUrl,
         home_region_id: values.homeRegionId || null,
       })
@@ -184,6 +186,20 @@ export function OnboardingForm({
                       <FormControl>
                         <Input autoComplete="name" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Jenis kelamin</FormLabel>
+                      <FormControl>
+                        <GenderPicker aria-label="Jenis kelamin" value={field.value} onChange={field.onChange} />
+                      </FormControl>
+                      <FormDescription>Agar asisten AI memanggilmu dengan sapaan daerah yang pas, mis. “Mas” atau “Mbak”.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
