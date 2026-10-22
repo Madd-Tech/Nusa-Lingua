@@ -17,3 +17,20 @@ export async function getMySubmissions(db: DB, userId: string) {
 }
 
 export type Submission = Awaited<ReturnType<typeof getMySubmissions>>[number];
+
+/** Laporan kesalahan yang dikirim user ini (terbaru dulu). */
+export async function getMyReports(db: DB, userId: string) {
+  return must(
+    "Gagal memuat laporanmu",
+    await db
+      .from("content_reports")
+      .select(
+        "id, target_type, reason, message, status, resolution_note, created_at, resolved_at, vocabulary:vocabularies(word, language:languages(code, name)), article:cultural_articles(title, slug)",
+      )
+      .eq("reporter_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(30),
+  );
+}
+
+export type MyReport = Awaited<ReturnType<typeof getMyReports>>[number];

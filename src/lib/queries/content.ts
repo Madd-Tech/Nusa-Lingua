@@ -95,6 +95,8 @@ export async function getVocabularies(
       { count: "exact" },
     )
     .eq("language_id", languageId)
+    // Moderator juga bisa membaca kata tersembunyi (RLS); kamus publik selalu menyaringnya.
+    .eq("is_hidden", false)
     .order("word")
     .range(from, from + VOCAB_PAGE_SIZE - 1);
 
@@ -114,7 +116,12 @@ export type VocabularyItem = Awaited<ReturnType<typeof getVocabularies>>["items"
 export async function getVocabFacets(db: DB, languageId: number) {
   const rows = must(
     "Gagal memuat filter kamus",
-    await db.from("vocabularies").select("category, speech_level").eq("language_id", languageId).limit(2000),
+    await db
+      .from("vocabularies")
+      .select("category, speech_level")
+      .eq("language_id", languageId)
+      .eq("is_hidden", false)
+      .limit(2000),
   );
   const uniq = (values: (string | null)[]) =>
     Array.from(new Set(values.filter((v): v is string => !!v))).sort((a, b) => a.localeCompare(b, "id"));

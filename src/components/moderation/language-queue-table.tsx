@@ -22,6 +22,7 @@ export function LanguageQueueTable({ rows, showModerators }: { rows: OverviewRow
               <th scope="col" className="px-4 py-3">Paling lama</th>
               <th scope="col" className="px-4 py-3">Ditinjau 7 hari</th>
               <th scope="col" className="px-4 py-3">Artikel ditinjau</th>
+              <th scope="col" className="px-4 py-3">Laporan</th>
               {showModerators ? <th scope="col" className="px-4 py-3">Moderator</th> : null}
               <th scope="col" className="px-4 py-3"><span className="sr-only">Aksi</span></th>
             </tr>
@@ -44,6 +45,18 @@ export function LanguageQueueTable({ rows, showModerators }: { rows: OverviewRow
                       className="font-bold text-budaya-deep hover:underline dark:text-budaya"
                     >
                       {formatNumber(r.articles_review)}
+                    </Link>
+                  ) : (
+                    <span className="text-muted-foreground">0</span>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  {r.open_reports ? (
+                    <Link
+                      href={`/moderasi/laporan?bahasa=${r.language_code}`}
+                      className="font-bold text-danger-700 hover:underline dark:text-danger"
+                    >
+                      {formatNumber(r.open_reports)}
                     </Link>
                   ) : (
                     <span className="text-muted-foreground">0</span>
@@ -76,6 +89,7 @@ export function LanguageQueueTable({ rows, showModerators }: { rows: OverviewRow
                 {r.oldest_pending_at ? `Tertua ${formatRelative(r.oldest_pending_at)} · ` : ""}
                 Ditinjau 7 hari: {reviewed(r)}
                 {r.articles_review ? ` · ${formatNumber(r.articles_review)} artikel menunggu` : ""}
+                {r.open_reports ? ` · ${formatNumber(r.open_reports)} dilaporkan` : ""}
               </p>
               {showModerators && !r.moderator_count ? (
                 <Badge variant="danger" className="mt-1">

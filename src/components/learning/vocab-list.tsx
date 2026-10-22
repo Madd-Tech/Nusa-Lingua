@@ -1,18 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, PencilLine } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { RemoteImage } from "@/components/ui/remote-image";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { AudioButton } from "@/components/learning/audio-button";
 import { StrengthDots } from "@/components/learning/strength-dots";
+import { ReportButton } from "@/components/community/report-button";
+import { VocabEditDialog } from "@/components/moderation/vocab-edit-dialog";
 import type { VocabularyItem } from "@/lib/queries/content";
 import { strengthLabel } from "@/lib/srs";
 
-/** Daftar kosakata + detail kata dalam Sheet. */
-export function VocabList({ items, strength }: { items: VocabularyItem[]; strength: Record<number, number> }) {
+/** Daftar kosakata + detail kata dalam Sheet. `canModerate` menampilkan tombol Edit untuk moderator bahasa ini. */
+export function VocabList({
+  items,
+  strength,
+  canModerate = false,
+}: {
+  items: VocabularyItem[];
+  strength: Record<number, number>;
+  canModerate?: boolean;
+}) {
   const [selected, setSelected] = useState<VocabularyItem | null>(null);
+  const [editing, setEditing] = useState<VocabularyItem | null>(null);
   const s = selected ? strength[selected.id] ?? null : null;
 
   return (
@@ -124,10 +136,32 @@ export function VocabList({ items, strength }: { items: VocabularyItem[]; streng
                   </dd>
                 </div>
               </dl>
+              <div className="flex flex-wrap gap-2 border-t-2 pt-4">
+                <ReportButton targetType="vocabulary" targetId={selected.id} targetLabel={selected.word} />
+                {canModerate ? (
+                  <Button size="sm" variant="outline" onClick={() => setEditing(selected)}>
+                    <PencilLine aria-hidden="true" /> Edit kata
+                  </Button>
+                ) : null}
+              </div>
             </>
           ) : null}
         </SheetContent>
       </Sheet>
+
+      {canModerate ? (
+        <VocabEditDialog
+          vocab={editing}
+          open={!!editing}
+          onOpenChange={(o) => !o && setEditing(null)}
+          warning={
+            editing?.peran === "inti"
+              ? "Kata ini materi pelajaran. Soal lesson yang memakainya tidak ikut berubah."
+              : undefined
+          }
+          onSaved={() => setSelected(null)}
+        />
+      ) : null}
     </>
   );
 }

@@ -170,6 +170,10 @@ export type Database = {
           peran: string;
           source: string | null;
           contributed_by: string | null;
+          is_hidden: boolean;
+          hidden_reason: string | null;
+          updated_at: string | null;
+          updated_by: string | null;
         };
         Insert: {
           id?: number;
@@ -187,6 +191,10 @@ export type Database = {
           peran?: string;
           source?: string | null;
           contributed_by?: string | null;
+          is_hidden?: boolean;
+          hidden_reason?: string | null;
+          updated_at?: string | null;
+          updated_by?: string | null;
         };
         Update: {
           id?: number;
@@ -204,11 +212,22 @@ export type Database = {
           peran?: string;
           source?: string | null;
           contributed_by?: string | null;
+          is_hidden?: boolean;
+          hidden_reason?: string | null;
+          updated_at?: string | null;
+          updated_by?: string | null;
         };
         Relationships: [
           {
             foreignKeyName: "vocabularies_contributed_by_fkey";
             columns: ["contributed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "vocabularies_updated_by_fkey";
+            columns: ["updated_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -886,6 +905,90 @@ export type Database = {
           },
         ];
       };
+      content_reports: {
+        Row: {
+          id: number;
+          reporter_id: string;
+          target_type: Database["public"]["Enums"]["report_target"];
+          vocabulary_id: number | null;
+          article_id: number | null;
+          language_id: number | null;
+          reason: Database["public"]["Enums"]["report_reason"];
+          message: string | null;
+          status: Database["public"]["Enums"]["report_status"];
+          resolution_note: string | null;
+          resolved_by: string | null;
+          resolved_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          reporter_id?: string;
+          target_type: Database["public"]["Enums"]["report_target"];
+          vocabulary_id?: number | null;
+          article_id?: number | null;
+          language_id?: number | null;
+          reason: Database["public"]["Enums"]["report_reason"];
+          message?: string | null;
+          status?: Database["public"]["Enums"]["report_status"];
+          resolution_note?: string | null;
+          resolved_by?: string | null;
+          resolved_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          reporter_id?: string;
+          target_type?: Database["public"]["Enums"]["report_target"];
+          vocabulary_id?: number | null;
+          article_id?: number | null;
+          language_id?: number | null;
+          reason?: Database["public"]["Enums"]["report_reason"];
+          message?: string | null;
+          status?: Database["public"]["Enums"]["report_status"];
+          resolution_note?: string | null;
+          resolved_by?: string | null;
+          resolved_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "content_reports_reporter_id_fkey";
+            columns: ["reporter_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "content_reports_vocabulary_id_fkey";
+            columns: ["vocabulary_id"];
+            isOneToOne: false;
+            referencedRelation: "vocabularies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "content_reports_article_id_fkey";
+            columns: ["article_id"];
+            isOneToOne: false;
+            referencedRelation: "cultural_articles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "content_reports_language_id_fkey";
+            columns: ["language_id"];
+            isOneToOne: false;
+            referencedRelation: "languages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "content_reports_resolved_by_fkey";
+            columns: ["resolved_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       weekly_leaderboard: {
@@ -975,10 +1078,51 @@ export type Database = {
           moderator_count: number;
           articles_review: number;
           articles_draft: number;
+          open_reports: number;
         }[];
       };
       get_my_moderation_stats: {
         Args: { p_days?: number };
+        Returns: Json;
+      };
+      get_report_queue: {
+        Args: {
+          p_status?: Database["public"]["Enums"]["report_status"];
+          p_language_id?: number | null;
+          p_target_type?: Database["public"]["Enums"]["report_target"] | null;
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: {
+          target_type: Database["public"]["Enums"]["report_target"];
+          target_id: number;
+          language_id: number | null;
+          language_name: string | null;
+          language_code: string | null;
+          title: string | null;
+          subtitle: string | null;
+          article_slug: string | null;
+          article_status: Database["public"]["Enums"]["article_status"] | null;
+          vocab_hidden: boolean;
+          vocab_uses: number;
+          report_count: number;
+          reasons: Database["public"]["Enums"]["report_reason"][];
+          first_reported_at: string;
+          last_reported_at: string;
+          reports: Json;
+          resolution_note: string | null;
+          resolved_by_username: string | null;
+          resolved_at: string | null;
+          total_count: number;
+        }[];
+      };
+      resolve_reports: {
+        Args: {
+          p_target_type: Database["public"]["Enums"]["report_target"];
+          p_target_id: number;
+          p_status: Database["public"]["Enums"]["report_status"];
+          p_note?: string | null;
+        };
         Returns: Json;
       };
     };
@@ -1007,6 +1151,9 @@ export type Database = {
         | "audio_buruk"
         | "lainnya";
       article_status: "draft" | "review" | "published" | "archived";
+      report_target: "vocabulary" | "article";
+      report_reason: "ejaan" | "arti_keliru" | "tingkat_tutur" | "audio" | "fakta_budaya" | "tidak_pantas" | "lainnya";
+      report_status: "open" | "resolved" | "dismissed";
       moderation_action:
         | "submission_approved"
         | "submission_rejected"

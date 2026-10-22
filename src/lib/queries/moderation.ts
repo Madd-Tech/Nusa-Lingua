@@ -1,5 +1,5 @@
 import type { DB } from "./_shared";
-import { must } from "./_shared";
+import { must, sanitizeSearch } from "./_shared";
 import type { Enums } from "@/types/database";
 
 export const QUEUE_PAGE_SIZE = 20;
@@ -141,6 +141,13 @@ export type LogDetail = {
   from?: Enums<"article_status">;
   to?: Enums<"article_status">;
   fields?: string[];
+  /** Entri kamus (vocab_updated): nilai kolom yang berubah. */
+  before?: Record<string, string | null>;
+  after?: Record<string, string | null>;
+  /** Entri laporan. */
+  target_type?: Enums<"report_target">;
+  target_id?: number;
+  count?: number;
 };
 
 export type LogEntry = Awaited<ReturnType<typeof getModerationLog>>["items"][number];
@@ -216,6 +223,115 @@ export async function getScopeLanguagesWithRegion(db: DB, languageIds: number[])
     await db.from("languages").select("id, name, code, region_id").in("id", languageIds).order("name"),
   );
 }
+
+// ---------------------------------------------------------------------
+// Laporan pengguna
+// ---------------------------------------------------------------------
+
+export const REPORT_PAGE_SIZE = 20;
+
+export type ReportEntry = {
+  id: number;
+  reason: Enums<"report_reason">;
+  message: string | null;
+  reporter: string | null;
+  created_at: string;
+};
+
+/** Laporan dikelompokkan per target (RPC get_report_queue sudah membatasi ke bahasa yang dimoderasi). */
+export async function getReportQueue(
+  db: DB,
+  opts: {
+    status: Enums<"report_status">;
+    languageId?: number | null;
+    targetType?: Enums<"report_target"> | null;
+    page?: number;
+  },
+) {
+  const page = Math.max(1, opts.page ?? 1);
+  const rows = must(
+    "Gagal memuat antrean laporan",
+    await db.rpc("get_report_queue", {
+      p_status: opts.status,
+      p_language_id: opts.languageId ?? null,
+      p_target_type: opts.targetType ?? null,
+      p_limit: REPORT_PAGE_SIZE,
+      p_offset: (page - 1) * REPORT_PAGE_SIZE,
+    }),
+  );
+  const items = rows.map((r) => ({ ...r, reports: (r.reports ?? []) as unknown as ReportEntry[] }));
+  return { items, total: Number(rows[0]?.total_count ?? 0), page, pageSize: REPORT_PAGE_SIZE };
+}
+
+export type ReportGroup = Awaited<ReturnType<typeof getReportQueue>>["items"][number];
+
+/** Jumlah target per status laporan (untuk tab). */
+export async function countReportTargets(
+  db: DB,
+  opts: { languageId?: number | null; targetType?: Enums<"report_target"> | null },
+) {
+  const statuses: Enums<"report_status">[] = ["open", "resolved", "dismissed"];
+  const counts = await Promise.all(
+    statuses.map(async (status) => {
+      const res = await db.rpc("get_report_queue", {
+        p_status: status,
+        p_language_id: opts.languageId ?? null,
+        p_target_type: opts.targetType ?? null,
+        p_limit: 1,
+        p_offset: 0,
+      });
+      return [status, Number(res.data?.[0]?.total_count ?? 0)] as const;
+    }),
+  );
+  return Object.fromEntries(counts) as Record<Enums<"report_status">, number>;
+}
+
+/** Laporan terbuka yang bisa ditindak user ini (milik sendiri tidak dihitung). */
+export async function countActionableReports(db: DB, userId: string) {
+  const res = await db
+    .from("content_reports")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "open")
+    .neq("reporter_id", userId);
+  return res.count ?? 0;
+}
+
+// ---------------------------------------------------------------------
+// Kelola kamus
+// ---------------------------------------------------------------------
+
+export const MOD_VOCAB_PAGE_SIZE = 30;
+
+export type VocabFilter = "semua" | "tersembunyi" | "kontribusi";
+
+/** Kosakata untuk moderator (termasuk yang tersembunyi), dengan jumlah soal yang memakainya. */
+export async function getModerationVocab(
+  db: DB,
+  opts: { languageId: number; q?: string; filter?: VocabFilter; page?: number },
+) {
+  const page = Math.max(1, opts.page ?? 1);
+  const from = (page - 1) * MOD_VOCAB_PAGE_SIZE;
+  let query = db
+    .from("vocabularies")
+    .select(
+      "id, language_id, word, meaning_id, meaning_en, speech_level, pronunciation, example_sentence, example_meaning, category, peran, source, is_hidden, hidden_reason, updated_at, questions(count)",
+      { count: "exact" },
+    )
+    .eq("language_id", opts.languageId)
+    .order("word")
+    .range(from, from + MOD_VOCAB_PAGE_SIZE - 1);
+  const q = sanitizeSearch(opts.q);
+  if (q) query = query.or(`word.ilike.%${q}%,meaning_id.ilike.%${q}%`);
+  if (opts.filter === "tersembunyi") query = query.eq("is_hidden", true);
+  if (opts.filter === "kontribusi") query = query.eq("source", "kontribusi");
+
+  const res = await query;
+  const rows = must("Gagal memuat kosakata", res);
+  const items = rows.map(({ questions, ...v }) => ({ ...v, uses: questions?.[0]?.count ?? 0 }));
+  return { items, total: res.count ?? 0, page, pageSize: MOD_VOCAB_PAGE_SIZE };
+}
+
+export type ModerationVocab = Awaited<ReturnType<typeof getModerationVocab>>["items"][number];
 
 /** Khusus admin: moderator beserta bahasa & aktivitas tinjauan 30 hari terakhir. */
 export async function getModeratorTeam(db: DB) {

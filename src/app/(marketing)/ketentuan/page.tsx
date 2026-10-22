@@ -27,7 +27,11 @@ export default function KetentuanPage() {
           Jawaban asisten AI dihasilkan mesin dan bisa keliru. Jangan membagikan informasi pribadi yang sensitif dalam obrolan.
         </p>
         <h2>Perilaku pengguna</h2>
-        <p>Gunakan bahasa yang sopan. Konten yang menyinggung SARA atau melanggar hukum akan dihapus.</p>
+        <p>
+          Gunakan bahasa yang sopan. Konten yang menyinggung SARA atau melanggar hukum akan dihapus. Jika menemukan kesalahan pada
+          kamus atau artikel, gunakan tombol &ldquo;Laporkan kesalahan&rdquo;; laporanmu ditinjau moderator dan hasilnya tampil di
+          halaman Kontribusi.
+        </p>
         <h2 id="sumber-data">Sumber data</h2>
         <p>
           Sebagian besar kosakata, lesson, dan soal untuk bahasa Aceh, Bali, Banjar, Batak Toba, Bugis, Dayak Ngaju, Jawa, Madura,

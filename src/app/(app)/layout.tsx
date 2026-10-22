@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { getProfile, getUserLanguages } from "@/lib/queries/progress";
-import { countActionablePending } from "@/lib/queries/moderation";
+import { countActionablePending, countActionableReports } from "@/lib/queries/moderation";
 import { ACTIVE_LANGUAGE_COOKIE, resolveActiveLanguage } from "@/lib/active-language";
 import { getLearningMascot } from "@/lib/learning-mascots";
 import { resolvePose } from "@/lib/mascot-poses";
@@ -21,7 +21,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const activeCode = cookies().get(ACTIVE_LANGUAGE_COOKIE)?.value;
   const active = resolveActiveLanguage(userLanguages, activeCode);
   const isModerator = profile?.role === "moderator" || profile?.role === "admin";
-  const pendingReviews = isModerator ? await countActionablePending(supabase, user.id).catch(() => 0) : 0;
+  const pendingReviews = isModerator
+    ? (
+        await Promise.all([
+          countActionablePending(supabase, user.id).catch(() => 0),
+          countActionableReports(supabase, user.id).catch(() => 0),
+        ])
+      ).reduce((a, b) => a + b, 0)
+    : 0;
 
   // Preload SVG maskot yang dipakai `PageLoading` supaya animasi tidak diawali
   // kotak placeholder saat navigasi pertama.

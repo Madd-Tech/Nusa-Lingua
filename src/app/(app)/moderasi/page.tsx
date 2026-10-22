@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCheck, Inbox, Newspaper, ShieldAlert, Timer } from "lucide-react";
+import { ArrowRight, CheckCheck, Flag, Inbox, Newspaper, ShieldAlert } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { IlloCheck } from "@/components/illustrations";
 import { StatCard } from "@/components/gamification/stat-card";
@@ -36,6 +36,8 @@ export default async function ModerasiDashboardPage() {
   const unmoderated = overview.filter((r) => r.moderator_count === 0);
   const articlesReview = overview.reduce((sum, r) => sum + r.articles_review, 0);
   const articlesDraft = overview.reduce((sum, r) => sum + r.articles_draft, 0);
+  const openReports = overview.reduce((sum, r) => sum + r.open_reports, 0);
+  const languagesWithReports = overview.filter((r) => r.open_reports > 0).length;
   const languageNames = new Map(scope.map((l) => [l.id, l.name]));
 
   return (
@@ -69,14 +71,16 @@ export default async function ModerasiDashboardPage() {
               iconClassName="text-budaya"
             />
           </Link>
-          <StatCard
-            icon={CheckCheck}
-            label="Kamu tinjau (7 hari)"
-            value={formatNumber(mine.reviewed)}
-            hint={mine.reviewed ? `${Math.round((mine.approved / mine.reviewed) * 100)}% disetujui` : "Belum ada tinjauan"}
-            tileClassName="bg-success/12"
-            iconClassName="text-success-700 dark:text-success"
-          />
+          <Link href="/moderasi/laporan" className={tileLink}>
+            <StatCard
+              icon={Flag}
+              label="Laporan terbuka"
+              value={formatNumber(openReports)}
+              hint={openReports ? `kata/artikel di ${languagesWithReports} bahasa` : "Tidak ada laporan"}
+              tileClassName="bg-danger/10"
+              iconClassName="text-danger-700 dark:text-danger"
+            />
+          </Link>
           {isAdmin ? (
             <Link href="/moderasi/tim" className={tileLink}>
               <StatCard
@@ -84,18 +88,22 @@ export default async function ModerasiDashboardPage() {
                 label="Bahasa tanpa moderator"
                 value={formatNumber(unmoderated.length)}
                 hint={unmoderated.length ? "Hanya admin yang meninjau" : "Semua bahasa terjaga"}
-                tileClassName="bg-danger/10"
-                iconClassName="text-danger-700 dark:text-danger"
+                tileClassName="bg-secondary/20"
+                iconClassName="text-secondary-700 dark:text-secondary"
               />
             </Link>
           ) : (
             <StatCard
-              icon={Timer}
-              label="Rata-rata waktu tunggu"
-              value={mine.avg_wait_hours === null ? "—" : formatHours(mine.avg_wait_hours)}
-              hint="dari dikirim sampai kamu tinjau"
-              tileClassName="bg-asisten/12"
-              iconClassName="text-asisten"
+              icon={CheckCheck}
+              label="Kamu tinjau (7 hari)"
+              value={formatNumber(mine.reviewed)}
+              hint={
+                mine.reviewed
+                  ? `${Math.round((mine.approved / mine.reviewed) * 100)}% disetujui${mine.avg_wait_hours === null ? "" : ` · tunggu ±${formatHours(mine.avg_wait_hours)}`}`
+                  : "Belum ada tinjauan"
+              }
+              tileClassName="bg-success/12"
+              iconClassName="text-success-700 dark:text-success"
             />
           )}
         </div>

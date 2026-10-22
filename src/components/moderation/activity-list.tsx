@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, Check, Newspaper, UserMinus, UserPlus, X, type LucideIcon } from "lucide-react";
+import { Activity, Ban, BookA, Check, CheckCheck, Eye, EyeOff, Newspaper, UserMinus, UserPlus, X, type LucideIcon } from "lucide-react";
 import { UserAvatar } from "@/components/ui/avatar";
 import type { LogDetail, LogEntry } from "@/lib/queries/moderation";
 import { MODERATION_ACTION_LABEL, REJECT_REASON_LABEL } from "@/lib/constants";
@@ -15,6 +15,22 @@ const ACTION_ICON: Partial<Record<Enums<"moderation_action">, { icon: LucideIcon
   article_updated: { icon: Newspaper, tone: "bg-budaya/12 text-budaya" },
   article_status_changed: { icon: Newspaper, tone: "bg-budaya/12 text-budaya" },
   article_deleted: { icon: Newspaper, tone: "bg-budaya/12 text-budaya" },
+  vocab_updated: { icon: BookA, tone: "bg-belajar/12 text-belajar" },
+  vocab_hidden: { icon: EyeOff, tone: "bg-belajar/12 text-belajar" },
+  vocab_restored: { icon: Eye, tone: "bg-belajar/12 text-belajar" },
+  report_resolved: { icon: CheckCheck, tone: "bg-success/12 text-success-700 dark:text-success" },
+  report_dismissed: { icon: Ban, tone: "bg-muted text-muted-foreground" },
+};
+
+const VOCAB_FIELD_LABEL: Record<string, string> = {
+  word: "kata",
+  meaning_id: "arti",
+  meaning_en: "arti Inggris",
+  speech_level: "tingkat tutur",
+  pronunciation: "pengucapan",
+  example_sentence: "contoh",
+  example_meaning: "terjemah contoh",
+  category: "kategori",
 };
 
 /** "@budi {verb} “Judul”{suffix}" untuk entri artikel, tergantung transisi status. */
@@ -64,7 +80,18 @@ export function ActivityList({
                   <span className="font-bold">Sistem</span>
                 )}{" "}
                 {article ? article.verb : MODERATION_ACTION_LABEL[e.action]}{" "}
-                {article ? (
+                {e.target_type === "report" ? (
+                  <>
+                    {d.target_type === "article" && d.target_id ? (
+                      <Link href={`/moderasi/artikel/${d.target_id}`} className="font-bold hover:underline">
+                        “{d.title}”
+                      </Link>
+                    ) : (
+                      <span className="font-bold">“{d.title}”</span>
+                    )}
+                    {d.count ? <span className="text-muted-foreground"> ({d.count} laporan)</span> : null}
+                  </>
+                ) : article ? (
                   <>
                     {e.action === "article_deleted" ? (
                       <span className="font-bold">“{d.title}”</span>
@@ -92,6 +119,17 @@ export function ActivityList({
                 {d.edited ? <span className="text-muted-foreground"> (dengan perubahan)</span> : null}
                 {d.reason ? <span className="text-muted-foreground"> · {REJECT_REASON_LABEL[d.reason]}</span> : null}
               </p>
+              {e.action === "vocab_updated" && d.after ? (
+                <ul className="mt-0.5 space-y-0.5 text-muted-foreground">
+                  {Object.keys(d.after).map((k) => (
+                    <li key={k} className="break-words">
+                      {VOCAB_FIELD_LABEL[k] ?? k}: <span className="sr-only">dari </span>
+                      <span className="line-through">{d.before?.[k] ?? "—"}</span> <span aria-hidden="true">→</span>
+                      <span className="sr-only"> menjadi</span> {d.after?.[k] ?? "—"}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               {d.note ? <p className="mt-0.5 break-words italic text-muted-foreground">“{d.note}”</p> : null}
               <p className="mt-1 text-xs text-muted-foreground">
                 {e.language?.name ? `${e.language.name} · ` : null}

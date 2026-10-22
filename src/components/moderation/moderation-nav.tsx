@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { History, Inbox, LayoutDashboard, Newspaper, UsersRound, type LucideIcon } from "lucide-react";
+import { BookA, Flag, History, Inbox, LayoutDashboard, Newspaper, UsersRound, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TABS: { href: string; label: string; icon: LucideIcon; exact?: boolean; adminOnly?: boolean }[] = [
   { href: "/moderasi", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/moderasi/antrean", label: "Antrean usulan", icon: Inbox },
+  { href: "/moderasi/laporan", label: "Laporan", icon: Flag },
+  { href: "/moderasi/kamus", label: "Kamus", icon: BookA },
   { href: "/moderasi/artikel", label: "Artikel", icon: Newspaper },
   { href: "/moderasi/riwayat", label: "Riwayat", icon: History },
   { href: "/moderasi/tim", label: "Tim moderator", icon: UsersRound, adminOnly: true },

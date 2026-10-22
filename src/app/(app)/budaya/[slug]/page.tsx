@@ -9,6 +9,7 @@ import { RemoteImage } from "@/components/ui/remote-image";
 import { ArticleCard } from "@/components/culture/article-card";
 import { ArticleIllustration } from "@/components/culture/article-illustration";
 import { ArticleSources } from "@/components/culture/article-sources";
+import { ReportButton } from "@/components/community/report-button";
 import { MarkdownContent } from "@/components/culture/markdown-content";
 import { ReadTracker } from "@/components/culture/read-tracker";
 import { TableOfContents } from "@/components/culture/table-of-contents";
@@ -101,13 +102,16 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               )}
               {article.published_at ? ` · Terbit ${formatDate(article.published_at)}` : null}
             </p>
-            {canEdit ? (
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/moderasi/artikel/${article.id}`}>
-                  <PencilLine aria-hidden="true" /> Edit artikel
-                </Link>
-              </Button>
-            ) : null}
+            <div className="flex flex-wrap gap-2">
+              <ReportButton targetType="article" targetId={article.id} targetLabel={article.title} />
+              {canEdit ? (
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/moderasi/artikel/${article.id}`}>
+                    <PencilLine aria-hidden="true" /> Edit artikel
+                  </Link>
+                </Button>
+              ) : null}
+            </div>
           </div>
         </div>
       </header>

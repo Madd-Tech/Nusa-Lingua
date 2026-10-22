@@ -119,6 +119,36 @@ export const returnArticleSchema = z.object({
   note: z.string().trim().min(1, "Tulis catatan untuk penulis").max(500, "Catatan maksimal 500 karakter"),
 });
 
+export const vocabEditSchema = z.object({
+  word: z.string().trim().min(1, "Kata wajib diisi").max(80, "Kata maksimal 80 karakter"),
+  meaningId: z.string().trim().min(1, "Arti wajib diisi").max(200, "Arti maksimal 200 karakter"),
+  meaningEn: optionalText(200, "Arti bahasa Inggris"),
+  speechLevel: optionalText(40, "Tingkat tutur"),
+  pronunciation: optionalText(80, "Pengucapan"),
+  exampleSentence: optionalText(300, "Contoh kalimat"),
+  exampleMeaning: optionalText(300, "Terjemah contoh"),
+  category: optionalText(40, "Kategori"),
+});
+
+export const hideVocabSchema = z.object({
+  reason: z.string().trim().min(1, "Tulis alasan menyembunyikan kata ini").max(300, "Alasan maksimal 300 karakter"),
+});
+
+export const reportSchema = z
+  .object({
+    reason: z.enum(["ejaan", "arti_keliru", "tingkat_tutur", "audio", "fakta_budaya", "tidak_pantas", "lainnya"], {
+      required_error: "Pilih jenis kesalahan",
+      invalid_type_error: "Pilih jenis kesalahan",
+    }),
+    message: optionalText(500, "Keterangan"),
+  })
+  .refine((v) => v.reason !== "lainnya" || !!v.message?.trim(), {
+    message: "Jelaskan kesalahannya",
+    path: ["message"],
+  });
+
+export const resolveReportSchema = z.object({ note: optionalText(500, "Catatan") });
+
 /** Terjemahkan pesan error Supabase Auth ke Bahasa Indonesia yang ramah. */
 export function authErrorMessage(message: string | undefined | null) {
   const m = (message ?? "").toLowerCase();

@@ -8,10 +8,11 @@ import { SubmissionForm } from "@/components/community/submission-form";
 import { SubmissionStatus } from "@/components/community/submission-status";
 import { SubmissionFeedback } from "@/components/community/submission-feedback";
 import { CancelSubmissionButton } from "@/components/community/cancel-submission-button";
+import { MyReports } from "@/components/community/my-reports";
 import { AudioButton } from "@/components/learning/audio-button";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { getActiveLanguages } from "@/lib/queries/content";
-import { getMySubmissions } from "@/lib/queries/community";
+import { getMyReports, getMySubmissions } from "@/lib/queries/community";
 import { getProfile, getUserLanguages } from "@/lib/queries/progress";
 import { CONTRIBUTION_XP } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
@@ -21,11 +22,12 @@ export const metadata: Metadata = { title: "Kontribusi" };
 export default async function KontribusiPage() {
   const { supabase, user } = await getCurrentUser();
   const userId = user!.id;
-  const [languages, mine, submissions, profile] = await Promise.all([
+  const [languages, mine, submissions, profile, reports] = await Promise.all([
     getActiveLanguages(supabase),
     getUserLanguages(supabase, userId),
     getMySubmissions(supabase, userId),
     getProfile(supabase, userId),
+    getMyReports(supabase, userId),
   ]);
   const isModerator = profile?.role === "moderator" || profile?.role === "admin";
   const counts = {
@@ -144,6 +146,20 @@ export default async function KontribusiPage() {
           </>
         )}
       </section>
+
+      {reports.length ? (
+        <section aria-labelledby="laporan-heading" className="mt-10 space-y-3">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <h2 id="laporan-heading" className="text-xl">
+              Laporan saya
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {reports.filter((r) => r.status === "open").length} sedang diperiksa
+            </p>
+          </div>
+          <MyReports reports={reports} />
+        </section>
+      ) : null}
     </>
   );
 }

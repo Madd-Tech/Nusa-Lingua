@@ -66,6 +66,36 @@ export const ARTICLE_STATUS_LABEL = Object.fromEntries(ARTICLE_STATUSES.map((s) 
   string
 >;
 
+/** Alasan laporan & jenis konten yang relevan untuk tiap alasan. */
+export const REPORT_REASONS: { value: Enums<"report_reason">; label: string; targets: Enums<"report_target">[] }[] = [
+  { value: "ejaan", label: "Ejaan keliru", targets: ["vocabulary", "article"] },
+  { value: "arti_keliru", label: "Arti kurang tepat", targets: ["vocabulary"] },
+  { value: "tingkat_tutur", label: "Tingkat tutur keliru", targets: ["vocabulary"] },
+  { value: "audio", label: "Rekaman/pelafalan keliru", targets: ["vocabulary"] },
+  { value: "fakta_budaya", label: "Fakta budaya keliru", targets: ["article"] },
+  { value: "tidak_pantas", label: "Tidak pantas", targets: ["vocabulary", "article"] },
+  { value: "lainnya", label: "Lainnya", targets: ["vocabulary", "article"] },
+];
+
+export const REPORT_REASON_LABEL = Object.fromEntries(REPORT_REASONS.map((r) => [r.value, r.label])) as Record<
+  Enums<"report_reason">,
+  string
+>;
+
+export const REPORT_STATUSES: { value: Enums<"report_status">; label: string }[] = [
+  { value: "open", label: "Terbuka" },
+  { value: "resolved", label: "Selesai" },
+  { value: "dismissed", label: "Diabaikan" },
+];
+
+export const REPORT_STATUS_LABEL = Object.fromEntries(REPORT_STATUSES.map((s) => [s.value, s.label])) as Record<
+  Enums<"report_status">,
+  string
+>;
+
+/** Batas laporan terbuka per user (ditegakkan trigger reports_before_insert). */
+export const MAX_OPEN_REPORTS = 10;
+
 /** Kata kerja untuk riwayat moderasi: "@budi {label} …". */
 export const MODERATION_ACTION_LABEL: Record<Enums<"moderation_action">, string> = {
   submission_approved: "menyetujui usulan",
@@ -97,6 +127,8 @@ export const LOG_ACTION_FILTERS: {
     label: "Artikel",
     actions: ["article_created", "article_updated", "article_status_changed", "article_deleted"],
   },
+  { value: "kamus", label: "Kamus", actions: ["vocab_updated", "vocab_hidden", "vocab_restored"] },
+  { value: "laporan", label: "Laporan", actions: ["report_resolved", "report_dismissed"] },
   { value: "penugasan", label: "Penugasan moderator", actions: ["moderator_assigned", "moderator_removed"], adminOnly: true },
 ];
 

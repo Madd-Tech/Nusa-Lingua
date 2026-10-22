@@ -1,6 +1,6 @@
 # Rancangan fitur moderator
 
-> **Status:** Fase A (P1 + P2, `0005_moderation_core.sql`), Fase B (P3, `0006_moderation_dashboard.sql`), dan Fase C (P4, `0007_articles_cms.sql`) sudah diimplementasikan dengan semua rekomendasi di [bagian 10](#10-keputusan-yang-perlu-dikonfirmasi). Fase D masih rancangan · 22 Oktober 2026
+> **Status:** Semua fase sudah diimplementasikan dengan rekomendasi di [bagian 10](#10-keputusan-yang-perlu-dikonfirmasi): Fase A (P1 + P2, `0005_moderation_core.sql`), Fase B (P3, `0006_moderation_dashboard.sql`), Fase C (P4, `0007_articles_cms.sql`), Fase D (P5, `0008_reports_vocab.sql`) · 22 Oktober 2026
 > Cakupan: semua prioritas dari diskusi fitur moderator (P1–P5). SQL di dokumen ini adalah **sketsa**; untuk Fase A, migrasinya yang menjadi acuan.
 
 ## 1. Ringkasan
@@ -432,6 +432,15 @@ src/app/(app)/moderasi/
   - **Perbaiki** → membuka `VocabEditDialog` atau editor artikel. Setelah disimpan, muncul tombol **Tandai selesai** (catatan opsional).
   - **Abaikan** → catatan wajib (misalnya "Ejaan sudah sesuai kamus baku").
   - Keduanya memanggil `resolve_reports`.
+
+**Implementasi Fase D** (yang berbeda atau lebih rinci dari rancangan):
+
+- **Pelapor & bahasa diisi trigger**: client hanya mengirim jenis target, id, alasan, dan pesan. Hanya kata yang tampil dan artikel yang terbit yang bisa dilaporkan.
+- **Alasan per jenis konten**: kosakata (ejaan, arti, tingkat tutur, rekaman, tidak pantas, lainnya), artikel (ejaan, fakta budaya, tidak pantas, lainnya). Alasan "lainnya" wajib disertai keterangan (di UI).
+- **Tab laporan**: Terbuka / Selesai / Diabaikan dengan jumlah target, filter jenis konten dan bahasa. Kartu menampilkan maksimal 3 laporan terbaru (+N lainnya).
+- **Kata tersembunyi** tidak dihitung sebagai duplikat di `review_submission`/`get_submission_queue` (fungsi dari 0005 diperbarui di 0008).
+- **Edit dari kamus publik**: Sheet detail kata menampilkan "Laporkan kesalahan" untuk semua pelajar dan "Edit kata" untuk moderator bahasa itu (dengan peringatan bila kata adalah materi pelajaran, karena soal tidak ikut berubah). Menyembunyikan hanya tersedia di `/moderasi/kamus` dan kartu laporan.
+- **Dashboard**: kotak "Laporan terbuka" menggantikan "Kamu tinjau (7 hari)" untuk admin; moderator tetap melihat tinjauannya (dengan rata-rata waktu tunggu di keterangan). Tabel per bahasa mendapat kolom Laporan. Badge sidebar "Moderasi" menjumlahkan usulan dan laporan yang bisa ditindak.
 
 ### 6.7 `/moderasi/riwayat` — Riwayat aktivitas (P3)
 

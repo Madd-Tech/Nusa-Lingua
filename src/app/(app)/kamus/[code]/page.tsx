@@ -11,6 +11,7 @@ import { LanguageIcon } from "@/components/learning/language-icon";
 import { LanguageTabs } from "@/components/learning/language-tabs";
 import { VocabList } from "@/components/learning/vocab-list";
 import { getCurrentUser } from "@/lib/supabase/server";
+import { getModerationContext } from "@/lib/moderation-context";
 import { getLanguageByCode, getVocabFacets, getVocabularies } from "@/lib/queries/content";
 import { getMasteryFor } from "@/lib/queries/progress";
 import { formatNumber } from "@/lib/utils";
@@ -38,7 +39,7 @@ export default async function KamusPage({ params, searchParams }: { params: { co
   if (!language) notFound();
 
   const page = Math.max(1, Number(searchParams.hal) || 1);
-  const [{ items, total, pageSize }, facets] = await Promise.all([
+  const [{ items, total, pageSize }, facets, moderation] = await Promise.all([
     getVocabularies(supabase, language.id, {
       q: searchParams.q,
       category: searchParams.kategori,
@@ -46,7 +47,10 @@ export default async function KamusPage({ params, searchParams }: { params: { co
       page,
     }),
     getVocabFacets(supabase, language.id),
+    getModerationContext(),
   ]);
+  // Tombol Edit untuk moderator bahasa ini (RLS tetap penegak utama).
+  const canModerate = moderation.isModerator && moderation.scope.some((l) => l.id === language.id);
   const mastery = await getMasteryFor(
     supabase,
     user!.id,
@@ -142,7 +146,7 @@ export default async function KamusPage({ params, searchParams }: { params: { co
         />
       ) : (
         <>
-          <VocabList items={items} strength={strength} />
+          <VocabList items={items} strength={strength} canModerate={canModerate} />
           {totalPages > 1 ? (
             <nav aria-label="Halaman" className="mt-8 flex items-center justify-center gap-3">
               {page > 1 ? (
