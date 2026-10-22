@@ -8,4 +8,7 @@ export const SITE = {
     "Belajar bahasa daerah Indonesia 5 menit sehari: lesson ala game, kamus dengan tingkat tutur, cerita sejarah & budaya, serta teman ngobrol AI.",
   team: "nama timnya bozo 🥦🍽️🔥",
   competition: "IT DashFest 2026",
+  // [ISI] Pastikan kotak masuk ini aktif — dipakai di halaman Ketentuan & Privasi.
+  contactEmail: "halo@nusalingua.id",
+  termsUpdatedAt: "22 Oktober 2026",
 };
