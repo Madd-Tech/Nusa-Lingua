@@ -54,7 +54,7 @@ const rows = ARTIKEL_BARU.map(({ slug, title, category, region_id, language_id, 
   language_id,
   summary,
   content,
-  is_published: true,
+  status: "published",
 }));
 
 if (dryRun) {
@@ -66,7 +66,7 @@ if (dryRun) {
 }
 
 const res = await fetch(
-  `${url}/rest/v1/cultural_articles?on_conflict=slug&select=id,slug,title,category,is_published`,
+  `${url}/rest/v1/cultural_articles?on_conflict=slug&select=id,slug,title,category,status`,
   {
     method: "POST",
     headers: {

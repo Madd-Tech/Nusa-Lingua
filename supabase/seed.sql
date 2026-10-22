@@ -157,7 +157,7 @@ on conflict (id) do nothing;
 -- ---------------------------------------------------------------------
 -- Artikel budaya
 -- ---------------------------------------------------------------------
-insert into public.cultural_articles (id, region_id, language_id, title, slug, category, summary, content, is_published) values
+insert into public.cultural_articles (id, region_id, language_id, title, slug, category, summary, content, status) values
 (1, 1, 1, 'Unggah-ungguh: Tingkat Tutur dalam Bahasa Jawa', 'unggah-ungguh-basa-jawa', 'lainnya',
  'Mengapa satu kata dalam bahasa Jawa bisa punya beberapa bentuk? Kenalan dengan ngoko, krama, dan krama inggil.',
 $md$
@@ -195,7 +195,7 @@ Kedua kalimat artinya sama, *nama saya Sari*, tetapi kesan yang ditangkap penden
 1. Mulailah dari kosakata ngoko dan krama yang paling sering dipakai.
 2. Perhatikan siapa lawan bicaramu sebelum memilih kata.
 3. Jangan takut salah — penutur asli biasanya senang membantu orang yang mau belajar.
-$md$, true),
+$md$, 'published'),
 
 (2, 2, 2, 'Sangkuriang dan Asal-usul Gunung Tangkuban Parahu', 'legenda-sangkuriang', 'cerita_rakyat',
  'Legenda dari Tanah Sunda tentang janji, larangan, dan perahu yang tertelungkup menjadi gunung.',
@@ -221,13 +221,13 @@ Dibantu makhluk halus, pekerjaan Sangkuriang hampir selesai. Dayang Sumbi pun me
 ## Pesan dari cerita
 
 Legenda ini sering dipakai untuk mengajarkan pentingnya mengendalikan amarah dan menghormati orang tua. Ada beberapa versi cerita yang berbeda di tiap daerah; versi di atas adalah salah satu yang paling sering diceritakan.
-$md$, true),
+$md$, 'published'),
 
 (3, 1, 1, 'Mengenal Aksara Jawa (Hanacaraka)', 'aksara-jawa-hanacaraka', 'aksara',
  'Draf — artikel ini belum terbit dan tidak boleh tampil di aplikasi.',
 $md$
 Draf artikel tentang aksara Jawa. Belum terbit.
-$md$, false)
+$md$, 'draft')
 on conflict (id) do nothing;
 
 -- Artikel budaya tambahan (scripts/artikel-budaya.mjs)
@@ -236,7 +236,7 @@ on conflict (id) do nothing;
 -- Sumber data: scripts/artikel-budaya.mjs
 -- ---------------------------------------------------------------------
 insert into public.cultural_articles
-  (region_id, language_id, title, slug, category, summary, content, is_published)
+  (region_id, language_id, title, slug, category, summary, content, status)
 values
 (4, 3, 'Tari Saman: Seribu Tangan dari Tanah Gayo', 'tari-saman-gayo', 'tarian',
  'Tepuk tangan, dada, dan lantunan syair yang makin cepat — tari dari dataran tinggi Gayo yang mendunia.',
@@ -266,7 +266,7 @@ Pada 2011, UNESCO menetapkan Saman sebagai Warisan Budaya Takbenda yang Memerluk
 | gayo | suku dan bahasa asal tari ini |
 
 > Saman mengajarkan satu hal sederhana: gerak yang paling indah adalah gerak yang dilakukan bersama.
-$md$, true),
+$md$, 'published'),
 
 (3, 7, 'Tari Kecak: Nyanyian Seratus Lelaki di Tepi Pura', 'tari-kecak-bali', 'tarian',
  'Tanpa gamelan, puluhan lelaki membangun irama dengan suara dan gerak. Kecak mengubah ritual menjadi pertunjukan yang menghipnotis.',
@@ -295,7 +295,7 @@ Tidak ada alat musik. Puluhan penari membentuk lingkaran dan menghasilkan irama 
 | ramayana | epik India yang menjadi lakon |
 
 > Kecak menunjukkan bahwa musik tidak selalu datang dari alat musik; tubuh dan suara bisa menjadi orkestra.
-$md$, true),
+$md$, 'published'),
 
 (6, 5, 'Tari Piring: Menari Rama dengan Piring di Telapak', 'tari-piring-minang', 'tarian',
  'Piring di telapak tangan, gerak silat yang cepat, dan rasa syukur atas panen — beginilah tari dari Solok, Sumatera Barat.',
@@ -324,7 +324,7 @@ Tari Piring diiringi talempong dan gendang. Tempo awalnya tenang, lalu semakin c
 | rantak | gerakan hentakan kaki |
 
 > Tari Piring adalah pelajaran tentang keseimbangan: bergerak cepat, tetapi tetap menjaga apa yang ada di tangan.
-$md$, true),
+$md$, 'published'),
 
 (1, 1, 'Gudeg: Manis Hangat dari Kayu Nangka Yogyakarta', 'gudeg-yogyakarta', 'kuliner',
  'Nangka muda, santan, gula jawa, dan waktu berjam-jam. Di balik sepiring gudeg ada kesabaran khas Yogyakarta.',
@@ -353,7 +353,7 @@ Di Yogyakarta, gudeg dijual pagi hari dan sering menjadi sarapan. Gudeg juga had
 | nangka | buah yang menjadi bahan utama |
 
 > Gudeg mengajarkan bahwa rasa yang dalam lahir dari waktu, bukan dari tergesa-gesa.
-$md$, true),
+$md$, 'published'),
 
 (6, 5, 'Rendang: Sabar yang Berbuah Rasa', 'rendang-minang', 'kuliner',
  'Daging, santan, dan bumbu yang dimasak berjam-jam sampai kuahnya mengering. Rendang adalah pelajaran kesabaran dari Minangkabau.',
@@ -382,7 +382,7 @@ Selain rendang daging, ada rendang ayam, rendang telur, rendang jengkol, dan ren
 | santan | cairan dari kelapa parut |
 
 > Rendang adalah bukti bahwa kesabaran punya rasa: semakin lama dimasak, semakin dalam rasanya.
-$md$, true),
+$md$, 'published'),
 
 (5, 4, 'Sisingamangaraja: Pemimpin yang Menolak Menyerah', 'sisingamangaraja-toba', 'sejarah',
  'Dari tepi Danau Toba, Sisingamangaraja XII memimpin perlawanan panjang terhadap kekuasaan kolonial di Tanah Batak.',
@@ -410,7 +410,7 @@ Sisingamangaraja XII gugur pada 1907 di Dairi. Perjuangannya dikenang sebagai si
 | ulos | kain adat Batak |
 
 > Nama Sisingamangaraja dikenang bukan karena ia menang, tetapi karena ia tidak menyerah.
-$md$, true),
+$md$, 'published'),
 
 (8, 8, 'Jejak Maritim Bugis: Pelaut dari Tanah Bone', 'jejak-maritim-bugis', 'sejarah',
  'Pinisi, pengetahuan membuat perahu, dan jaringan pelayaran yang menghubungkan Nusantara — warisan maritim Bugis dari Bone.',
@@ -439,7 +439,7 @@ Pelayaran tidak hanya soal keberanian. Ada pengetahuan tentang angin, pasang sur
 | sombala | layar (bahasa Bugis) |
 
 > Bagi orang Bugis, laut bukan batas, melainkan jalan yang menghubungkan banyak tempat.
-$md$, true)
+$md$, 'published')
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------

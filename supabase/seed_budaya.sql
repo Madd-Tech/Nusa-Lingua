@@ -19,8 +19,8 @@ begin
   end if;
 end $$;
 
-insert into public.cultural_articles (id, region_id, language_id, title, slug, category, summary, content, is_published)
-select v.id, l.region_id, l.id, v.title, v.slug, v.category::public.article_category, v.summary, v.content, true
+insert into public.cultural_articles (id, region_id, language_id, title, slug, category, summary, content, status)
+select v.id, l.region_id, l.id, v.title, v.slug, v.category::public.article_category, v.summary, v.content, 'published'::public.article_status
 from (values
 (4, 'ban', 'Nyepi: Sehari Sunyi di Pulau Dewata', 'nyepi-hari-sunyi-bali', 'upacara',
  'Satu hari dalam setahun, Bali berhenti total: tanpa lampu, tanpa kendaraan, tanpa keramaian. Kenalan dengan rangkaian Hari Raya Nyepi.',

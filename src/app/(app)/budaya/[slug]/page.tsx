@@ -1,22 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Clock, GraduationCap, Languages, MapPin } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock, GraduationCap, Languages, MapPin, PencilLine } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BatikPattern } from "@/components/ui/batik-pattern";
 import { RemoteImage } from "@/components/ui/remote-image";
 import { ArticleCard } from "@/components/culture/article-card";
 import { ArticleIllustration } from "@/components/culture/article-illustration";
+import { ArticleSources } from "@/components/culture/article-sources";
 import { MarkdownContent } from "@/components/culture/markdown-content";
 import { ReadTracker } from "@/components/culture/read-tracker";
 import { TableOfContents } from "@/components/culture/table-of-contents";
 import { AskAssistantButton } from "@/components/chat/ask-assistant-button";
 import { getCurrentUser } from "@/lib/supabase/server";
+import { getModerationContext } from "@/lib/moderation-context";
 import { getArticleBySlug, getReadArticleIds, getRelatedArticles } from "@/lib/queries/culture";
 import { getPublicPersonas } from "@/lib/queries/personas";
 import { articleCategoryLabel } from "@/lib/constants";
 import { extractHeadings } from "@/lib/markdown-toc";
+import { formatDate } from "@/lib/utils";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const { supabase } = await getCurrentUser();
@@ -29,12 +32,17 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   const article = await getArticleBySlug(supabase, params.slug);
   if (!article) notFound();
 
-  const [related, readIds, personas] = await Promise.all([
+  const [related, readIds, personas, moderation] = await Promise.all([
     getRelatedArticles(supabase, article),
     getReadArticleIds(supabase, user!.id),
     // Persona dibaca di server (service role); hanya kolom publik.
     getPublicPersonas().catch(() => []),
+    getModerationContext(),
   ]);
+  // Tombol edit untuk moderator bahasa artikel ini (artikel tanpa bahasa: admin). RLS tetap penegak utama.
+  const canEdit =
+    moderation.isModerator &&
+    (article.language_id ? moderation.scope.some((l) => l.id === article.language_id) : moderation.isAdmin);
   const persona = article.language_id ? personas.find((p) => p.language_id === article.language_id) ?? null : null;
   const headings = extractHeadings(article.content);
   const minutes = Math.max(1, Math.round(article.content.split(/\s+/).length / 200));
@@ -82,12 +90,32 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           </div>
           <h1 className="text-3xl leading-tight sm:text-4xl">{article.title}</h1>
           {article.summary ? <p className="text-lg text-muted-foreground">{article.summary}</p> : null}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-muted-foreground">
+              {article.author?.username ? (
+                <>
+                  Ditulis oleh <span className="font-bold text-foreground">@{article.author.username}</span>
+                </>
+              ) : (
+                "Tim Nusa Lingua"
+              )}
+              {article.published_at ? ` · Terbit ${formatDate(article.published_at)}` : null}
+            </p>
+            {canEdit ? (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/moderasi/artikel/${article.id}`}>
+                  <PencilLine aria-hidden="true" /> Edit artikel
+                </Link>
+              </Button>
+            ) : null}
+          </div>
         </div>
       </header>
 
       <div className="grid gap-10 lg:grid-cols-[1fr_220px]">
         <article id="isi-artikel" className="min-w-0">
           <MarkdownContent content={article.content} />
+          {article.sources?.trim() ? <ArticleSources sources={article.sources} /> : null}
         </article>
         {headings.length >= 2 ? (
           <aside className="hidden lg:block">

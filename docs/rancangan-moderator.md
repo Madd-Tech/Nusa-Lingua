@@ -1,6 +1,6 @@
 # Rancangan fitur moderator
 
-> **Status:** Fase A (P1 + P2, `0005_moderation_core.sql`) dan Fase B (P3, `0006_moderation_dashboard.sql`) sudah diimplementasikan dengan semua rekomendasi di [bagian 10](#10-keputusan-yang-perlu-dikonfirmasi). Fase C–D masih rancangan · 21 Oktober 2026
+> **Status:** Fase A (P1 + P2, `0005_moderation_core.sql`), Fase B (P3, `0006_moderation_dashboard.sql`), dan Fase C (P4, `0007_articles_cms.sql`) sudah diimplementasikan dengan semua rekomendasi di [bagian 10](#10-keputusan-yang-perlu-dikonfirmasi). Fase D masih rancangan · 22 Oktober 2026
 > Cakupan: semua prioritas dari diskusi fitur moderator (P1–P5). SQL di dokumen ini adalah **sketsa**; untuk Fase A, migrasinya yang menjadi acuan.
 
 ## 1. Ringkasan
@@ -412,6 +412,18 @@ src/app/(app)/moderasi/
 - Catatan dari peninjau (`review_note`) tampil sebagai banner di atas editor.
 - Penjaga perubahan belum tersimpan (`beforeunload` + konfirmasi saat berpindah tab).
 
+**Implementasi Fase C** (yang berbeda atau lebih rinci dari rancangan di atas):
+
+- **Bahasa wajib di UI.** Policy database tetap mengizinkan artikel tanpa bahasa untuk admin (artikel umum), tetapi editor selalu meminta bahasa karena rekomendasi artikel dan cakupan moderator berbasis bahasa.
+- **Penulis & status awal diisi trigger**, bukan client: `author_id` dan `status` tidak termasuk hak kolom insert.
+- **Slug terkunci** begitu artikel pernah terbit (`published_at` terisi), agar tautan lama tidak rusak.
+- **Catatan peninjau** (`review_note`) hanya berubah lewat transisi: wajib saat peninjau mengembalikan ke draf, dikosongkan saat diajukan ulang, ditarik penulis, atau terbit.
+- **Syarat ajukan tinjauan** (di UI): ringkasan terisi dan isi minimal 50 kata. Daftar periksa lain (2 subjudul, ±300 kata, rujukan, sampul) hanya pengingat.
+- **Arsip bersifat baca-saja** di editor; satu-satunya aksi adalah "Pulihkan ke draf".
+- **Dashboard:** kotak "Menunggu paling lama" dilebur ke keterangan kotak "Usulan menunggu", digantikan kotak **Artikel perlu ditinjau** (tidak menghitung tulisan sendiri, kecuali admin). Tabel per bahasa mendapat kolom "Artikel ditinjau".
+- **Riwayat:** filter "Artikel"; entri status dibaca sebagai kalimat (mis. "@budi menerbitkan artikel “Angklung…”", "… mengembalikan artikel “…” ke penulis").
+- **Halaman publik** `/budaya/[slug]`: byline penulis + tanggal terbit, bagian Rujukan, dan tombol "Edit artikel" untuk moderator bahasa itu. Daftar artikel diurutkan `published_at` terbaru.
+
 ### 6.6 `/moderasi/laporan` — Laporan pengguna (P5)
 
 - Tab Terbuka / Selesai / Diabaikan; filter bahasa dan jenis (kosakata/artikel).
@@ -484,7 +496,7 @@ Setiap fase menjadi satu PR yang bisa dirilis sendiri.
 | **C** | P4 | `0007_articles_cms.sql`: enum `article_status`, kolom artikel, `is_published` menjadi kolom turunan, policy, grant, trigger transisi, bucket `budaya` | `artikel`, editor, perubahan `/budaya` | besar |
 | **D** | P5 | `0008_reports_vocab.sql`: enum laporan, `content_reports`, kolom & trigger `vocabularies` (sembunyikan), RPC laporan | `laporan`, `kamus`, tombol Laporkan, Edit di Sheet kamus | sedang |
 
-**Dampak ke seed (Fase C):** `seed.sql` dan `seed_budaya.sql` meng-insert kolom `is_published`, yang setelah migrasi menjadi kolom turunan. Kedua seed harus diubah ke `status` ('published' / 'draft'), karena jika tidak, menjalankan ulang seed akan gagal.
+**Dampak ke seed (Fase C):** `seed.sql` dan `seed_budaya.sql` meng-insert kolom `is_published`, yang setelah migrasi menjadi kolom turunan. Kedua seed harus diubah ke `status` ('published' / 'draft'), karena jika tidak, menjalankan ulang seed akan gagal. **Sudah diubah**, begitu juga `scripts/seed-artikel.mjs` dan `scripts/artikel-budaya.mjs`. Catatan: `seed.sql` versi terbaru memakai region 4 (Aceh) dari `seed_basanusa.sql`, jadi di database kosong jalankan `seed_basanusa.sql` sebelum `seed.sql`.
 
 ### Skenario uji SQL (minimal)
 

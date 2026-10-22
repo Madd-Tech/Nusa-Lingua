@@ -54,6 +54,18 @@ export const REJECT_REASON_LABEL = Object.fromEntries(REJECT_REASONS.map((r) => 
   string
 >;
 
+export const ARTICLE_STATUSES: { value: Enums<"article_status">; label: string; tab: string }[] = [
+  { value: "draft", label: "Draf", tab: "Draf" },
+  { value: "review", label: "Menunggu tinjauan", tab: "Ditinjau" },
+  { value: "published", label: "Terbit", tab: "Terbit" },
+  { value: "archived", label: "Arsip", tab: "Arsip" },
+];
+
+export const ARTICLE_STATUS_LABEL = Object.fromEntries(ARTICLE_STATUSES.map((s) => [s.value, s.label])) as Record<
+  Enums<"article_status">,
+  string
+>;
+
 /** Kata kerja untuk riwayat moderasi: "@budi {label} …". */
 export const MODERATION_ACTION_LABEL: Record<Enums<"moderation_action">, string> = {
   submission_approved: "menyetujui usulan",
@@ -80,6 +92,11 @@ export const LOG_ACTION_FILTERS: {
 }[] = [
   { value: "disetujui", label: "Usulan disetujui", actions: ["submission_approved"] },
   { value: "ditolak", label: "Usulan ditolak", actions: ["submission_rejected"] },
+  {
+    value: "artikel",
+    label: "Artikel",
+    actions: ["article_created", "article_updated", "article_status_changed", "article_deleted"],
+  },
   { value: "penugasan", label: "Penugasan moderator", actions: ["moderator_assigned", "moderator_removed"], adminOnly: true },
 ];
 

@@ -13,6 +13,7 @@ export async function getArticles(
     .from("cultural_articles")
     .select(ARTICLE_CARD_FIELDS)
     .eq("is_published", true)
+    .order("published_at", { ascending: false, nullsFirst: false })
     .order("id", { ascending: false })
     .limit(opts.limit ?? 60);
 
@@ -39,6 +40,7 @@ export async function getArticlesPage(
     .from("cultural_articles")
     .select(ARTICLE_CARD_FIELDS, { count: "exact" })
     .eq("is_published", true)
+    .order("published_at", { ascending: false, nullsFirst: false })
     .order("id", { ascending: false })
     .range(from, from + ARTICLE_PAGE_SIZE - 1);
   if (opts.category) query = query.eq("category", opts.category);
@@ -64,6 +66,7 @@ export async function getRecommendedArticles(db: DB, opts: { languageId?: number
       .select(ARTICLE_CARD_FIELDS)
       .eq("is_published", true)
       .or(filters.join(","))
+      .order("published_at", { ascending: false, nullsFirst: false })
       .order("id", { ascending: false })
       .limit(limit * 3);
     if (!res.error && res.data.length) return res.data;
@@ -77,7 +80,7 @@ export async function getArticleBySlug(db: DB, slug: string) {
     await db
       .from("cultural_articles")
       .select(
-        "id, title, slug, category, summary, content, cover_url, region_id, language_id, region:regions(id, name, province), language:languages(id, name, code)",
+        "id, title, slug, category, summary, content, cover_url, sources, published_at, region_id, language_id, region:regions(id, name, province), language:languages(id, name, code), author:profiles!cultural_articles_author_id_fkey(username)",
       )
       .eq("slug", slug)
       .eq("is_published", true)
@@ -94,6 +97,7 @@ export async function getRelatedArticles(db: DB, article: { id: number; category
     .eq("is_published", true)
     .neq("id", article.id)
     .or(filters.join(","))
+    .order("published_at", { ascending: false, nullsFirst: false })
     .order("id", { ascending: false })
     .limit(3);
   return res.data ?? [];

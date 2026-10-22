@@ -12,7 +12,7 @@ export const ARTIKEL_BARU = [
     category: "tarian",
     region_id: 4,
     language_id: 3,
-    is_published: true,
+    status: "published",
     summary:
       "Tepuk tangan, dada, dan lantunan syair yang makin cepat — tari dari dataran tinggi Gayo yang mendunia.",
     content: `Tari Saman lahir di dataran tinggi Gayo, Aceh Tengah. Nama tarian ini dipercaya berasal dari Syekh Saman, seorang ulama yang memakai gerak tubuh dan syair sebagai media dakwah pada abad ke-14. Kini Saman dikenal sebagai salah satu tari paling ikonik dari Aceh, bahkan dunia.
@@ -47,7 +47,7 @@ Pada 2011, UNESCO menetapkan Saman sebagai Warisan Budaya Takbenda yang Memerluk
     category: "tarian",
     region_id: 3,
     language_id: 7,
-    is_published: true,
+    status: "published",
     summary:
       "Tanpa gamelan, puluhan lelaki membangun irama dengan suara dan gerak. Kecak mengubah ritual menjadi pertunjukan yang menghipnotis.",
     content: `Di Bali, ada pertunjukan yang tidak memakai gamelan sama sekali. Puluhan lelaki duduk melingkar, lalu melantunkan "cak, cak, cak" secara bergantian. Itulah Tari Kecak, salah satu pertunjukan paling dikenal dari Pulau Dewata.
@@ -81,7 +81,7 @@ Tidak ada alat musik. Puluhan penari membentuk lingkaran dan menghasilkan irama 
     category: "tarian",
     region_id: 6,
     language_id: 5,
-    is_published: true,
+    status: "published",
     summary:
       "Piring di telapak tangan, gerak silat yang cepat, dan rasa syukur atas panen — beginilah tari dari Solok, Sumatera Barat.",
     content: `Tari Piring berasal dari Solok, Sumatera Barat. Sesuai namanya, penari membawa piring di telapak tangan sambil bergerak lincah. Tarian ini dulunya dipentaskan sebagai syukur atas panen, lalu berkembang menjadi pertunjukan seni yang memukau.
@@ -115,7 +115,7 @@ Tari Piring diiringi talempong dan gendang. Tempo awalnya tenang, lalu semakin c
     category: "kuliner",
     region_id: 1,
     language_id: 1,
-    is_published: true,
+    status: "published",
     summary:
       "Nangka muda, santan, gula jawa, dan waktu berjam-jam. Di balik sepiring gudeg ada kesabaran khas Yogyakarta.",
     content: `Gudeg adalah makanan khas Yogyakarta yang terbuat dari nangka muda. Nangka dimasak bersama santan, gula jawa, dan rempah selama berjam-jam hingga warnanya cokelat tua dan rasanya manis gurih. Proses panjang inilah yang membuat gudeg tidak bisa dibuat terburu-buru.
@@ -149,7 +149,7 @@ Di Yogyakarta, gudeg dijual pagi hari dan sering menjadi sarapan. Gudeg juga had
     category: "kuliner",
     region_id: 6,
     language_id: 5,
-    is_published: true,
+    status: "published",
     summary:
       "Daging, santan, dan bumbu yang dimasak berjam-jam sampai kuahnya mengering. Rendang adalah pelajaran kesabaran dari Minangkabau.",
     content: `Rendang adalah masakan Minangkabau yang paling dikenal di dunia. Potongan daging dimasak dengan santan dan bumbu rempah dalam waktu lama sampai kuahnya mengering. Hasilnya adalah daging berwarna gelap dengan rasa pedas, gurih, dan sedikit manis.
@@ -183,7 +183,7 @@ Selain rendang daging, ada rendang ayam, rendang telur, rendang jengkol, dan ren
     category: "sejarah",
     region_id: 5,
     language_id: 4,
-    is_published: true,
+    status: "published",
     summary:
       "Dari tepi Danau Toba, Sisingamangaraja XII memimpin perlawanan panjang terhadap kekuasaan kolonial di Tanah Batak.",
     content: `Sisingamangaraja XII adalah salah satu tokoh paling penting dalam sejarah Batak. Ia lahir di Bakkara, tepi Danau Toba, pada 1849, dan menjadi raja sekaligus pemimpin spiritual bagi masyarakat Batak Toba.
@@ -216,7 +216,7 @@ Sisingamangaraja XII gugur pada 1907 di Dairi. Perjuangannya dikenang sebagai si
     category: "sejarah",
     region_id: 8,
     language_id: 8,
-    is_published: true,
+    status: "published",
     summary:
       "Pinisi, pengetahuan membuat perahu, dan jaringan pelayaran yang menghubungkan Nusantara — warisan maritim Bugis dari Bone.",
     content: `Orang Bugis dikenal sebagai pelaut ulung. Dari pesisir Sulawesi Selatan, mereka mengarungi laut dengan perahu layar, menjalin perdagangan, dan membangun permukiman di berbagai wilayah Nusantara. Salah satu pusat kekuatan maritim Bugis adalah Bone, dengan ibu kota Watampone.

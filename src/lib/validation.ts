@@ -95,6 +95,30 @@ export const approveEditSchema = z.object({
   note: optionalText(500, "Catatan"),
 });
 
+export const ARTICLE_SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+export const articleSchema = z.object({
+  title: z.string().trim().min(5, "Judul minimal 5 karakter").max(160, "Judul maksimal 160 karakter"),
+  slug: z
+    .string()
+    .trim()
+    .min(3, "Slug minimal 3 karakter")
+    .max(80, "Slug maksimal 80 karakter")
+    .regex(ARTICLE_SLUG_PATTERN, "Hanya huruf kecil, angka, dan tanda hubung (-)"),
+  category: z.enum(["sejarah", "cerita_rakyat", "tarian", "kuliner", "pakaian_adat", "upacara", "aksara", "lainnya"]),
+  languageId: z.coerce.number({ invalid_type_error: "Pilih bahasa" }).int().positive("Pilih bahasa"),
+  /** 0 = tanpa daerah. */
+  regionId: z.coerce.number().int().nonnegative(),
+  summary: optionalText(300, "Ringkasan"),
+  content: z.string().max(60000, "Isi artikel terlalu panjang"),
+  sources: optionalText(4000, "Rujukan"),
+  coverUrl: z.string().nullable(),
+});
+
+export const returnArticleSchema = z.object({
+  note: z.string().trim().min(1, "Tulis catatan untuk penulis").max(500, "Catatan maksimal 500 karakter"),
+});
+
 /** Terjemahkan pesan error Supabase Auth ke Bahasa Indonesia yang ramah. */
 export function authErrorMessage(message: string | undefined | null) {
   const m = (message ?? "").toLowerCase();

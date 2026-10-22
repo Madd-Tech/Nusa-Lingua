@@ -21,6 +21,7 @@ export function LanguageQueueTable({ rows, showModerators }: { rows: OverviewRow
               <th scope="col" className="px-4 py-3">Menunggu</th>
               <th scope="col" className="px-4 py-3">Paling lama</th>
               <th scope="col" className="px-4 py-3">Ditinjau 7 hari</th>
+              <th scope="col" className="px-4 py-3">Artikel ditinjau</th>
               {showModerators ? <th scope="col" className="px-4 py-3">Moderator</th> : null}
               <th scope="col" className="px-4 py-3"><span className="sr-only">Aksi</span></th>
             </tr>
@@ -36,6 +37,18 @@ export function LanguageQueueTable({ rows, showModerators }: { rows: OverviewRow
                   {r.oldest_pending_at ? formatRelative(r.oldest_pending_at) : "—"}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{reviewed(r)}</td>
+                <td className="px-4 py-3">
+                  {r.articles_review ? (
+                    <Link
+                      href={`/moderasi/artikel?status=review&bahasa=${r.language_code}`}
+                      className="font-bold text-budaya-deep hover:underline dark:text-budaya"
+                    >
+                      {formatNumber(r.articles_review)}
+                    </Link>
+                  ) : (
+                    <span className="text-muted-foreground">0</span>
+                  )}
+                </td>
                 {showModerators ? (
                   <td className="px-4 py-3">
                     {r.moderator_count ? formatNumber(r.moderator_count) : <Badge variant="danger">Belum ada</Badge>}
@@ -62,6 +75,7 @@ export function LanguageQueueTable({ rows, showModerators }: { rows: OverviewRow
               <p className="text-xs text-muted-foreground">
                 {r.oldest_pending_at ? `Tertua ${formatRelative(r.oldest_pending_at)} · ` : ""}
                 Ditinjau 7 hari: {reviewed(r)}
+                {r.articles_review ? ` · ${formatNumber(r.articles_review)} artikel menunggu` : ""}
               </p>
               {showModerators && !r.moderator_count ? (
                 <Badge variant="danger" className="mt-1">

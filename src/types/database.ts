@@ -311,7 +311,17 @@ export type Database = {
           summary: string | null;
           content: string;
           cover_url: string | null;
+          /** Kolom turunan: status = 'published'. */
           is_published: boolean;
+          status: Database["public"]["Enums"]["article_status"];
+          author_id: string | null;
+          sources: string | null;
+          review_note: string | null;
+          created_at: string;
+          updated_at: string | null;
+          updated_by: string | null;
+          published_at: string | null;
+          published_by: string | null;
         };
         Insert: {
           id?: number;
@@ -323,7 +333,16 @@ export type Database = {
           summary?: string | null;
           content?: string;
           cover_url?: string | null;
-          is_published?: boolean;
+          is_published?: never;
+          status?: Database["public"]["Enums"]["article_status"];
+          author_id?: string | null;
+          sources?: string | null;
+          review_note?: string | null;
+          created_at?: string;
+          updated_at?: string | null;
+          updated_by?: string | null;
+          published_at?: string | null;
+          published_by?: string | null;
         };
         Update: {
           id?: number;
@@ -335,7 +354,16 @@ export type Database = {
           summary?: string | null;
           content?: string;
           cover_url?: string | null;
-          is_published?: boolean;
+          is_published?: never;
+          status?: Database["public"]["Enums"]["article_status"];
+          author_id?: string | null;
+          sources?: string | null;
+          review_note?: string | null;
+          created_at?: string;
+          updated_at?: string | null;
+          updated_by?: string | null;
+          published_at?: string | null;
+          published_by?: string | null;
         };
         Relationships: [
           {
@@ -350,6 +378,27 @@ export type Database = {
             columns: ["language_id"];
             isOneToOne: false;
             referencedRelation: "languages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "cultural_articles_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "cultural_articles_updated_by_fkey";
+            columns: ["updated_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "cultural_articles_published_by_fkey";
+            columns: ["published_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -924,6 +973,8 @@ export type Database = {
           reviewed_7d: number;
           approved_7d: number;
           moderator_count: number;
+          articles_review: number;
+          articles_draft: number;
         }[];
       };
       get_my_moderation_stats: {
@@ -955,6 +1006,7 @@ export type Database = {
         | "tidak_pantas"
         | "audio_buruk"
         | "lainnya";
+      article_status: "draft" | "review" | "published" | "archived";
       moderation_action:
         | "submission_approved"
         | "submission_rejected"

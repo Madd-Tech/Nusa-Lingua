@@ -136,9 +136,86 @@ export type LogDetail = {
   reason?: Enums<"reject_reason">;
   note?: string | null;
   language_ids?: number[];
+  /** Entri artikel. */
+  title?: string;
+  from?: Enums<"article_status">;
+  to?: Enums<"article_status">;
+  fields?: string[];
 };
 
 export type LogEntry = Awaited<ReturnType<typeof getModerationLog>>["items"][number];
+
+// ---------------------------------------------------------------------
+// Artikel budaya (CMS)
+// ---------------------------------------------------------------------
+
+export const MOD_ARTICLE_PAGE_SIZE = 20;
+
+const MOD_ARTICLE_FIELDS =
+  "id, title, slug, status, category, language_id, author_id, created_at, updated_at, published_at, review_note, language:languages(id, name, code), author:profiles!cultural_articles_author_id_fkey(username)" as const;
+
+/**
+ * Artikel di area moderasi. Artikel terbit terbaca semua orang lewat RLS, jadi
+ * daftar dibatasi eksplisit ke bahasa yang dimoderasi (`languageIds` null = admin, semua).
+ */
+export async function getModerationArticles(
+  db: DB,
+  opts: { status: Enums<"article_status">; languageIds: number[] | null; page?: number },
+) {
+  const page = Math.max(1, opts.page ?? 1);
+  const from = (page - 1) * MOD_ARTICLE_PAGE_SIZE;
+  let query = db
+    .from("cultural_articles")
+    .select(MOD_ARTICLE_FIELDS, { count: "exact" })
+    .eq("status", opts.status)
+    .order("updated_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .range(from, from + MOD_ARTICLE_PAGE_SIZE - 1);
+  if (opts.languageIds) query = query.in("language_id", opts.languageIds);
+  const res = await query;
+  const items = must("Gagal memuat daftar artikel", res);
+  return { items, total: res.count ?? 0, page, pageSize: MOD_ARTICLE_PAGE_SIZE };
+}
+
+export type ModerationArticle = Awaited<ReturnType<typeof getModerationArticles>>["items"][number];
+
+export async function countArticlesByStatus(db: DB, languageIds: number[] | null) {
+  const statuses: Enums<"article_status">[] = ["draft", "review", "published", "archived"];
+  const counts = await Promise.all(
+    statuses.map(async (status) => {
+      let query = db.from("cultural_articles").select("id", { count: "exact", head: true }).eq("status", status);
+      if (languageIds) query = query.in("language_id", languageIds);
+      const res = await query;
+      return [status, res.count ?? 0] as const;
+    }),
+  );
+  return Object.fromEntries(counts) as Record<Enums<"article_status">, number>;
+}
+
+/** Artikel lengkap untuk editor (RLS: hanya bahasa yang dimoderasi, atau yang sudah terbit). */
+export async function getArticleForEdit(db: DB, id: number) {
+  return must(
+    "Gagal memuat artikel",
+    await db
+      .from("cultural_articles")
+      .select(
+        "*, language:languages(id, name, code), author:profiles!cultural_articles_author_id_fkey(username), editor:profiles!cultural_articles_updated_by_fkey(username), publisher:profiles!cultural_articles_published_by_fkey(username)",
+      )
+      .eq("id", id)
+      .maybeSingle(),
+  );
+}
+
+export type EditableArticle = NonNullable<Awaited<ReturnType<typeof getArticleForEdit>>>;
+
+/** Bahasa (dengan region_id) yang bisa dipilih di editor artikel. */
+export async function getScopeLanguagesWithRegion(db: DB, languageIds: number[]) {
+  if (!languageIds.length) return [];
+  return must(
+    "Gagal memuat daftar bahasa",
+    await db.from("languages").select("id, name, code, region_id").in("id", languageIds).order("name"),
+  );
+}
 
 /** Khusus admin: moderator beserta bahasa & aktivitas tinjauan 30 hari terakhir. */
 export async function getModeratorTeam(db: DB) {

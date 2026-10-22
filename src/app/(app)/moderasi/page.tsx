@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCheck, Hourglass, Inbox, ShieldAlert, Timer } from "lucide-react";
+import { ArrowRight, CheckCheck, Inbox, Newspaper, ShieldAlert, Timer } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { IlloCheck } from "@/components/illustrations";
 import { StatCard } from "@/components/gamification/stat-card";
@@ -34,6 +34,8 @@ export default async function ModerasiDashboardPage() {
   );
   const oldestHours = oldest ? (Date.now() - new Date(oldest).getTime()) / 3_600_000 : null;
   const unmoderated = overview.filter((r) => r.moderator_count === 0);
+  const articlesReview = overview.reduce((sum, r) => sum + r.articles_review, 0);
+  const articlesDraft = overview.reduce((sum, r) => sum + r.articles_draft, 0);
   const languageNames = new Map(scope.map((l) => [l.id, l.name]));
 
   return (
@@ -48,19 +50,25 @@ export default async function ModerasiDashboardPage() {
               icon={Inbox}
               label="Usulan menunggu"
               value={formatNumber(pending)}
-              hint={pending ? `di ${languagesWithQueue} bahasa` : "Antrean bersih"}
+              hint={
+                pending && oldestHours !== null
+                  ? `di ${languagesWithQueue} bahasa · tertua ${formatHours(oldestHours)}`
+                  : "Antrean bersih"
+              }
               tileClassName="bg-komunitas/10"
               iconClassName="text-komunitas"
             />
           </Link>
-          <StatCard
-            icon={Hourglass}
-            label="Menunggu paling lama"
-            value={oldestHours === null ? "—" : formatHours(oldestHours)}
-            hint={oldestHours === null ? "Tidak ada antrean" : "sejak dikirim"}
-            tileClassName="bg-secondary/20"
-            iconClassName="text-secondary-700 dark:text-secondary"
-          />
+          <Link href="/moderasi/artikel?status=review" className={tileLink}>
+            <StatCard
+              icon={Newspaper}
+              label="Artikel perlu ditinjau"
+              value={formatNumber(articlesReview)}
+              hint={`${formatNumber(articlesDraft)} draf sedang ditulis`}
+              tileClassName="bg-budaya/12"
+              iconClassName="text-budaya"
+            />
+          </Link>
           <StatCard
             icon={CheckCheck}
             label="Kamu tinjau (7 hari)"
