@@ -113,6 +113,12 @@ export function OnboardingForm({
     }
 
     toast.success(`Selamat datang, ${values.fullName.split(" ")[0]}!`);
+
+    // Kirim welcome email (fire-and-forget, tidak perlu blocking)
+    fetch("/api/emails/welcome", { method: "POST" }).catch(() => {
+      // Gagal kirim email welcome tidak menghambat onboarding
+    });
+
     router.replace(target);
     router.refresh();
   };
