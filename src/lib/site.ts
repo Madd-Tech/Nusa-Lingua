@@ -9,6 +9,6 @@ export const SITE = {
   team: "nama timnya bozo 🥦🍽️🔥",
   competition: "IT DashFest 2026",
   // [ISI] Pastikan kotak masuk ini aktif — dipakai di halaman Ketentuan & Privasi.
-  contactEmail: "halo@nusalingua.id",
+  contactEmail: "nusalingua01@gmail.com",
   termsUpdatedAt: "22 Oktober 2026",
 };
