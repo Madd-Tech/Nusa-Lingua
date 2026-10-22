@@ -6,6 +6,6 @@ export const SITE = {
   tagline: "Kenali Indonesia lewat bahasanya.",
   description:
     "Belajar bahasa daerah Indonesia 5 menit sehari: lesson ala game, kamus dengan tingkat tutur, cerita sejarah & budaya, serta teman ngobrol AI.",
-  team: "[ISI: nama tim]",
-  competition: "[ISI: nama lomba]",
+  team: "nama timnya bozo 🥦🍽️🔥",
+  competition: "IT DashFest 2026",
 };

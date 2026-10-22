@@ -180,10 +180,31 @@ export function LessonPlayer({
         setPhase("submit-error");
         return;
       }
-      setResult(parseCompleteLesson(data));
+      const parsed = parseCompleteLesson(data);
+      setResult(parsed);
       setPhase("result");
       sfx.finish();
       router.refresh();
+
+      // Kirim email notifikasi achievement baru (fire-and-forget)
+      const before = Date.now();
+      supabase.auth.getUser().then(({ data: { user: u } }) => {
+        if (!u) return;
+        supabase
+          .from("user_achievements")
+          .select("achievement_id")
+          .eq("user_id", u.id)
+          .gte("earned_at", new Date(before - 10_000).toISOString())
+          .then(({ data: fresh }) => {
+            fresh?.forEach((a) =>
+              fetch("/api/emails/achievement", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ achievementId: a.achievement_id }),
+              }).catch(() => {}),
+            );
+          });
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [lessonId, router, supabase, sfx.enabled],

@@ -1,4 +1,4 @@
-import Link from "next/link";
+  import Link from "next/link";
 import Image from "next/image";
 import { Logo } from "@/components/layout/logo";
 import { LandingNavbar } from "@/components/landing/landing-navbar";
@@ -67,7 +67,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
               {SITE.description}
             </p>
             <p className="text-xs text-muted-foreground">
-              Dibuat oleh {SITE.team} untuk {SITE.competition}
+              Dibuat oleh {SITE.team} 
             </p>
           </div>
 

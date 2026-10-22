@@ -11,7 +11,7 @@ const FAQ = [
     a: "Daftar bahasa terus bertambah. Lihat bagian Peta Bahasa di halaman ini untuk bahasa yang sudah aktif beserta daerah asalnya.",
   },
   {
-    q: "Apakah saya perlu login?",
+    q: "Apakah saya perlu login untuk menggunakan Nusa Lingua?",
     a: "Halaman ini bisa dibaca tanpa akun, dan kamu bisa mencoba satu soal di atas. Untuk belajar, membuka kamus, membaca artikel, ngobrol dengan asisten AI, dan menyimpan progres, kamu perlu masuk.",
   },
   {
